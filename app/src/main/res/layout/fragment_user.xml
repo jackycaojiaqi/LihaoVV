@@ -1,0 +1,87 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.UserFragment">
+
+    <include layout="@layout/widget_home_head_layout"
+        />
+    <android.support.v7.widget.CardView
+        style="@style/user_card_style"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="10dp"
+        >
+        <LinearLayout
+            android:id="@+id/user_clear_cache"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+            <TextView
+               style="@style/user_text_title_stylt"
+                android:text="@string/user_clear_cache"
+                />
+            <TextView
+                android:id="@+id/user_now_cache"
+                android:text="@string/user_cache_text"
+                style="@style/user_text_small"/>
+            <ImageView
+                style="@style/user_icon_arrow" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        style="@style/user_card_style"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="10dp"
+        >
+        <LinearLayout
+            android:id="@+id/user_recommed_friend"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+            <TextView
+                style="@style/user_text_title_stylt"
+                android:text="@string/user_recommed_friend"
+                />
+            <TextView
+                style="@style/user_text_small"/>
+            <ImageView
+                style="@style/user_icon_arrow" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        style="@style/user_card_style"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="10dp"
+        >
+        <LinearLayout
+            android:id="@+id/user_check_version"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+            <TextView
+                style="@style/user_text_title_stylt"
+                android:text="@string/user_check_version"
+                />
+            <TextView
+                android:id="@+id/user_version_text"
+                android:text="@string/user_now_verson"
+                style="@style/user_text_small"/>
+            <ImageView
+                style="@style/user_icon_arrow" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/user_seekbar_light"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/user_seekbar_light_text"
+        android:text="23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>

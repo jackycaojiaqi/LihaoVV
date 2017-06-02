@@ -1,0 +1,89 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="@android:color/black"
+    tools:context=".fragment.VipFragment">
+
+    <ImageView
+        android:layout_width="200dp"
+        android:src="@mipmap/vip"
+        android:layout_height="75dp" />
+    <RelativeLayout
+        android:background="@mipmap/bk"
+        android:layout_width="250dp"
+        android:layout_height="125dp">
+        <LinearLayout
+            android:layout_centerInParent="true"
+            android:id="@+id/vip_name"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="30dp"
+                android:src="@mipmap/vip_icons_sheild"
+                android:layout_height="30dp" />
+            <TextView
+                android:text="vip0"
+                android:textSize="20sp"
+                android:textColor="@color/home_tab_backgroud"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <ImageView
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:src="@mipmap/vip_yj"
+            android:layout_below="@id/vip_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <android.support.v7.widget.CardView
+        app:cardCornerRadius="10dp"
+        app:cardBackgroundColor="#583816"
+        android:layout_marginTop="20dp"
+        android:layout_width="80dp"
+        android:layout_height="30dp">
+        <TextView
+            android:layout_gravity="center"
+            android:text="马上充值"
+            android:textColor="@color/home_tab_backgroud"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </android.support.v7.widget.CardView>
+    <View
+        android:layout_marginTop="20dp"
+        android:background="#583816"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+    <TextView
+        android:textColor="#f2de4e"
+        android:text="特权内容"
+        android:textSize="25sp"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:layout_marginTop="20dp"
+        android:src="@mipmap/ic_launcher"
+        android:layout_width="60dp"
+        android:layout_height="60dp" />
+    <TextView
+        android:textSize="25sp"
+        android:textColor="#686868"
+        android:text="怅然若失,无权无挂"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_marginTop="20dp"
+        android:textColor="#f2de4e"
+        android:textSize="25sp"
+        android:text="成为VIP可享受更多特权"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</LinearLayout>

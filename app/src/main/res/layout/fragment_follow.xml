@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.FollowFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/follow_reheight">
+        <TextView
+            android:gravity="center"
+            android:textSize="20sp"
+            android:background="@color/bottom_radio_checked_text"
+            android:text="@string/my_follow"
+            android:textColor="@color/home_tab_backgroud"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/follow_tv_height" />
+    </RelativeLayout>
+    <View
+        android:background="@color/my_center_line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.handmark.pulltorefresh.library.PullToRefreshGridView
+            android:id="@+id/follow_ptlist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:numColumns="2"
+            android:stretchMode="columnWidth"
+            android:horizontalSpacing="@dimen/home_ptgv_padding"
+            android:verticalSpacing="@dimen/home_ptgv_padding_vertical"
+            />
+    </FrameLayout>
+
+</LinearLayout>

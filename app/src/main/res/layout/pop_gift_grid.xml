@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <GridView
+        android:id="@+id/room_gift_list"
+        android:numColumns="4"
+        android:columnWidth="80dp"
+        android:stretchMode="columnWidth"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/gift_name_txt"
+            android:layout_width="wrap_content"
+            android:text="送给"
+            android:gravity="center"
+            android:layout_height="match_parent" />
+        <EditText
+            android:text="1"
+            android:id="@+id/gift_to_user"
+            android:layout_width="0dp"
+            android:textSize="12sp"
+            android:inputType="number"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="match_parent" />
+        <TextView
+            android:text="数量"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:text="1"
+            android:id="@+id/gift_count"
+            android:layout_width="0dp"
+            android:inputType="number"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_height="wrap_content" />
+        <android.support.v7.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/home_tab_backgroud"
+            app:cardCornerRadius="8dp"
+            android:layout_height="40dp">
+            <Button
+                android:id="@+id/gift_send_btn"
+                android:text="赠送"
+                android:background="@color/home_tab_backgroud"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+</LinearLayout>

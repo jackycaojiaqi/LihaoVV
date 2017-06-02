@@ -1,0 +1,96 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <style name="pop_set_radio">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:button">@null</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/bottom_radio_text_color</item>
+    </style>
+    <style name="bottom_radio_btn">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:button">@null</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/bottom_radio_text_color</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="widget_home_head_image">
+        <item name="android:layout_width">23dp</item>
+        <item name="android:layout_height">23dp</item>
+        <item name="android:layout_marginTop">@dimen/widget_search_margintop</item>
+    </style>
+
+    <style name="user_text_title_stylt">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:textColor">@color/user_title_text</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="user_text_small">
+        <item name="android:gravity">center|right</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="user_card_style">
+        <item name="android:layout_height">@dimen/user_card_height</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+    </style>
+
+    <style name="user_icon_arrow">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:src">@mipmap/icon_arrow</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="person_message_tag">
+        <item name="android:textColor">@color/home_room_text</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="person_message_name">
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">right</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppThemeFullscreen" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+</resources>

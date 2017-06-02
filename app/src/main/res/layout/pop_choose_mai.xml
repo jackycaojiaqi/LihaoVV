@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/pop_1mai"
+        android:src="@mipmap/mai1"
+        android:layout_width="60dp"
+        android:layout_height="60dp" />
+    <ImageView
+        android:id="@+id/pop_2mai"
+        android:src="@mipmap/mai2"
+        android:layout_width="60dp"
+        android:layout_height="60dp" />
+    <ImageView
+        android:id="@+id/pop_3mai"
+        android:src="@mipmap/mai3"
+        android:layout_width="60dp"
+        android:layout_height="60dp" />
+</LinearLayout>

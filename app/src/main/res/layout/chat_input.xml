@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_alignParentBottom="true"
+    android:background="@color/chat_input_backgd"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/room_message_list"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#eee"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingBottom="6dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="6dp">
+
+
+        <ImageView
+            android:id="@+id/emotion_button"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:clickable="true"
+            android:src="@mipmap/room_face_icon"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_button_reply_edittext"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/edit_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#0000"
+                android:maxLines="3"
+                android:minHeight="36dp"
+                android:textSize="16sp"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/room_chat_send"
+            android:layout_width="56dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shape_button_reply_button"
+            android:text="发送"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#e0e0e0"/>
+    <GridView
+        android:id="@+id/page_face_grid"
+        android:background="@color/white"
+        android:numColumns="auto_fit"
+        android:columnWidth="40dp"
+        android:stretchMode="columnWidth"
+        android:padding="8dp"
+        android:clipToPadding="false"
+        android:scrollbarStyle="outsideOverlay"
+        android:verticalSpacing="16dp"
+        android:horizontalSpacing="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

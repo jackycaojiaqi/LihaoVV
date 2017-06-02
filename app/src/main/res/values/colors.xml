@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="bottom_radio_text">#ada7a7</color>
+    <color name="bottom_radio_checked_text">#e14486</color>
+    <color name="home_tab_backgroud">#ffffff</color>
+    <color name="home_room_text">#111111</color>
+    <color name="user_title_text">#2761a3</color>
+    <color name="login_background">#07c3f7</color>
+    <color name="chat_input_backgd">#f2efef</color>
+    <color name="room_message_color">#0e9dd6</color>
+    <color name="my_text_center">#f40f07</color>
+    <color name="my_center_line">#999292</color>
+    <color name="gift_back_color">#e14486</color>
+    <color name="login_btn_back">#ff336699</color>
+    <color name="head_bg_color">#e14486</color>
+    <color name="reply_button_disable">#f5f5f5</color>
+    <color name="reply_button_text">#dfFFFFFF</color>
+    <color name="reply_button_text_disable">#b8b8b8</color>
+    <color name="white">#FFFFFF</color>
+    <color name="text_primary">#df000000</color>
+
+    <color name="black_room">#171717</color>
+    <color name="transparent_deep_aa">#e0161616</color>
+    <color name="gray">#32cfc9</color>
+
+    <color name="bg_edittext_color">#00000000</color>
+
+    <color name="bg_horizontal_line_color">#80a3a4a7</color>
+    <color name="bg_horizontal_btn_normal">#eeeeee</color>
+    <color name="bg_horizontal_btn_selected">#70a3a4a7</color>
+
+    <color name="bg_indicator_point_normal">#D8D8D8</color>
+    <color name="bg_indicator_point_selected">#A6A6A6</color>
+    <color name="pldroid_streaming_white">#fff</color>
+
+    <color name="pldroid_streaming_red">#f00</color>
+
+    <color name="pldroid_streaming_yellow">#FFFF00</color>
+</resources>

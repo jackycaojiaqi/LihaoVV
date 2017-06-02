@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/choose_head_height">
+    <com.bigkoo.convenientbanner.ConvenientBanner
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/choose_frag_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/choose_head_height"
+        app:canLoop="true"
+    />
+    <!--<com.gc.flashview.FlashView-->
+        <!--android:id="@+id/choose_frag_viewpager"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="150dp"-->
+        <!--app:effect="cube"-->
+        <!--/>-->
+</LinearLayout>

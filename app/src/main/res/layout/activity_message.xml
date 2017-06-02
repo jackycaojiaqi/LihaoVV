@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.MessageActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/message_reheight">
+        <ImageView
+            android:id="@+id/message_back_btn"
+            android:layout_margin="@dimen/message_image_left"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/btn_title_black_back"
+            android:layout_width="@dimen/message_image_width"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:gravity="center"
+            android:textSize="@dimen/message_tv"
+            android:text="@string/message_center"
+            android:textColor="@color/my_text_center"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/message_tvheight" />
+    </RelativeLayout>
+
+    <View
+        android:background="@color/my_center_line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        />
+    <TextView
+        android:text="@string/message_page"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <android.support.v7.widget.CardView
+        android:layout_gravity="center_horizontal"
+        android:background="#0596f1"
+        app:cardCornerRadius="15dp"
+        android:layout_width="200dp"
+        android:layout_height="30dp">
+        <ImageView
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/icon_search"
+            android:layout_gravity="center_vertical"/>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

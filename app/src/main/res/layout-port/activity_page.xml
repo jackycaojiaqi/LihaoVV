@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:keepScreenOn="true"
+    tools:context=".ui.PageActivity">
+    <LinearLayout
+        android:id="@+id/linear_container"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <android.support.percent.PercentFrameLayout
+            android:background="@mipmap/fubang_bj"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/room_land_new_relative"
+                android:layout_gravity="center"
+                app:layout_heightPercent="100%"
+                app:layout_widthPercent="75%"
+                android:layout_width="0dp"
+                android:layout_height="0dp">
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/page_vp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </RelativeLayout>
+
+            <master.flame.danmaku.ui.widget.DanmakuView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/danmakuView"
+                />
+            <RelativeLayout
+                android:id="@+id/room_land_new_controll"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:background="#0fffffff"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp">
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:id="@+id/room_land_new_back_btn"
+                        android:src="@mipmap/btn_title_back_pressed"
+                        android:layout_width="30dp"
+                        android:layout_margin="10dp"
+                        android:layout_height="30dp" />
+                    <TextView
+                        android:text="房间号"
+                        android:textSize="18sp"
+                        android:textColor="@color/home_tab_backgroud"
+                        android:id="@+id/room_id_test"
+                        android:layout_gravity="center"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+                <ImageView
+                    android:src="@mipmap/icon_danmu_whole_normal"
+                    android:id="@+id/test_danmu_btn"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="100dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:src="@mipmap/full"
+                    android:id="@+id/test_full"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="50dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <include layout="@layout/reply_layout"
+                    android:id="@+id/reply_layout"
+                    android:visibility="gone"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </RelativeLayout>
+        </android.support.percent.PercentFrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

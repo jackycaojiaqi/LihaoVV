@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.SettingActivity">
+
+    <RelativeLayout
+        android:background="@color/bottom_radio_checked_text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/setting_reheight">
+        <ImageView
+            android:id="@+id/setting_back_btn"
+            android:layout_margin="@dimen/setting_image_margin"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/lookleft_icon"
+            android:layout_width="@dimen/setting_image_width"
+            android:layout_height="30dp" />
+        <TextView
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="@string/setting_setting"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/setting_tv_height" />
+    </RelativeLayout>
+
+    <View
+        android:background="@color/my_center_line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/line_height"
+        />
+    <android.support.v7.widget.CardView
+        style="@style/user_card_style"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="10dp"
+        >
+        <LinearLayout
+            android:id="@+id/setting_clear_cache"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+            <TextView
+                style="@style/user_text_title_stylt"
+                android:text="@string/user_clear_cache"
+                />
+            <TextView
+                android:id="@+id/setting_now_cache"
+                android:text="@string/user_cache_text"
+                style="@style/user_text_small"/>
+            <ImageView
+                style="@style/user_icon_arrow" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        style="@style/user_card_style"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="10dp"
+        >
+        <LinearLayout
+            android:id="@+id/setting_recommed_friend"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+            <TextView
+                style="@style/user_text_title_stylt"
+                android:text="@string/user_recommed_friend"
+                />
+            <TextView
+                style="@style/user_text_small"/>
+            <ImageView
+                style="@style/user_icon_arrow" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        style="@style/user_card_style"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="10dp"
+        >
+        <LinearLayout
+            android:id="@+id/setting_check_version"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+            <TextView
+                style="@style/user_text_title_stylt"
+                android:text="@string/user_check_version"
+                />
+            <TextView
+                android:id="@+id/setting_version_text"
+                android:text="@string/user_now_verson"
+                style="@style/user_text_small"/>
+            <ImageView
+                style="@style/user_icon_arrow" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.CardView
+        android:layout_margin="50dp"
+        style="@style/user_card_style"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="10dp"
+        app:cardBackgroundColor="#b1b1b1"
+        >
+        <LinearLayout
+            android:id="@+id/setting_back_login"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="match_parent">
+            <TextView
+                android:textSize="20sp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:text="退出登录"
+                />
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

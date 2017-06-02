@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_register"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:background="@color/bottom_radio_checked_text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/setting_reheight">
+        <ImageView
+            android:id="@+id/register_back_btn"
+            android:layout_margin="@dimen/setting_image_margin"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/lookleft_icon"
+            android:layout_width="@dimen/setting_image_width"
+            android:layout_height="30dp" />
+        <TextView
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="@string/register_text"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/setting_tv_height" />
+    </RelativeLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/login_marin_left"
+        android:layout_marginRight="@dimen/login_marin_left"
+        android:layout_marginTop="@dimen/login_marin_top"
+        android:gravity="center" >
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            app:cardCornerRadius="@dimen/login_edit_radius"
+            android:layout_height="@dimen/login_editname_height"
+            android:gravity="center" >
+            <EditText
+                android:hint="@string/input_phone"
+                android:layout_marginLeft="@dimen/login_edit_margin_left"
+                android:id="@+id/register_user_phone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/login_edit_top"
+                android:inputType="number"
+                android:maxLength="20"
+                android:background="@null"
+                >
+            </EditText>
+            <ImageView
+                android:layout_width="@dimen/login_image_width"
+                android:layout_height="@dimen/login_image_height"
+                android:layout_marginLeft="21dp"
+                android:layout_gravity="center_vertical"
+                android:background="@mipmap/users_icon"
+                android:visibility="visible" />
+        </android.support.v7.widget.CardView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.CardView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                app:cardCornerRadius="@dimen/login_edit_radius"
+                android:layout_height="@dimen/login_editname_height"
+                android:layout_marginTop="@dimen/login_frame2_top"
+                android:gravity="center">
+                <EditText
+                    android:id="@+id/register_user_yanzhen"
+                    android:hint="@string/input_user_yanzhen"
+                    android:layout_marginLeft="@dimen/login_edit_margin_left"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="textPassword"
+                    android:maxLength="20"
+                    android:background="@null"
+                    >
+                </EditText>
+                <ImageView
+                    android:layout_marginLeft="21dp"
+                    android:layout_width="@dimen/login_image_mm_width"
+                    android:layout_height="@dimen/login_image_mm_height"
+                    android:layout_gravity="center_vertical"
+                    android:background="@mipmap/yz_icon" />
+            </android.support.v7.widget.CardView>
+            <android.support.v7.widget.CardView
+                android:layout_width="wrap_content"
+                app:cardCornerRadius="15dp"
+                app:cardBackgroundColor="#e4007f"
+                android:layout_height="@dimen/login_editname_height"
+                android:layout_marginTop="@dimen/login_frame2_top"
+                android:gravity="center" >
+                <Button
+                    android:id="@+id/register_get_yanzhen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/login_editname_height"
+                    android:background="@null"
+                    android:textColor="@android:color/white"
+                    android:gravity="center"
+                    android:textSize="20sp"
+                    android:text="@string/recive_yanzhen" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            app:cardCornerRadius="@dimen/login_edit_radius"
+            android:layout_height="@dimen/login_editname_height"
+            android:layout_marginTop="@dimen/login_frame2_top"
+            android:gravity="center" >
+            <EditText
+                android:hint="@string/input_user_password"
+                android:layout_marginLeft="@dimen/login_edit_margin_left"
+                android:id="@+id/register_password"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="textPassword"
+                android:maxLength="20"
+                android:background="@null"
+                >
+            </EditText>
+            <ImageView
+                android:layout_marginLeft="21dp"
+                android:layout_width="@dimen/login_image_mm_width"
+                android:layout_height="@dimen/login_image_mm_height"
+                android:layout_gravity="center_vertical"
+                android:background="@mipmap/keycode_icon" />
+        </android.support.v7.widget.CardView>
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            app:cardCornerRadius="@dimen/login_edit_radius"
+            app:cardBackgroundColor="#e4007f"
+            android:layout_height="@dimen/login_editname_height"
+            android:layout_marginTop="@dimen/login_frame2_top"
+            android:gravity="center" >
+            <Button
+                android:id="@+id/register_register"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:text="@string/register_text_user" />
+        </android.support.v7.widget.CardView>
+    </LinearLayout>
+
+</LinearLayout>

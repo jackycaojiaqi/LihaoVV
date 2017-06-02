@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_new_room"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.NewRoomActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="90dp"
+                android:background="#151414">
+
+                <ImageView
+                    android:layout_width="150dp"
+                    android:layout_height="80dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:scaleType="fitXY"
+                    android:src="@mipmap/gz_btn" />
+
+
+                <RelativeLayout
+                    android:layout_width="150dp"
+                    android:layout_height="80dp"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="12dp"
+                        android:src="@mipmap/room_left_logo" />
+
+                    <TextView
+                        android:id="@+id/new_room_roomid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="10dp"
+                        android:text="房间号"
+                        android:textColor="#ffffff"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/new_room_person"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="30dp"
+                        android:text="5000在线"
+                        android:textColor="#ffffff"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:id="@+id/new_room_follow"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginTop="12dp"
+                        android:src="@mipmap/room_follow" />
+                </RelativeLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/new_room_linear"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="160dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/new_room_maike"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:padding="3dp"
+                        android:src="@mipmap/mai_icon" />
+
+                    <ImageView
+                        android:id="@+id/down_mai_image"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:padding="3dp"
+                        android:src="@mipmap/xiamai_icon" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/new_room_back_btn"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="5dp"
+                            android:src="@mipmap/exit_icon" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_alignParentBottom="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="85dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="魅力主播"
+                        android:textColor="#ffffff" />
+
+                    <TextView
+                        android:layout_width="85dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center_vertical"
+                        android:text="幽默"
+                        android:textColor="#ffffff" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:src="@mipmap/kbi_btn" />
+
+                        <TextView
+                            android:id="@+id/new_room_kb_number"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:gravity="center"
+                            android:singleLine="true"
+                            android:text="12314541116"
+                            android:textColor="#ffffff"
+                            android:textSize="9sp" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.fubang.lihaovv.view.ScaleLayout
+                    android:id="@+id/new_room_relative"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:widthToHeight="0.75">
+
+                    <android.support.v4.view.ViewPager
+                        android:id="@+id/new_room_viewpager"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <com.facebook.drawee.view.SimpleDraweeView
+                        android:id="@+id/new_room_back_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:placeholderImage="@mipmap/roomspeen_photo"
+                        app:placeholderImageScaleType="fitXY" />
+
+                </com.fubang.lihaovv.view.ScaleLayout>
+            </RelativeLayout>
+
+            <ListView
+                android:id="@+id/new_room_listview"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="#161616" />
+
+            <LinearLayout
+                android:id="@+id/new_room_control"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="#161616"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/new_room_more"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:src="@mipmap/more" />
+
+                <ImageView
+                    android:id="@+id/new_room_chat"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:src="@mipmap/liaotian" />
+
+                <ImageView
+                    android:id="@+id/new_room_share"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:src="@mipmap/share" />
+
+                <ImageView
+                    android:id="@+id/new_room_screen"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:src="@mipmap/screen" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/new_room_gift"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="10dp"
+                    android:src="@mipmap/liwu" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/user_linear"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_horizontal_btn_normal"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/home_tab_backgroud"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/userlist_back"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/btn_title_black_back" />
+
+            <RadioGroup
+                android:id="@+id/list_check_radio"
+                android:layout_width="200dp"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/mai_list_btn"
+                    style="@style/bottom_radio_btn"
+                    android:layout_gravity="center"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:text="麦序列表" />
+
+                <RadioButton
+                    android:id="@+id/person_list_btn"
+                    style="@style/bottom_radio_btn"
+                    android:layout_gravity="center"
+                    android:checked="false"
+                    android:gravity="center"
+                    android:text="在线观众" />
+            </RadioGroup>
+
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ExpandableListView
+                android:id="@+id/mai_list_eplist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible" />
+
+            <ExpandableListView
+                android:id="@+id/user_listview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/new_room_chatline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:id="@+id/new_room_chat_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:id="@+id/person_chat_linear"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/bg_horizontal_btn_normal"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@color/home_tab_backgroud">
+
+                    <TextView
+                        android:id="@+id/person_chat_listview"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="私聊记录" />
+
+                    <ImageView
+                        android:id="@+id/person_chat_down"
+                        android:layout_width="30dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/room_list_down_btn" />
+                </RelativeLayout>
+
+                <ListView
+                    android:id="@+id/person_chat_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:divider="@null" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/new_room_chat_listview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#00000000" />
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/new_room_chat_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <!--抽屉-->
+    <RelativeLayout
+        android:id="@+id/rl_room_right_menu"
+        android:layout_width="220dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:background="@color/transparent_deep_aa">
+
+        <include layout="@layout/room_control_right" />
+    </RelativeLayout>
+</android.support.v4.widget.DrawerLayout>

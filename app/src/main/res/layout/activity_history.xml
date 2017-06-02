@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_history"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.HistoryActivity">
+    <RelativeLayout
+        android:background="@color/bottom_radio_checked_text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/setting_reheight">
+        <ImageView
+            android:id="@+id/history_back_btn"
+            android:layout_margin="@dimen/setting_image_margin"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/lookleft_icon"
+            android:layout_width="@dimen/setting_image_width"
+            android:layout_height="30dp" />
+        <TextView
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="@string/history_text"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/setting_tv_height" />
+    </RelativeLayout>
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
+        android:id="@+id/history_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+</LinearLayout>

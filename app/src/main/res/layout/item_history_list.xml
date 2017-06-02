@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:id="@+id/history_layout"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:layout_width="35dp"
+        app:placeholderImage="@mipmap/my_photo_icon"
+        android:id="@+id/history_list_headicon"
+        app:roundAsCircle="true"
+        android:layout_gravity="center"
+        android:layout_marginLeft="15dp"
+        app:actualImageScaleType="focusCrop"
+        android:layout_height="35dp" />
+    <TextView
+        android:id="@+id/history_room_name"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:text="123"
+        android:gravity="center"
+        android:layout_height="match_parent" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:text="房间号:"
+        android:textColor="@color/bottom_radio_checked_text"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:textColor="@color/bottom_radio_checked_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:text="001"
+        android:gravity="center"
+        android:id="@+id/history_room_id"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/history_del"
+        android:src="@mipmap/clear_icon"
+        android:layout_width="100dp"
+        android:layout_gravity="center"
+        android:layout_height="35dp" />
+</LinearLayout>

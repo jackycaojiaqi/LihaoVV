@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_user_help"
+    android:orientation="vertical"
+    android:background="#efeff4"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.UserHelpActivity">
+    <RelativeLayout
+        android:background="@color/bottom_radio_checked_text"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/setting_reheight">
+        <ImageView
+            android:id="@+id/userhelp_back_btn"
+            android:layout_margin="@dimen/setting_image_margin"
+            android:layout_centerVertical="true"
+            android:src="@mipmap/lookleft_icon"
+            android:layout_width="@dimen/setting_image_width"
+            android:layout_height="match_parent" />
+        <TextView
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="@string/user_help"
+            android:textColor="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/setting_tv_height" />
+    </RelativeLayout>
+    <ImageView
+        android:src="@mipmap/user_help_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

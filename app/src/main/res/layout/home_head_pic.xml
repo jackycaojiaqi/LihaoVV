@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <com.bigkoo.convenientbanner.ConvenientBanner
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/choose_frag_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_head_pic_height"
+        app:canLoop="true"
+        />
+    <android.support.v7.widget.RecyclerView
+        android:padding="@dimen/home_head_icon_padding"
+        android:id="@+id/choose_frag_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_head_icon_height"
+        />
+</LinearLayout>

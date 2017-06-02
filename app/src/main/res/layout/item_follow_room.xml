@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:id="@+id/follow_room_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:background="@color/home_tab_backgroud"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/follow_room_pic_height">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/follow_room_pic"
+            android:layout_width="match_parent"
+            app:actualImageScaleType="focusCrop"
+            app:placeholderImage="@mipmap/roommr_photo"
+            android:layout_height="match_parent" />
+        <ImageView
+            android:src="@mipmap/rm_icon"
+            android:layout_alignParentRight="true"
+            android:scaleType="fitXY"
+            android:layout_width="33dp"
+            android:layout_height="13dp" />
+        <TextView
+            android:text="12122222222222"
+            android:id="@+id/follow_room_name"
+            android:textSize="@dimen/home_room_text"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
+            android:textColor="@color/home_room_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+</LinearLayout>

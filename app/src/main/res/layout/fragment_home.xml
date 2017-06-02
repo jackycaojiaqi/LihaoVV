@@ -1,0 +1,71 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".fragment.HomeFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <include layout="@layout/widget_home_head_layout"/>
+    <com.bigkoo.convenientbanner.ConvenientBanner
+        android:id="@+id/convenientBanner"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/choose_head_height"
+        app:canLoop="true"
+    />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/home_tab_height">
+        <android.support.design.widget.TabLayout
+            android:background="@color/home_tab_backgroud"
+            android:id="@+id/home_tablayout"
+            app:tabTextColor="@color/bottom_radio_text"
+            app:tabIndicatorColor="@color/bottom_radio_checked_text"
+            app:tabSelectedTextColor="@color/bottom_radio_checked_text"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/home_tab_height"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:src="@mipmap/room_list_bar_text_icon"
+                android:layout_width="4dp"
+                android:layout_marginLeft="20dp"
+                android:scaleType="fitXY"
+                android:layout_gravity="center_vertical"
+                android:layout_height="20dp" />
+            <TextView
+                android:layout_marginLeft="8dp"
+                android:layout_gravity="center_vertical"
+                android:text="大厅列表"
+                android:textColor="@color/home_room_text"
+                android:textSize="16sp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_marginLeft="8dp"
+                android:layout_gravity="center_vertical"
+                android:text="热门主播"
+                android:textColor="@color/home_room_text"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:src="@mipmap/room_list_down_btn"
+                android:layout_width="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="10dp"
+                android:scaleType="fitXY"
+                android:layout_gravity="center_vertical"
+                android:layout_height="15dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/home_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

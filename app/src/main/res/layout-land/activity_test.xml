@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/linear_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.percent.PercentFrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/home_room_text">
+
+            <LinearLayout
+                android:id="@+id/text_relative"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/room_control"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2">
+
+                    <SurfaceView
+                        android:id="@+id/text_surface"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <com.facebook.drawee.view.SimpleDraweeView
+                        android:id="@+id/text_back_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:placeholderImage="@mipmap/roomspeen_photo"
+                        app:placeholderImageScaleType="fitXY" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:id="@+id/room_control2"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                        <SurfaceView
+                            android:id="@+id/text_surface2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                        <com.facebook.drawee.view.SimpleDraweeView
+                            android:id="@+id/text_back_image2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:placeholderImage="@mipmap/roomspeen_photo"
+                            app:placeholderImageScaleType="fitXY" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:id="@+id/room_control3"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                        <SurfaceView
+                            android:id="@+id/text_surface3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                        <com.facebook.drawee.view.SimpleDraweeView
+                            android:id="@+id/text_back_image3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:placeholderImage="@mipmap/roomspeen_photo"
+                            app:placeholderImageScaleType="fitXY" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <master.flame.danmaku.ui.widget.DanmakuView
+                android:id="@+id/danmakuView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <RelativeLayout
+                android:id="@+id/test_controll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="#0fffffff"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/test_back_btn"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:src="@mipmap/btn_title_back_pressed" />
+
+                    <TextView
+                        android:id="@+id/room_id_test"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:text="房间号"
+                        android:textColor="@color/home_tab_backgroud"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/room_change"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:text="切换"
+                        android:textSize="18sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/test_danmu_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="100dp"
+                    android:layout_marginLeft="10dp"
+
+                    android:layout_marginRight="15dp"
+                    android:src="@mipmap/icon_danmu_whole_normal" />
+
+                <ImageView
+                    android:id="@+id/test_full"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginBottom="50dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@mipmap/full"
+                   />
+
+                <include
+                    android:id="@+id/reply_layout"
+                    layout="@layout/reply_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:visibility="gone" />
+            </RelativeLayout>
+        </android.support.percent.PercentFrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

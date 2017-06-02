@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="#5e000000"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <ImageView
+            android:id="@+id/pop_set_car"
+            android:src="@mipmap/car_icon"
+            android:layout_margin="20dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+        <TextView
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:text="进入车行"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <TextView
+        android:layout_marginTop="80sp"
+        android:textColor="#ffffff"
+        android:text="sdddssssss2"
+        android:textSize="12sp"
+        android:id="@+id/pop_light"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+        <ImageView
+            android:layout_marginLeft="20dp"
+            android:src="@mipmap/brightness_mix"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+        <android.support.v7.widget.AppCompatSeekBar
+            android:layout_gravity="center"
+            android:id="@+id/pop_set_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <RadioGroup
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <RadioButton
+            android:text="普清"
+            style="@style/pop_set_radio" />
+        <RadioButton
+            android:text="高清"
+            style="@style/pop_set_radio" />
+        <RadioButton
+            android:text="超清"
+            style="@style/pop_set_radio" />
+    </RadioGroup>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <ImageView
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/max_icon"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="35dp" />
+        <ImageView
+            android:src="@mipmap/siliao_icon"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="40dp" />
+        <ImageView
+            android:src="@mipmap/pop_home_icon"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="40dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+        <TextView
+            android:text="最小化"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:text="私聊"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+        <TextView
+        android:text="主页"
+        android:textColor="#ffffff"
+            android:gravity="center"
+        android:textSize="16sp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+        android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginTop="20dp"
+
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <ImageView
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/pop_clear_icon"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+        <ImageView
+            android:src="@mipmap/mai"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+        <ImageView
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+        <TextView
+            android:text="清屏"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:text="音频模式"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:text=""
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+</LinearLayout>
