@@ -1,6 +1,7 @@
 package com.fubang.lihaovv.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.fubang.lihaovv.R;
 import com.fubang.lihaovv.ui.NewRoomActivity_;
 import com.fubang.lihaovv.AppConstant;
 import com.fubang.lihaovv.entities.RoomListEntity;
+import com.fubang.lihaovv.ui.PushrtmpTestActivity;
 import com.fubang.lihaovv.ui.RoomActivity_;
 import com.zhuyunjian.library.ListBaseAdapter;
 
@@ -31,6 +33,7 @@ public class HomeRoomAdapter extends ListBaseAdapter<RoomListEntity> {
         super(list, context);
         this.list = list;
     }
+
     @Override
     public int getCount() {
         return list != null ? list.size() : 0;
@@ -60,40 +63,41 @@ public class HomeRoomAdapter extends ListBaseAdapter<RoomListEntity> {
 ////            holder.roomLayout.setVisibility(View.GONE);
 //        }else {
         DraweeController controller = Fresco.newDraweeControllerBuilder()
-                .setUri(Uri.parse(AppConstant.HEAD_URL+list.get(position).getRoompic()))
+                .setUri(Uri.parse(AppConstant.HEAD_URL + list.get(position).getRoompic()))
                 .setAutoPlayAnimations(true)
                 .build();
-        Log.d("123", AppConstant.HEAD_URL+list.get(position).getRoompic());
+        Log.d("123", AppConstant.HEAD_URL + list.get(position).getRoompic());
         holder.simpleDraweeView.setController(controller);
 //            holder.simpleDraweeView.setImageURI(Uri.parse(AppConstant.HEAD_URL+list.get(position).getRoompic()));
-            holder.roomNumber.setText(list.get(position).getRscount() + "/" + list.get(position).getRoomrs());
-            holder.roomText.setText(list.get(position).getRoomname());
-            holder.roomLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.d("123",position+"-----------------");
+        holder.roomNumber.setText(list.get(position).getRscount() + "/" + list.get(position).getRoomrs());
+        holder.roomText.setText(list.get(position).getRoomname());
+        holder.roomLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("123", position + "-----------------");
                     context.startActivity(RoomActivity_.intent(context)
                             .extra("roomIp",list.get(position).getGateway())
                             .extra("roomId",list.get(position).getRoomid())
                             .extra("roomPwd",list.get(position).getRoompwd()).get());
+//                context.startActivity(new Intent(context, PushrtmpTestActivity.class));
 //                    context.startActivity(NewRoomActivity_.intent(context)
 //                            .extra("roomIp","42.121.57.170:12529;42.121.57.170:12529")
 //                            .extra("roomId","123")
 //                            .extra("roomPwd","").get());
-                }
-            });
+            }
+        });
 //        }
         return convertView;
     }
 
-    static class ViewHolder{
+    static class ViewHolder {
         SimpleDraweeView simpleDraweeView;
-        TextView roomNumber,roomText;
+        TextView roomNumber, roomText;
         LinearLayout roomLayout;
 
         public ViewHolder(View itemView) {
             simpleDraweeView = (SimpleDraweeView) itemView.findViewById(R.id.home_room_pic);
-            roomNumber = (TextView)itemView.findViewById(R.id.home_room_number);
+            roomNumber = (TextView) itemView.findViewById(R.id.home_room_number);
             roomText = (TextView) itemView.findViewById(R.id.home_room_name);
             roomLayout = (LinearLayout) itemView.findViewById(R.id.home_room_layout);
         }

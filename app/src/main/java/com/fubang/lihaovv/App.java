@@ -53,6 +53,8 @@ public class App extends Application {
 //        Log.d("123",mgr+"------mgr");
         //初始化Fresco
 //        FrescoHelper.getInstance().init(this);
+
+
         Fresco.initialize(this);
         //初始化数据库类
         DbUtil.init(this);

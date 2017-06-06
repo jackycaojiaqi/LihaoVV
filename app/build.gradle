@@ -11,6 +11,18 @@ android {
         versionCode 1
         versionName "1.0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk{
+            stl "stlport_static"
+
+            ldLibs "m","c","dl","log","android"
+            abiFilters "armeabi", "armeabi-v7a"
+//            abiFilters "x86"
+//           ldLibs.addAll(["m","c","dl","log","android"])
+//            moduleName "media"
+//            ldLibs.addAll([ 'log']);
+//            abiFilters "armeabi", "armeabi-v7a", "x86"
+        }
+
     }
 
     signingConfigs {
@@ -31,6 +43,8 @@ android {
             signingConfig signingConfigs.config
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            debuggable true
+            jniDebuggable true
         }
     }
     productFlavors {
@@ -51,6 +65,7 @@ repositories{
     flatDir{
         dirs 'libs' //就是你放aar的目录地址
     }
+
 }
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -93,6 +108,7 @@ dependencies {
     compile files('libs/pldroid-media-streaming-2.1.2.jar')
     compile files('libs/pldroid-player-1.5.0.jar')
     compile files('libs/klog.jar')
+    compile 'com.lzy.net:okgo:2.1.4'
 }
 apt {
     arguments {

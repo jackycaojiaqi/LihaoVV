@@ -1,11 +1,13 @@
 package com.fubang.lihaovv;
 
 
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.widget.RadioGroup;
@@ -24,6 +26,8 @@ import org.androidannotations.annotations.ViewById;
 
 import java.util.ArrayList;
 
+import org.yj.media.Media;
+
 /**
  * 主页面
  */
@@ -37,6 +41,10 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        Media.Init();
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                100);
         fragments.add(HomeFragment_.builder().build());
         fragments.add(LiveFragment_.builder().build());
         fragments.add(FollowFragment_.builder().build());
