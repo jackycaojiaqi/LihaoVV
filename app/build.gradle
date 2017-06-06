@@ -92,6 +92,7 @@ dependencies {
     compile 'com.qiniu.pili:pili-android-qos:0.8.+'
     compile files('libs/pldroid-media-streaming-2.1.2.jar')
     compile files('libs/pldroid-player-1.5.0.jar')
+    compile files('libs/klog.jar')
 }
 apt {
     arguments {

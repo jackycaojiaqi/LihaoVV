@@ -49,6 +49,7 @@ import com.fubang.lihaovv.utils.FaceUtil;
 import com.fubang.lihaovv.utils.GiftUtil;
 import com.fubang.lihaovv.utils.GlobalOnItemClickManager;
 import com.fubang.lihaovv.R;
+import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.JoinRoomResponse;
 import com.xlg.android.protocol.MicState;
@@ -140,7 +141,7 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
     private Button giftSendBtn;
     private GridView gridView;
     private ListView userList;
-    private boolean isRunning = true;
+    private boolean isRunning = false;
 
     private List<RoomChatMsg> data = new ArrayList<>();
 
@@ -256,7 +257,6 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
             @Override
             public void onClick(View v) {
                 finish();
-                startActivity(RoomActivity_.intent(RoomLandActivity.this).extra("roomIp", roomIp).extra("roomId", roomId + "").extra("roomPwd", roomPwd + "").get());
             }
         });
         danmuImage.setOnClickListener(new View.OnClickListener() {
@@ -611,7 +611,7 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
     //麦上几个人就添加视频流
     @Subscriber(tag = "onMicUser")
     public void getonMicUser(RoomUserInfo obj) {
-
+        KLog.e("==================" + obj.getUserid());
         if (obj.getMicindex() == 0) {
             sendToUser = obj;
         }
@@ -640,17 +640,15 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
     @Override
     protected void onResume() {
         super.onResume();
-        configuration = getResources().getConfiguration();
         isRunning = true;
+        micUsers = new ArrayList<>();
+        configuration = getResources().getConfiguration();
 //        Log.d("123","onResume---");
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (isRunning) {
-                    play.start();
-//                    Log.d("123", "chongxingqidong");
-                    roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomLandActivity.this)), StartUtil.getUserPwd(RoomLandActivity.this), ip, port, roomPwd);
-                }
+                play.start();
+                roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomLandActivity.this)), StartUtil.getUserPwd(RoomLandActivity.this), ip, port, roomPwd);
             }
         }).start();
         if (danmakuView != null && danmakuView.isPrepared() && danmakuView.isPaused()) {
@@ -658,7 +656,7 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
         }
     }
 
-//    @Override
+    //    @Override
 //    public void onConfigurationChanged(Configuration config) {
 //        try {
 //            super.onConfigurationChanged(config);
@@ -675,28 +673,10 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
 //        }
 //    }
 
-    protected void onPause() {
-        super.onPause();
-        isRunning = false;
-//        Log.d("123", "onPause---");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (mgr != null && play != null) {
-                    mgr.StopRTPSession();
-                    mgr.Uninit();
-                    play.stop();
-                    mgr = null;
-                }
-            }
-        }).start();
-        if (danmakuView != null && danmakuView.isPrepared()) {
-            danmakuView.pause();
-        }
-    }
 
     @Subscriber(tag = "upMicState")
     public void upMicState(MicState obj) {
+        KLog.e("==================" + obj.getUserid());
         for (int i = 0; i < userInfos.size(); i++) {
             if (obj.getUserid() == userInfos.get(i).getUserid()) {
                 userInfos.get(i).setMicindex(obj.getMicindex());
@@ -719,11 +699,11 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
             mgr.SetServerAddr2(mediaIp, mediaPort, 0);
             mgr.StartRTPSession();
         }
-        mgr.AddRTPRecver(0, ssrc, 99, 1000);
-        mgr.SetRTPRecverARQMode(ssrc, 99, 1);
-
-        mgr.AddRTPRecver(0, ssrc, 97, 1000);
-        mgr.SetRTPRecverARQMode(ssrc, 97, 1);
+//        mgr.AddRTPRecver(0, ssrc, 99, 1000);
+//        mgr.SetRTPRecverARQMode(ssrc, 99, 1);
+//
+//        mgr.AddRTPRecver(0, ssrc, 97, 1000);
+//        mgr.SetRTPRecverARQMode(ssrc, 97, 1);
 //        Log.d("123","ssrc====="+ssrc);
         mgr.AddVideoStream(ssrc, 0, 1, this);
         if (!isplaying)
@@ -746,11 +726,9 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
     }
 
     @Override
-    public void onStop() {
-//        Log.d("123", "onStop---");
-        mStop = true;
+    protected void onPause() {
+        super.onPause();
         isRunning = false;
-        super.onStop();
         if (mgr != null) {
             final AVModuleMgr tmp = mgr;
             mgr = null;
@@ -760,16 +738,18 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                 public void run() {
                     tmp.StopRTPSession();
                     tmp.Uninit();
-                    roomMain.getRoom().getChannel().sendLeaveRoom(Integer.parseInt(StartUtil.getUserId(RoomLandActivity.this)));
-                    roomMain.getRoom().onDisconnected();
+                    if (roomMain.getRoom() != null) {
+                        roomMain.getRoom().getChannel().sendLeaveRoom(Integer.parseInt(StartUtil.getUserId(RoomLandActivity.this)));
+                        roomMain.getRoom().onDisconnected();
+                    }
                 }
             }).start();
-
         }
-
     }
 
+
     public void StartAV(String ip, int port, int rand, int uid) {
+        KLog.e("==================" + "StartAV");
         ssrc = uid;
 //        ssrc = rand - uid;
 //        if (rand < 1800000000)
@@ -777,12 +757,12 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
 //        ssrc = rand - uid;
         ssrc = ~uid + 0x1314;
 
-        mgr.AddRTPRecver(0, ssrc, 99, 1000);
-        mgr.SetRTPRecverARQMode(ssrc, 99, 1);
-
-        mgr.AddRTPRecver(0, ssrc, 97, 1000);
-        mgr.SetRTPRecverARQMode(ssrc, 97, 1);
-        Log.d("123", "ssrc=====" + ssrc);
+//        mgr.AddRTPRecver(0, ssrc, 99, 1000);
+//        mgr.SetRTPRecverARQMode(ssrc, 99, 1);
+//
+//        mgr.AddRTPRecver(0, ssrc, 97, 1000);
+//        mgr.SetRTPRecverARQMode(ssrc, 97, 1);
+        Log.e("123", "ssrc=====" + ssrc);
 //        isplaying = true;
         mgr.AddAudioStream(ssrc, 1, this);
         mgr.AddVideoStream(ssrc, 0, 1, this);
@@ -790,44 +770,31 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
 
     @Override
     public void onVideo(int ssrc, int width, int height, byte[] img) {
-        if (false != mStop) {
+        KLog.e("onVideo:" + img.length);
+        if (!isRunning) {
             return;
         }
-        System.out.println("==ssrc" + ssrc + "======== onVideo: " + width + ":" + height + "(" + img.length + ")");
+        KLog.e("123123");
         if (micUsers.size() == 1) {
-//        actorid = obj.getActorid();
-            buddyid = micUsers.get(0).getUserid();
-            toName = micUsers.get(0).getUseralias();
-            micid = micUsers.get(0).getUserid();
-            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (micUsers.get(0).getUserid()))) {
-                if (textBackImage.isShown()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage.setVisibility(View.GONE);
-                            surfaceView.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+            //一麦显示一麦,二麦显示二麦,三麦显示三麦
+            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (~micUsers.get(0).getUserid() + 0x1314))) {
+                textBackImage.setVisibility(View.GONE);
                 // 删除旧的
                 if (null != bmp) {
                     if (width != bmp.getWidth() || height != bmp.getHeight()) {
                         bmp = null;
                     }
                 }
-
                 // 创建新的
                 if (null == bmp) {
                     bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
                 }
-
                 ByteBuffer buf = ByteBuffer.wrap(img);
                 bmp.copyPixelsFromBuffer(buf);
                 // 这是在线程里操作的，千万不要直接在画布上绘制
                 // 在surfaceView中显示
                 if (null != surfaceView.getHolder()) {
                     Canvas canvas = surfaceView.getHolder().lockCanvas();
-
                     if (null != canvas) {
                         try {
                             Rect rt1 = new Rect(0, 0, surfaceView.getWidth(), surfaceView.getHeight());
@@ -839,16 +806,8 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                         }
                     }
                 }
-            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (micUsers.get(0).getUserid()))) {
-                if (textBackImage2.isShown()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage2.setVisibility(View.GONE);
-                            surfaceView2.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (~micUsers.get(0).getUserid() + 0x1314))) {
+                textBackImage2.setVisibility(View.GONE);
                 // 删除旧的
                 if (null != bmp1) {
                     if (width != bmp1.getWidth() || height != bmp1.getHeight()) {
@@ -867,6 +826,7 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                 // 在surfaceView中显示
                 if (null != surfaceView2.getHolder()) {
                     Canvas canvas = surfaceView2.getHolder().lockCanvas();
+
                     if (null != canvas) {
                         try {
                             Rect rt1 = new Rect(0, 0, surfaceView2.getWidth(), surfaceView2.getHeight());
@@ -878,16 +838,8 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                         }
                     }
                 }
-            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (micUsers.get(0).getUserid()))) {
-                if (textBackImage3.isShown()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage3.setVisibility(View.GONE);
-                            surfaceView3.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (~micUsers.get(0).getUserid() + 0x1314))) {
+                textBackImage3.setVisibility(View.GONE);
                 // 删除旧的
                 if (null != bmp2) {
                     if (width != bmp2.getWidth() || height != bmp2.getHeight()) {
@@ -921,26 +873,10 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
             }
         }
         if (micUsers.size() == 2) {
-            if (micUsers.get(0).getMicindex() == 0) {
-                buddyid = micUsers.get(0).getUserid();
-                toName = micUsers.get(0).getUseralias();
-                micid = micUsers.get(0).getUserid();
-            } else if (micUsers.get(1).getMicindex() == 0) {
-                buddyid = micUsers.get(1).getUserid();
-                toName = micUsers.get(1).getUseralias();
-                micid = micUsers.get(1).getUserid();
-            }
-            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (micUsers.get(0).getUserid())) ||
-                    (micUsers.get(1).getMicindex() == mic0 && ssrc == (micUsers.get(1).getUserid()))) {
-                if (textBackImage.isShown()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage.setVisibility(View.GONE);
-                            surfaceView.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+
+            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
+                    (micUsers.get(1).getMicindex() == mic0 && ssrc == (~micUsers.get(1).getUserid() + 0x1314))) {
+                textBackImage.setVisibility(View.GONE);
                 // 删除旧的
                 if (null != bmp) {
                     if (width != bmp.getWidth() || height != bmp.getHeight()) {
@@ -971,17 +907,9 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                         }
                     }
                 }
-            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (micUsers.get(0).getUserid())) ||
-                    (micUsers.get(1).getMicindex() == mic1 && ssrc == (micUsers.get(1).getUserid()))) {
-                if (textBackImage2.isShown()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage2.setVisibility(View.GONE);
-                            surfaceView2.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
+                    (micUsers.get(1).getMicindex() == mic1 && ssrc == (~micUsers.get(1).getUserid() + 0x1314))) {
+                textBackImage2.setVisibility(View.GONE);
                 // 删除旧的
                 if (null != bmp1) {
                     if (width != bmp1.getWidth() || height != bmp1.getHeight()) {
@@ -1012,17 +940,9 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                         }
                     }
                 }
-            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (micUsers.get(0).getUserid())) ||
-                    (micUsers.get(1).getMicindex() == mic2 && ssrc == (micUsers.get(1).getUserid()))) {
-                if (textBackImage3.isShown()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage3.setVisibility(View.GONE);
-                            surfaceView3.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
+                    (micUsers.get(1).getMicindex() == mic2 && ssrc == (~micUsers.get(1).getUserid() + 0x1314))) {
+                textBackImage3.setVisibility(View.GONE);
                 // 删除旧的
                 if (null != bmp2) {
                     if (width != bmp2.getWidth() || height != bmp2.getHeight()) {
@@ -1056,31 +976,11 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
             }
         }
         if (micUsers.size() == 3) {
-            if (micUsers.get(0).getMicindex() == 0) {
-                buddyid = micUsers.get(0).getUserid();
-                toName = micUsers.get(0).getUseralias();
-                micid = micUsers.get(0).getUserid();
-            } else if (micUsers.get(1).getMicindex() == 0) {
-                buddyid = micUsers.get(1).getUserid();
-                toName = micUsers.get(1).getUseralias();
-                micid = micUsers.get(1).getUserid();
-            } else if (micUsers.get(2).getMicindex() == 0) {
-                buddyid = micUsers.get(2).getUserid();
-                toName = micUsers.get(2).getUseralias();
-                micid = micUsers.get(2).getUserid();
-            }
-            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (micUsers.get(0).getUserid())) ||
-                    (micUsers.get(1).getMicindex() == mic0 && ssrc == (micUsers.get(1).getUserid())) ||
-                    (micUsers.get(2).getMicindex() == mic0 && ssrc == (micUsers.get(2).getUserid()))) {
-                if (textBackImage.isShown()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage.setVisibility(View.GONE);
-                            surfaceView.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
+                    (micUsers.get(1).getMicindex() == mic0 && ssrc == (~micUsers.get(1).getUserid() + 0x1314)) ||
+                    (micUsers.get(2).getMicindex() == mic0 && ssrc == (~micUsers.get(2).getUserid() + 0x1314))) {
+                textBackImage.setVisibility(View.GONE);
+
                 // 删除旧的
                 if (null != bmp) {
                     if (width != bmp.getWidth() || height != bmp.getHeight()) {
@@ -1111,18 +1011,10 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                         }
                     }
                 }
-            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (micUsers.get(0).getUserid())) ||
-                    (micUsers.get(1).getMicindex() == mic1 && ssrc == (micUsers.get(1).getUserid())) ||
-                    (micUsers.get(2).getMicindex() == mic1 && ssrc == (micUsers.get(2).getUserid()))) {
-                if (textBackImage2.isShown()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage2.setVisibility(View.GONE);
-                            surfaceView2.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
+                    (micUsers.get(1).getMicindex() == mic1 && ssrc == (~micUsers.get(1).getUserid() + 0x1314)) ||
+                    (micUsers.get(2).getMicindex() == mic1 && ssrc == (~micUsers.get(2).getUserid() + 0x1314))) {
+                textBackImage2.setVisibility(View.GONE);
                 // 删除旧的
                 if (null != bmp1) {
                     if (width != bmp1.getWidth() || height != bmp1.getHeight()) {
@@ -1153,18 +1045,10 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                         }
                     }
                 }
-            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (micUsers.get(0).getUserid())) ||
-                    (micUsers.get(1).getMicindex() == mic2 && ssrc == (micUsers.get(1).getUserid())) ||
-                    (micUsers.get(2).getMicindex() == mic2 && ssrc == (micUsers.get(2).getUserid()))) {
-                if (textBackImage3.isShown()) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage3.setVisibility(View.GONE);
-                            surfaceView3.setVisibility(View.VISIBLE);
-                        }
-                    });
-                }
+            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
+                    (micUsers.get(1).getMicindex() == mic2 && ssrc == (~micUsers.get(1).getUserid() + 0x1314)) ||
+                    (micUsers.get(2).getMicindex() == mic2 && ssrc == (~micUsers.get(2).getUserid() + 0x1314))) {
+                textBackImage3.setVisibility(View.GONE);
                 // 删除旧的
                 if (null != bmp2) {
                     if (width != bmp2.getWidth() || height != bmp2.getHeight()) {
@@ -1204,11 +1088,13 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
 
     @Override
     public void onAudio(int ssrc, int sample, int channel, byte[] pcm) {
-        if (false != mStop) {
+        KLog.e("onAudio");
+        if (!isRunning) {
             return;
         }
-        System.out.println("========== onAudio: " + sample + ":" + channel + "(" + pcm.length + ")");
+        KLog.e("========== onAudio: " + sample + ":" + channel + "(" + pcm.length + ")");
         if (play != null) {
+            isplaying = true;
             play.setConfig(sample, channel);
             play.play(pcm);
         }
@@ -1221,13 +1107,10 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
 
     @Override
     public void onMic(String ip, int port, int rand, int uid) {
-        if (false != mStop) {
-            return;
-        }
+        KLog.e("onMic");
         mediaIp = ip;
         mediaPort = port;
         mediaRand = rand;
-        // TODO Auto-generated method stub
         if (null == mgr) {
             mgr = new AVModuleMgr();
 //            Log.d("123","mgr-----new--"+mgr);
@@ -1242,14 +1125,13 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
 
     @Override
     protected void onDestroy() {
-//        Log.d("123", "onDestory---");
-        mStop = true;
         isRunning = false;
         super.onDestroy();
         if (mgr == null) {
 
         } else {
             mgr.StopRTPSession();
+//            mgr.DelRTMPRecver(ssrc);
             mgr.Uninit();
             play.stop();
         }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="50dp">
+    <com.facebook.drawee.view.SimpleDraweeView
+        app:placeholderImage="@mipmap/my_photo_icon"
+        android:id="@+id/look_user_headicon"
+        android:layout_width="40dp"
+        app:roundAsCircle="true"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_height="40dp" />
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp">
+        <TextView
+            android:id="@+id/look_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text="观众名字"
+            android:layout_weight="1"/>
+        <TextView
+            android:text="观众id"
+            android:textColor="#fb0699"
+            android:id="@+id/look_user_id"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+    <ImageView
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="center_vertical"
+        android:src="@mipmap/lookright_icon"/>
+</LinearLayout>

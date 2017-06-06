@@ -6,13 +6,5 @@
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable/ssdk_oks_classic_progressbar.xml",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable/ssdk_oks_classic_progressbar.xml"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable/ssdk_oks_classic_progressbar.xml",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable/ssdk_oks_classic_progressbar.xml"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable/ssdk_oks_classic_platform_cell_back.xml",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable/ssdk_oks_classic_platform_cell_back.xml"
     }
 ]

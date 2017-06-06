@@ -80,6 +80,11 @@
             android:configChanges="keyboardHidden|orientation"
             android:launchMode="singleTask" />
         <activity
+            android:name="com.fubang.lihaovv.ui.NewRoomLandActivity_"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="landscape"
+            android:launchMode="singleTask" />
+        <activity
 
             android:name="com.fubang.lihaovv.ui.LoginActivity_"
             android:launchMode="singleTask"

@@ -8,16 +8,20 @@
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_facebookmessenger.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_yixin.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_yixin.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_foursquare.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_foursquare.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_pocket.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_pocket.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_wechatmoments.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_wechatmoments.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_laiwangmoments.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_laiwangmoments.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_instapaper.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_instapaper.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_alipay.png",
@@ -36,10 +40,6 @@
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_pinterest.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_back_arr.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_back_arr.png"
-    },
-    {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_wechatfavorite.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_wechatfavorite.png"
     },
@@ -52,212 +52,16 @@
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_shortmessage.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_qq.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_qq.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_line.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_line.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_yixinmoments.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_yixinmoments.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_bluetooth.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_bluetooth.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_facebookmessenger.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_facebookmessenger.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_alipaymoments.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_alipaymoments.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_foursquare.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_foursquare.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_kakaotalk.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_kakaotalk.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_dropbox.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_dropbox.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_wechat.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_wechat.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_vkontakte.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_vkontakte.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_dropbox.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_dropbox.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_meipai.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_meipai.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_laiwang.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_laiwang.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_instagram.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_instagram.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_laiwang.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_laiwang.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_kaixin.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_kaixin.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_youtube.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_youtube.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_yixin.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_yixin.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_linkedin.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_linkedin.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_qzone.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_qzone.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_sinaweibo.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_sinaweibo.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_wechat.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_wechat.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_title_div.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_title_div.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_twitter.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_twitter.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_back_arr.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_back_arr.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_tencentweibo.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_tencentweibo.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_renren.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_renren.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_vkontakte.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_vkontakte.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_line.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_line.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_douban.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_douban.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_check_default.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_check_default.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_logo.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_logo.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_wechatfavorite.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_wechatfavorite.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_tumblr.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_tumblr.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_check_default.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_check_default.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_meipai.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_meipai.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_facebook.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_facebook.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_foursquare.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_foursquare.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_kakaostory.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_kakaostory.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_mingdao.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_mingdao.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_pinterest.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_pinterest.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_title_div.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_title_div.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_laiwangmoments.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_laiwangmoments.png"
-    },
-    {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_instapaper.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_instapaper.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_qzone.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_qzone.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_renren.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_renren.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_pocket.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_pocket.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_kakaotalk.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_kakaotalk.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_logo.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_logo.png"
-    },
-    {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_auth_title_back.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_auth_title_back.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_email.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_email.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_line.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_line.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_whatsapp.png",
@@ -268,36 +72,24 @@
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_flickr.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_youdao.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_youdao.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_bluetooth.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_bluetooth.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_shortmessage.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_shortmessage.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_dingding.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_dingding.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_auth_title_back.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_auth_title_back.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_evernote.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_evernote.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_alipaymoments.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_alipaymoments.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_check_checked.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_check_checked.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_email.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_email.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_kakaotalk.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_kakaotalk.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_check_checked.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_check_checked.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_dropbox.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_dropbox.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_evernote.png",
@@ -308,12 +100,20 @@
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_googleplus.png"
     },
     {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_meipai.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_meipai.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_laiwang.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_laiwang.png"
+    },
+    {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_dingding.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_dingding.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_whatsapp.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_whatsapp.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_instagram.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_instagram.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_facebook.png",
@@ -324,60 +124,56 @@
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_youtube.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_alipaymoments.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_alipaymoments.png"
-    },
-    {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_yixinmoments.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_yixinmoments.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_yixin.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_yixin.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_qzone.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_qzone.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_tencentweibo.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_tencentweibo.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_instapaper.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_instapaper.png"
-    },
-    {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_kaixin.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_kaixin.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_laiwangmoments.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_laiwangmoments.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_bluetooth.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_bluetooth.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_wechat.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_wechat.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_kakaostory.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_kakaostory.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_instagram.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_instagram.png"
-    },
-    {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_flickr.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_flickr.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_title_div.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_title_div.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_sinaweibo.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_sinaweibo.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_alipay.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_alipay.png"
-    },
-    {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_qq.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_qq.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_tumblr.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_tumblr.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_back_arr.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_back_arr.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_renren.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_renren.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_vkontakte.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_vkontakte.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_mingdao.png",
@@ -388,7 +184,15 @@
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_linkedin.png"
     },
     {
-        "merged": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_googleplus.png",
-        "source": "/Users/jacky/Downloads/companyresorce/fubangoldproject/Nihaokehu/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_googleplus.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_check_default.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_check_default.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_logo.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_logo.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/release/drawable-xhdpi-v4/ssdk_oks_classic_tumblr.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_tumblr.png"
     }
 ]

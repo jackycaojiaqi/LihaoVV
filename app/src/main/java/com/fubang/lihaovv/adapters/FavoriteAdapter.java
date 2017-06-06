@@ -10,9 +10,9 @@ import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.fubang.lihaovv.R;
-import com.fubang.lihaovv.ui.NewRoomActivity_;
 import com.fubang.lihaovv.AppConstant;
 import com.fubang.lihaovv.entities.ActorListEntity;
+import com.fubang.lihaovv.ui.NewRoomActivity_;
 import com.zhuyunjian.library.ListBaseAdapter;
 
 import java.util.List;
