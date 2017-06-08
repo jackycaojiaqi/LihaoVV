@@ -30,6 +30,8 @@ public class AppConstant {
     public static final String PAGE = "page";
     public static final String GROUP = "group";
 
+
+
     //设置图片缓存地址
     public static final String IMAGE_CACHE = App_.getInstance().getCacheDir().getAbsolutePath()+"";
     public static File getCacheFile(){

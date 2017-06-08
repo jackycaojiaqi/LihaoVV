@@ -326,7 +326,7 @@ public class StreamingBaseActivity extends Activity implements
         new Thread(new Runnable() {
             @Override
             public void run() {
-                roomMain.getRoom().getChannel().upMicRequest(upMicFlag);
+//                roomMain.getRoom().getChannel().upMicRequest(upMicFlag);
             }
         }).start();
     }

@@ -1,12 +1,14 @@
 package com.xlg.android;
 
+import com.xlg.android.ClientSocketHandler;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class ClientSocket {
+public class LoginClientSocket {
 	// 事件回调
 	protected ClientSocketHandler mHandler;
 	// 线程事件
@@ -15,8 +17,8 @@ public class ClientSocket {
 	private int 	mSvrPort;
 	private Socket mSocket;
 	private OutputStream mOutput;
-	
-	public ClientSocket(ClientSocketHandler evt) {
+
+	public LoginClientSocket(ClientSocketHandler evt) {
 		this.mHandler = evt;
 	}
 	
@@ -25,10 +27,10 @@ public class ClientSocket {
 		if(null != mThread && mThread.isAlive()) {
 			return -1;
 		}
-
+		
 		mSvrPort = port;
 		mSvrIP = ip;
-//		mSvrPort = 14293;
+//		mSvrPort = 42111;
 //		mSvrIP = "42.121.57.170";
 		// 启动线程
 		mThread = new Thread(new Runnable() {

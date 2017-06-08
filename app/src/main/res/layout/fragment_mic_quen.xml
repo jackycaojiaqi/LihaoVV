@@ -1,9 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:id="@+id/tv_mic_queue_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="所有人都能上麦"
+            android:textColor="@color/gray_main" />
+
+        <TextView
+            android:id="@+id/tv_mic_queue_control"
+            android:layout_width="65dp"
+            android:gravity="center"
+            android:layout_height="28dp"
+            android:textColor="@color/pldroid_streaming_white"
+            android:background="@drawable/shap_paimai_circle"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="排麦" />
+    </RelativeLayout>
+
     <ExpandableListView
         android:id="@+id/mai_list_eplist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 </LinearLayout>

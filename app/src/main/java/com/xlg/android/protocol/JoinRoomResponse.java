@@ -58,32 +58,69 @@ public class JoinRoomResponse {
 	@StructOrder(25)
 	private byte[]			mediaserver = new byte[128];	//房间媒体服务器。
 	@StructOrder(26)
-	private long           nmictime;                   //房间麦时
+	private long           nmictime0;                   //房间麦时
 	@StructOrder(27)
-	private int           nmiclimit;                  //房间默认上麦几次
+	private long           nmictime1;                   //房间麦时
 	@StructOrder(28)
-	private int           nmiclimitall;
+	private long           nmictime2;                   //房间麦时
 	@StructOrder(29)
-	private int 			nadminid;			//一级区长
+	private int           nmiclimit;                  //房间默认上麦几次
 	@StructOrder(30)
-	private int 			nviceid1;			//一级区长
+	private int           nvideowndtype;
 	@StructOrder(31)
-	private int 			nviceid2;			//一级区长
+	private int           nmiclimitall;
 	@StructOrder(32)
-	private int 			nviceid3;			//一级区长
+	private int 			nadminid;			//一级区长
 	@StructOrder(33)
-	private int 			nadminid2;			//一级区长@StructOrder(29)
+	private int 			nviceid1;			//一级区长
 	@StructOrder(34)
-	private int 			nviceid21;			//一级区长
+	private int 			nviceid2;			//一级区长
 	@StructOrder(35)
-	private int 			nviceid22;			//一级区长
+	private int 			nviceid3;			//一级区长
 	@StructOrder(36)
-	private int 			nviceid23;			//一级区长
+	private int 			nadminid2;			//一级区长@StructOrder(29)
 	@StructOrder(37)
-	private byte[]          carname = new byte[32];                    //用户座驾名字
+	private int 			nviceid21;			//一级区长
 	@StructOrder(38)
+	private int 			nviceid22;			//一级区长
+	@StructOrder(39)
+	private int 			nviceid23;			//一级区长
+	@StructOrder(40)
+	private byte[]          carname = new byte[32];                    //用户座驾名字
+	@StructOrder(41)
 	private ByteBuffer playerlist = new ByteBuffer();				//管理员列表。变长
 
+	public long getNmictime0() {
+		return nmictime0;
+	}
+
+	public void setNmictime0(long nmictime0) {
+		this.nmictime0 = nmictime0;
+	}
+
+	public long getNmictime1() {
+		return nmictime1;
+	}
+
+	public void setNmictime1(long nmictime1) {
+		this.nmictime1 = nmictime1;
+	}
+
+	public long getNmictime2() {
+		return nmictime2;
+	}
+
+	public void setNmictime2(long nmictime2) {
+		this.nmictime2 = nmictime2;
+	}
+
+	public int getNvideowndtype() {
+		return nvideowndtype;
+	}
+
+	public void setNvideowndtype(int nvideowndtype) {
+		this.nvideowndtype = nvideowndtype;
+	}
 
 	public int getUserid() {
 		return userid;
@@ -242,12 +279,7 @@ public class JoinRoomResponse {
 	public void setMediaserver(String mediaserver) {
 		Tools.String2ByteArrayGBK(this.mediaserver, mediaserver);
 	}
-	public long getNmictime() {
-		return nmictime;
-	}
-	public void setNmictime(long nmictime) {
-		this.nmictime = nmictime;
-	}
+
 	public int getNmiclimit() {
 		return nmiclimit;
 	}

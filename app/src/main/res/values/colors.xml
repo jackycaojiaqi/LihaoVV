@@ -34,9 +34,18 @@
 
     <color name="bg_indicator_point_normal">#D8D8D8</color>
     <color name="bg_indicator_point_selected">#A6A6A6</color>
-    <color name="pldroid_streaming_white">#fff</color>
+    <color name="pldroid_streaming_white">#ffffff</color>
 
     <color name="pldroid_streaming_red">#f00</color>
 
     <color name="pldroid_streaming_yellow">#FFFF00</color>
+    <color name="gray_a">#D4D4D4</color>
+    <color name="gray_b">#CCCCCC</color>
+    <color name="gray_c">#E0E0E0</color>
+    <color name="black">#000000</color>
+    <color name="gray_main">#3dcfc8</color>
+    <color name="pay_text">#ccfefefe</color>
+    <color name="cc_black">#cc000000</color>
+    <color name="green_626262">#626262</color>
+    <color name="orange">#41ae3b</color>
 </resources>

@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -61,12 +62,14 @@ import com.fubang.lihaovv.entities.GiftEntity;
 import com.fubang.lihaovv.filter.IFilter;
 import com.fubang.lihaovv.fragment.CommonFragment_;
 import com.fubang.lihaovv.fragment.LookFragment_;
+import com.fubang.lihaovv.fragment.MicQuenFragment_;
 import com.fubang.lihaovv.fragment.PersonFragment_;
 import com.fubang.lihaovv.ui.BaseActivity;
 import com.fubang.lihaovv.utils.GiftUtil;
 import com.fubang.lihaovv.utils.GlobalOnItemClickManager;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
+import com.xlg.android.protocol.Header;
 import com.xlg.android.protocol.JoinRoomError;
 import com.xlg.android.protocol.JoinRoomResponse;
 import com.xlg.android.protocol.MicState;
@@ -181,7 +184,7 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     private int mic2 = 2;
     private static AudioPlay play = new AudioPlay();
     private RoomMain roomMain = new RoomMain(this);
-
+    private Context context;
 
     private PopupWindow popupWindow;
     private PopupWindow faceWindow;
@@ -197,7 +200,7 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     private int ssrc;
     private int topline;
     private String toName;
-    private List<RoomUserInfo> userInfos = new ArrayList<>();
+    public static List<RoomUserInfo> userInfos = new ArrayList<>();
     private RoomUserInfo sendToUser;
     private UserAdapter userAdapter;
     private int micid;
@@ -250,7 +253,7 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
 //        data.add(joinMsg);
 //        Log.d("123",roomId+"roomId");
         EventBus.getDefault().register(this);
-
+        context = this;
 
     }
 
@@ -420,7 +423,7 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         fragments.add(CommonFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(0)).build());
         fragments.add(PersonFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
         fragments.add(LookFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(2)).build());
-        fragments.add(PersonFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
+        fragments.add(MicQuenFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
         roomIdTv.setText(roomId + "");
         roomActivity = this;
 //        if (mDetector != null) {
@@ -631,73 +634,6 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         globalOnItemClickListener.attachToEditText((EditText) findViewById(R.id.edit_new_text));
 
     }
-    //    private void showUser() {
-//        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        View view = layoutInflater.inflate(R.layout.pop_user_list,null);
-//        userList = (ListView) view.findViewById(R.id.room_user_list);
-//
-//        userWindow = new PopupWindow(view);
-//        userWindow.setFocusable(true);
-//        userAdapter = new UserAdapter(userInfos,this);
-//        userList.setAdapter(userAdapter);
-//
-//        userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-////                Log.d("123",gifts.get(position)+"------------>");
-//                sendToUser = userInfos.get(position);
-//                userSendBtn.setText(sendToUser.getUseralias());
-//                userWindow.dismiss();
-//            }
-//        });
-//        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-//        int height = wm.getDefaultDisplay().getHeight();
-//        int width = wm.getDefaultDisplay().getWidth();
-//        userWindow.setWidth(width/5);
-//        ColorDrawable dw = new ColorDrawable(0xb0ffffff);
-//        userWindow.setBackgroundDrawable(dw);
-//        userWindow.setHeight(height/2);
-//        userWindow.setOutsideTouchable(true);
-//    }
-//
-//    private void showFace() {
-//        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        View view = layoutInflater.inflate(R.layout.pop_face_grid,null);
-//        gridView = (GridView) view.findViewById(R.id.room_face_list);
-//
-//        faceWindow = new PopupWindow(view);
-//        faceWindow.setFocusable(true);
-//        faces.addAll(FaceUtil.getFaces());
-//        FaceAdapter faceAdapter = new FaceAdapter(faces,this);
-//        gridView.setAdapter(faceAdapter);
-//
-//        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-////                Log.d("123",faces.get(position)+"------------>");
-//                if (position < 9) {
-//                    int faceNumber = position + 1;
-//                    editText.setText(editText.getText() + "/mr70" + faceNumber);
-//                }
-//                if (position >= 9) {
-//                    int faceNumber = position + 1;
-//                    editText.setText(editText.getText() + "/mr7" + faceNumber);
-//                }
-//                faceWindow.dismiss();
-//            }
-//        });
-//        faceWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-//        ColorDrawable dw = new ColorDrawable(0xb0ffffff);
-//        faceWindow.setBackgroundDrawable(dw);
-//        faceWindow.setHeight(300);
-//
-//        faceWindow.setOutsideTouchable(true);
-//    }
-
-    private void showSet() {
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.pop_gift_grid, null);
-    }
 
 
     private EditText giftToUser;
@@ -902,6 +838,7 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
                             }).start();
                         }
                         editText.setText("");
+                        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(RoomActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                     }
                 }
             });
@@ -917,36 +854,95 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
 //                    .build();
         }
     }
-//    //接收礼物消息更新
-//    @Subscriber(tag="BigGiftRecord")
-//    public void getGiftRecord(BigGiftRecord obj){
-//        int getGiftId = obj.getGiftid();
-//        int count = obj.getCount();
-//        String giftTxt = "";
-//        if (count != 0) {
-//            for (int i = 0; i < gifts.size(); i++) {
-//                if (getGiftId == gifts.get(i).getGiftId()) {
-//                    if (getGiftId < 10)
-//                        giftTxt = "/g100" + getGiftId + "   x " + count;
-//                    if (getGiftId >= 10 && getGiftId < 100)
-//                        giftTxt = "/g10" + getGiftId + "   x " + count;
-//                    if (getGiftId >= 100)
-//                        giftTxt = "/g1" + getGiftId + "    x" + count;
-//                    if (getGiftId>549 && getGiftId<563) {
-//                        RoomChatMsg msg = new RoomChatMsg();
-//                        msg.setToid(-1);
-//                        msg.setContent("g" + getGiftId + "");
-//                        msg.setSrcid(obj.getSrcid());
-//                        msg.setSrcalias(obj.getSrcalias());
-//                        msg.setDstvcbid(count);
-//                        data.add(msg);
-//                        adapter.notifyDataSetChanged();
-////                        listView.setSelection(listView.getCount() - 1);
-//                    }
-//                }
-//            }
-//        }
-//    }
+
+    //接收礼物消息更新
+    @Subscriber(tag = "BigGiftRecord")
+    public void getGiftRecord(BigGiftRecord obj) {
+        int getGiftId = obj.getGiftid();
+        int count = obj.getCount();
+        String giftTxt = "";
+        if (count != 0) {
+            for (int i = 0; i < gifts.size(); i++) {
+                if (getGiftId == gifts.get(i).getGiftId()) {
+                    if (getGiftId < 10)
+                        giftTxt = "/g100" + getGiftId + "   x " + count;
+                    if (getGiftId >= 10 && getGiftId < 100)
+                        giftTxt = "/g10" + getGiftId + "   x " + count;
+                    if (getGiftId >= 100)
+                        giftTxt = "/g1" + getGiftId + "    x" + count;
+                    if (getGiftId > 549 && getGiftId < 563) {
+                        RoomChatMsg msg = new RoomChatMsg();
+                        msg.setToid(-1);
+                        msg.setContent("g" + getGiftId + "");
+                        msg.setSrcid(obj.getSrcid());
+                        msg.setSrcalias(obj.getSrcalias());
+                        msg.setDstvcbid(count);
+                        data.add(msg);
+                        adapter.notifyDataSetChanged();
+//                        listView.setSelection(listView.getCount() - 1);
+                    }
+                }
+            }
+        }
+    }
+
+    //自己排麦
+    @Subscriber(tag = "waitForMic")
+    public void waitForMic(final String userid) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.getRoom().getChannel().upMicRequest(userid, Header.MIC_STATUS_APPLICATE_MIC, micFlag);
+            }
+        }).start();
+
+    }
+
+    //自己下麦
+    @Subscriber(tag = "downForMic")
+    public void downForMic(final String userid) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.getRoom().getChannel().upMicRequest(userid, Header.MIC_STATUS_DOWN_MIC, micFlag);
+            }
+        }).start();
+    }
+
+    //抱上1麦
+    @Subscriber(tag = "FirstMic")
+    public void getFirstMic(final RoomUserInfo obj) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.getRoom().getChannel().baoMicRequest(0, obj.getUserid());
+            }
+        }).start();
+
+    }
+
+    //抱上2麦
+    @Subscriber(tag = "SecondMic")
+    public void getSecondMic(final RoomUserInfo obj) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.getRoom().getChannel().baoMicRequest(1, obj.getUserid());
+            }
+        }).start();
+    }
+
+    //抱上3麦
+    @Subscriber(tag = "ThirdMic")
+    public void getThirdMic(final RoomUserInfo obj) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.getRoom().getChannel().baoMicRequest(2, obj.getUserid());
+            }
+        }).start();
+    }
+
 
     //私聊发送
     @Subscriber(tag = "SendToUser")
@@ -1224,30 +1220,25 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         return parser;
 
     }
-//    //用户离开房间
-//    @Subscriber(tag = "RoomKickoutUserInfo")
-//    public void getUserOut(RoomKickoutUserInfo obj){
-//        int leaveId = obj.getToid();
-//        for (int i = 0; i < userInfos.size(); i++) {
-//            if (userInfos.get(i).getUserid() == leaveId){
-//                userInfos.remove(i);
-//            }
-//        }
-//        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-//            userAdapter.notifyDataSetChanged();
-//            userList.setAdapter(new UserAdapter(userInfos, this));
-//        }
-//    }
-//    //获取用户列表
-//    @Subscriber(tag = "userList")
-//    public void getUserList(RoomUserInfo userInfo){
-//        userInfos.add(userInfo);
-//        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-//            userAdapter.notifyDataSetChanged();
-//            userList.setAdapter(new UserAdapter(userInfos, this));
-//        }
-////        Log.d("123",userInfo.getUserid()+"-----------<<");
-//    }
+
+    //用户离开房间
+    @Subscriber(tag = "RoomKickoutUserInfo")
+    public void getUserOut(RoomKickoutUserInfo obj) {
+        int leaveId = obj.getToid();
+        KLog.e(leaveId + "离开房间");
+        for (int i = 0; i < userInfos.size(); i++) {
+            if (userInfos.get(i).getUserid() == leaveId) {
+                userInfos.remove(i);
+            }
+        }
+    }
+
+    //获取用户列表
+    @Subscriber(tag = "userList")
+    public void getUserList(RoomUserInfo userInfo) {
+        userInfos.add(userInfo);
+        KLog.e(userInfo.getUserid() + "加入房间");
+    }
 
     //开始加入房间
     @Override
@@ -1290,22 +1281,24 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         }
     }
 
-
-    //上麦提示
+    //上公麦提示   1
     @Subscriber(tag = "upMicState")
     public void upMicState(MicState obj) {
-
+        new Thread(new Runnable() {//上下麦后获取拍卖列表
+            @Override
+            public void run() {
+                roomMain.getRoom().getChannel().getMicList();//获取拍卖列表
+            }
+        }).start();
         for (int i = 0; i < userInfos.size(); i++) {
             if (obj.getUserid() == userInfos.get(i).getUserid()) {
                 userInfos.get(i).setMicindex(obj.getMicindex());
                 micUsers.add(userInfos.get(i));
             }
         }
-
         micid = obj.getUserid();
         ssrc = ~micid + 0x1314;
 //        ssrc = obj.getUserid();
-        KLog.e("upMicState" + micid + " " + ssrc);
         //创建视频接收流
         // TODO Auto-generated method stub
         if (null == mgr) {
@@ -1314,7 +1307,7 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
             mgr.Init();
             Log.d("123", "===uid" + micid);
             mgr.CreateRTPSession(0);
-            mgr.SetServerAddr2(mediaIp, mediaPort, 0);
+//            mgr.SetServerAddr2(mediaIp, mediaPort, 0);
             mgr.StartRTPSession();
         }
         mgr.AddRTPRecver(0, ssrc, 99, 1000);
@@ -1326,6 +1319,8 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         mgr.AddVideoStream(ssrc, 0, 1, this);
         if (!isplaying)
             mgr.AddAudioStream(ssrc, 1, this);
+
+
     }
 
     //下麦提示
@@ -1336,12 +1331,6 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
                 micUsers.remove(i);
             }
         }
-//        textBackImage.setVisibility(View.VISIBLE);
-//        surfaceView.setVisibility(View.GONE);
-//        textBackImage2.setVisibility(View.VISIBLE);
-//        surfaceView2.setVisibility(View.GONE);
-//        textBackImage3.setVisibility(View.VISIBLE);
-//        surfaceView3.setVisibility(View.GONE);
     }
 
     //麦上几个人就添加视频流
@@ -1359,7 +1348,6 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
             micid = obj.getUserid();
             Log.d("123", "micid=====" + micid);
             ssrc = ~micid + 0x1314;
-
             mgr.AddRTPRecver(0, ssrc, 99, 1000);
             mgr.SetRTPRecverARQMode(ssrc, 99, 1);
 
@@ -1733,9 +1721,17 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         }
     }
 
-    //320086319
     @Override
     protected void onDestroy() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (roomMain.getRoom() != null) {
+                    roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));
+                    roomMain.getRoom().getChannel().Close();
+                }
+            }
+        }).start();
         isRunning = false;
         super.onDestroy();
         if (mgr == null) {

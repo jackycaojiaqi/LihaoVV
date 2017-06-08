@@ -21,7 +21,7 @@
         android:layout_gravity="bottom"
         android:id="@+id/item_chat_message"
         android:text="hello"
-        android:textColor="#ffffff"
+        android:textColor="@color/gray"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </LinearLayout>

@@ -6,15 +6,21 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fubang.lihaovv.R;
 import com.fubang.lihaovv.adapters.LookUserAdapter;
 import com.fubang.lihaovv.adapters.MicQuenAdapter;
+import com.fubang.lihaovv.ui.RoomActivity;
+import com.socks.library.KLog;
+import com.xlg.android.protocol.MicState;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
 import com.xlg.android.protocol.RoomUserInfo;
 import com.xlg.android.protocol.UseridList;
+import com.zhuyunjian.library.StartUtil;
 
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 import org.simple.eventbus.EventBus;
@@ -31,8 +37,11 @@ public class MicQuenFragment extends BaseFragment {
 
     @ViewById(R.id.mai_list_eplist)
     ExpandableListView userList;
+    @ViewById(R.id.tv_mic_queue_state)
+    TextView tvMicQueueState;
+    @ViewById(R.id.tv_mic_queue_control)
+    TextView tvMicQueueControl;
     private MicQuenAdapter maiAdapter;
-    private List<RoomUserInfo> userInfos = new ArrayList<>();
     private LookUserAdapter adapter;
 
     //    private int flag = 0;
@@ -60,16 +69,16 @@ public class MicQuenFragment extends BaseFragment {
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 if (childPosition == 0) {
                     Toast.makeText(getActivity(), "点击了" + childPosition, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(userInfos.get(groupPosition), "SendToUser");
+                    EventBus.getDefault().post(RoomActivity.userInfos.get(groupPosition), "SendToUser");
                 } else if (childPosition == 1) {
                     Toast.makeText(getActivity(), "点击了" + childPosition, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(userInfos.get(groupPosition), "KickOut");
+                    EventBus.getDefault().post(RoomActivity.userInfos.get(groupPosition), "KickOut");
                 } else if (childPosition == 2) {
                     Toast.makeText(getActivity(), "点击了" + childPosition, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(userInfos.get(groupPosition), "ForbidChat");
+                    EventBus.getDefault().post(RoomActivity.userInfos.get(groupPosition), "ForbidChat");
                 } else if (childPosition == 3) {
                     Toast.makeText(getActivity(), "点击了" + childPosition, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(userInfos.get(groupPosition), "CancelForbidChat");
+                    EventBus.getDefault().post(RoomActivity.userInfos.get(groupPosition), "CancelForbidChat");
                 } else {
                     Toast.makeText(getActivity(), "点击了-----------" + childPosition, Toast.LENGTH_SHORT).show();
                 }
@@ -84,46 +93,73 @@ public class MicQuenFragment extends BaseFragment {
     }
 
     private List<RoomUserInfo> paiUserList = new ArrayList<>();
+    private boolean is_list_has_date = false;
+
+    //上麦    8
+    @Subscriber(tag = "changeMicList")
+    public void changeMicList(MicState obj) {
+        is_list_has_date = false;
+        if (obj.getRunnerid() == obj.getUserid()) {//表示排麦而非抱麦
+            for (int i = 0; i < RoomActivity.userInfos.size(); i++) {
+                if (obj.getUserid() == RoomActivity.userInfos.get(i).getUserid()) {//把排麦的放到麦序列表最后即可
+                    for (int j = 0; j < paiUserList.size(); j++) {
+                        if (paiUserList.get(j).getUserid() == obj.getUserid()) {
+                            is_list_has_date = true;
+                        }
+                    }
+                    if (!is_list_has_date) {
+                        paiUserList.add(RoomActivity.userInfos.get(i));
+                        maiAdapter.notifyDataSetChanged();
+                    }
+
+                }
+            }
+        } else {//表示抱麦
+            for (int i = 0; i < RoomActivity.userInfos.size(); i++) {
+                if (obj.getUserid() == RoomActivity.userInfos.get(i).getUserid()) {//把排麦的放到麦序列表第一即可
+                    for (int j = 0; j < paiUserList.size(); j++) {
+                        if (paiUserList.get(j).getUserid() == obj.getUserid()) {
+                            is_list_has_date = true;
+                        }
+                    }
+                    if (!is_list_has_date) {
+                        paiUserList.add(RoomActivity.userInfos.get(i));
+                        maiAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        }
+    }
+
+    //下麦提示  0
+    @Subscriber(tag = "downMicState")
+    public void downMicState(MicState obj) {
+        for (int i = 0; i < paiUserList.size(); i++) {
+            if (paiUserList.get(i).getUserid() == obj.getUserid()) {
+                paiUserList.remove(i);
+                maiAdapter = new MicQuenAdapter(paiUserList, getActivity());
+                userList.setAdapter(maiAdapter);
+            }
+        }
+    }
 
     //获取麦序列表
     @Subscriber(tag = "UseridList")
     public void getUseridList(UseridList obj) {
+        paiUserList.clear();
+        KLog.e(obj.getList().length + " ");
         for (int i = 0; i < obj.getList().length; i++) {
-            for (int j = 0; j < userInfos.size(); j++) {
-                if (obj.getList()[i] == userInfos.get(j).getUserid()) {
-                    paiUserList.add(userInfos.get(j));
-                    maiAdapter.notifyDataSetChanged();
+            for (int j = 0; j < RoomActivity.userInfos.size(); j++) {
+                if (obj.getList()[i] == RoomActivity.userInfos.get(j).getUserid()) {
+                    paiUserList.add(RoomActivity.userInfos.get(j));
                 }
             }
-//            if (obj.getList()[i] == userInfos)
         }
+        KLog.e(paiUserList.size() + " ");
+        maiAdapter = new MicQuenAdapter(paiUserList, getActivity());
+        userList.setAdapter(maiAdapter);
     }
 
-    //用户离开房间
-    @Subscriber(tag = "RoomKickoutUserInfo")
-    public void getUserOut(RoomKickoutUserInfo obj) {
-        int leaveId = obj.getToid();
-        for (int i = 0; i < userInfos.size(); i++) {
-            if (userInfos.get(i).getUserid() == leaveId) {
-                userInfos.remove(i);
-            }
-        }
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            adapter.notifyDataSetChanged();
-//            userList.setAdapter(new LookUserAdapter(userInfos, getContext()));
-        }
-    }
-
-    //获取用户列表
-    @Subscriber(tag = "userList")
-    public void getUserList(RoomUserInfo userInfo) {
-        userInfos.add(userInfo);
-//        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-        adapter.notifyDataSetChanged();
-//            userList.setAdapter(new UserAdapter(userInfos, this));
-//        }
-        Log.d("123", userInfo.getUserid() + "-----------<<");
-    }
 
     @Override
     public void onDestroy() {
@@ -131,21 +167,21 @@ public class MicQuenFragment extends BaseFragment {
         EventBus.getDefault().unregister(this);
     }
 
-//    @Override
-//    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-//        if (childPosition == 0) {
-//            Toast.makeText(getContext(), "点击了"+childPosition, Toast.LENGTH_SHORT).show();
-//            EventBus.getDefault().post(userInfos.get(groupPosition),"SendToUser");
-//        }else if (childPosition == 1){
-//            Toast.makeText(getContext(), "点击了"+childPosition, Toast.LENGTH_SHORT).show();
-//            EventBus.getDefault().post(userInfos.get(groupPosition),"KickOut");
-//        }else if (childPosition == 2){
-//            Toast.makeText(getContext(), "点击了"+childPosition, Toast.LENGTH_SHORT).show();
-//            EventBus.getDefault().post(userInfos.get(groupPosition),"ForbidChat");
-//        }else if (childPosition == 3){
-//            Toast.makeText(getContext(), "点击了"+childPosition, Toast.LENGTH_SHORT).show();
-//            EventBus.getDefault().post(userInfos.get(groupPosition),"CancelForbidChat");
-//        }
-//        return true;
-//    }
+    private boolean is_up_mic = false;
+
+    @Click({R.id.tv_mic_queue_control})
+    void click(View v) {
+        switch (v.getId()) {
+            case R.id.tv_mic_queue_control://排麦操作
+                if (!is_up_mic) {
+                    EventBus.getDefault().post(StartUtil.getUserId(getActivity()), "waitForMic");
+                    tvMicQueueControl.setText("下麦");
+                } else {
+                    EventBus.getDefault().post(StartUtil.getUserId(getActivity()), "downForMic");
+                    tvMicQueueControl.setText("排麦");
+                }
+                is_up_mic = !is_up_mic;
+                break;
+        }
+    }
 }

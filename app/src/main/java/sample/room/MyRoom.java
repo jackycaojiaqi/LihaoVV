@@ -176,6 +176,7 @@ public class MyRoom implements RoomHandler {
 			 Tools.PrintObject(obj[i]);
 //			Log.d("123",obj[i].getMicindex()+"----------micindex");
 			EventBus.getDefault().post(obj[i],"userList");
+			EventBus.getDefault().postSticky(obj[i],"userList");//方便fragment接收数据
 			if(0 != (obj[i].getUserstate() & FT_ROOMUSER_STATUS_PUBLIC_MIC)) {
 				EventBus.getDefault().post(obj[i],"onMicUser");
 				Log.d("123","micuser"+obj[i].getUserid()+"++++"+obj[i].getMicindex());
@@ -275,6 +276,9 @@ public class MyRoom implements RoomHandler {
 		Tools.PrintObject(obj);
 		if (obj.getMicstate() == 1){
 			EventBus.getDefault().post(obj,"upMicState");
+		}
+		if (obj.getMicstate() == 8){
+			EventBus.getDefault().post(obj,"changeMicList");
 		}
 		if (obj.getMicstate() == 0){
 			EventBus.getDefault().post(obj,"downMicState");
