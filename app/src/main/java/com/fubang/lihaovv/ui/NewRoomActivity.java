@@ -140,7 +140,7 @@ public class NewRoomActivity extends BaseActivity implements MicNotify, View.OnC
     ImageView giftBtn;
 
     private Configuration configuration;
-    private RoomMain roomMain = new RoomMain(this);
+    private RoomMain roomMain = new RoomMain();
     private String roomPwd;
     private String roomIp;
     private App app;
@@ -1431,7 +1431,7 @@ public class NewRoomActivity extends BaseActivity implements MicNotify, View.OnC
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Intent intent = new Intent(NewRoomActivity.this, HWCodecCameraStreamingActivity.class);
+                        Intent intent = new Intent(NewRoomActivity.this, RoomActivity.class);
                         intent.putExtra("RTMPURL", rtmpUrl);
                         intent.putExtra("roomIp", roomIp);
                         intent.putExtra("roomId", roomId);

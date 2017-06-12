@@ -16,7 +16,6 @@ import com.fubang.lihaovv.R;
 import com.fubang.lihaovv.ui.NewRoomActivity_;
 import com.fubang.lihaovv.AppConstant;
 import com.fubang.lihaovv.entities.RoomListEntity;
-import com.fubang.lihaovv.ui.PushrtmpTestActivity;
 import com.fubang.lihaovv.ui.RoomActivity_;
 import com.zhuyunjian.library.ListBaseAdapter;
 

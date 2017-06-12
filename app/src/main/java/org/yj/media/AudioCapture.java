@@ -112,8 +112,4 @@ public class AudioCapture {
 
         analysisList.clear();
     }
-
-    public static interface AudioCaptureCallback {
-        public void onAudioFrame(byte[] data);
-    }
 }

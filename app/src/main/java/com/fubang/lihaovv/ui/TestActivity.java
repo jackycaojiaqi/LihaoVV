@@ -116,7 +116,7 @@ public class TestActivity extends BaseActivity implements MicNotify, AVNotify, V
     SurfaceView surfaceView;
     private Bitmap bmp;
     private static AudioPlay play  = new AudioPlay();
-    private RoomMain roomMain = new RoomMain(this);
+    private RoomMain roomMain = new RoomMain();
     private EmotionInputDetector mDetector;
 
     private PopupWindow popupWindow;

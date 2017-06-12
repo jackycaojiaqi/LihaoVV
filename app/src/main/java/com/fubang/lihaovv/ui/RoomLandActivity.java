@@ -162,7 +162,7 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
     private int mic2 = 2;
     private static AudioPlay play = new AudioPlay();
     private boolean mStop = false;
-    private RoomMain roomMain = new RoomMain(this);
+    private RoomMain roomMain = new RoomMain();
     private EmotionInputDetector mDetector;
 
     private PopupWindow popupWindow;

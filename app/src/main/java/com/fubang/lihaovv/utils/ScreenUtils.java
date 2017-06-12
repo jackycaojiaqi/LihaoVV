@@ -2,9 +2,11 @@ package com.fubang.lihaovv.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -16,6 +18,35 @@ import android.view.WindowManager;
  */
 
 public class ScreenUtils {
+
+    /**
+     * dp2px
+     */
+    public static int dp2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+    /**
+     * px2dp
+     */
+    public static int px2dp(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
+    }
+    /**
+     *根据设备信息获取当前分辨率下指定单位对应的像素大小；
+     * px,dip,sp -> px
+     */
+    public float getRawSize(Context c, int unit, float size) {
+        Resources r;
+        if (c == null){
+            r = Resources.getSystem();
+        }else{
+            r = c.getResources();
+        }
+        return TypedValue.applyDimension(unit, size, r.getDisplayMetrics());
+    }
     private ScreenUtils()
     {
 		/* cannot be instantiated */

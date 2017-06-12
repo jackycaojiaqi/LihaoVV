@@ -9,10 +9,10 @@ public class EncodeH264 {
 
     private static native int _open(long ins, int width, int height);
     private static native int _release(long ins);
-    private static native int _encode(long ins, byte[] src, H264Data dst);
+    private static native int _encode(long ins, byte[] src, MediaData dst);
     private static native int _close(long ins);
 
-    private H264Data m_h264Cache;
+    private MediaData m_h264Cache;
 
     // 构建类, 必须通过 Media.CreateEncodeH264 来创建
     protected EncodeH264(long ins) {
@@ -34,7 +34,7 @@ public class EncodeH264 {
      * @return
      */
     public int Open(int width, int height) {
-        m_h264Cache = new H264Data(width, height);
+        m_h264Cache = new MediaData(width * height * 3);
         return _open(m_ins, width, height);
     }
 
@@ -43,10 +43,9 @@ public class EncodeH264 {
      * @param data
      * @return
      */
-    public H264Data Encode(byte []data) {
+    public MediaData Encode(byte []data) {
         // 重置变量
-        m_h264Cache.Length = 0;
-        m_h264Cache.Flags = 0;
+        m_h264Cache.Clean();
         // 进行编码
         int ret = _encode(m_ins, data, m_h264Cache);
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>:" + ret);

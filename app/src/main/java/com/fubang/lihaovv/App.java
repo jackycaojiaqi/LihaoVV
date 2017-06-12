@@ -4,10 +4,15 @@ import android.app.Application;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.fubang.lihaovv.utils.DbUtil;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.interceptor.HttpLoggingInterceptor;
 
 import org.androidannotations.annotations.EApplication;
 
+import java.util.logging.Level;
+
 import cn.sharesdk.framework.ShareSDK;
+import okhttp3.OkHttpClient;
 
 /**
  * 娶妻娶德不娶色，嫁人嫁心不嫁财，
@@ -60,7 +65,14 @@ public class App extends Application {
         DbUtil.init(this);
         //初始化ShareSDK
         ShareSDK.initSDK(this);
-//        getApplicationContext()
-//        SMSSDK.initSDK(this,"1789d8ca05454","ecd58e751dc63a816f29fda6f77e60c3");
+
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor("OkGo");
+        //log打印级别，决定了log显示的详细程度
+        loggingInterceptor.setPrintLevel(HttpLoggingInterceptor.Level.BODY);
+        //log颜色级别，决定了log在控制台显示的颜色
+        loggingInterceptor.setColorLevel(Level.INFO);
+        OkGo.getInstance().init(this)                       //必须调用初始化
+                .setOkHttpClient(builder.build());
     }
 }

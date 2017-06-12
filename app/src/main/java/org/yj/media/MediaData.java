@@ -13,6 +13,7 @@ public class MediaData {
     private int aSample;
     private int aChannel;
     private int aBit;
+    private long timestamp;
 
     public MediaData(int cap) {
         byData = new byte[cap];
@@ -57,5 +58,9 @@ public class MediaData {
 
     public int getAudioBit() {
         return aBit;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 }

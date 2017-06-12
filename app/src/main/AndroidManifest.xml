@@ -89,11 +89,6 @@
             android:name="com.fubang.lihaovv.ui.LoginActivity_"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
-        <activity
-
-            android:name="com.fubang.lihaovv.ui.PushrtmpTestActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
 
         <!--<service-->
         <!--android:name=".services.RoomService"-->
@@ -170,21 +165,11 @@
         <activity
             android:name="com.fubang.lihaovv.cao.RoomPortraitActivity_"
             android:configChanges="keyboardHidden|orientation" />
-        <activity
-            android:name="com.fubang.lihaovv.ui.HWCodecCameraStreamingActivity"
-            android:configChanges="orientation|screenSize"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <activity
-            android:name="com.fubang.lihaovv.ui.PLVideoViewActivity"
-            android:theme="@style/AppThemeFullscreen" />
-        <activity android:name="com.fubang.lihaovv.ui.DemoActivity">
             <!--<intent-filter>-->
             <!--<action android:name="android.intent.action.MAIN" />-->
 
             <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
-        </activity>
     </application>
 
 

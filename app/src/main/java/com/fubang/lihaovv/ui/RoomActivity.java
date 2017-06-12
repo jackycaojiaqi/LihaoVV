@@ -8,11 +8,9 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -24,14 +22,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -59,36 +55,43 @@ import com.fubang.lihaovv.adapters.RoomChatAdapter;
 import com.fubang.lihaovv.adapters.UserAdapter;
 import com.fubang.lihaovv.entities.FaceEntity;
 import com.fubang.lihaovv.entities.GiftEntity;
-import com.fubang.lihaovv.filter.IFilter;
+import com.fubang.lihaovv.entities.RtmpEntity;
 import com.fubang.lihaovv.fragment.CommonFragment_;
 import com.fubang.lihaovv.fragment.LookFragment_;
 import com.fubang.lihaovv.fragment.MicQuenFragment_;
 import com.fubang.lihaovv.fragment.PersonFragment_;
-import com.fubang.lihaovv.ui.BaseActivity;
 import com.fubang.lihaovv.utils.GiftUtil;
 import com.fubang.lihaovv.utils.GlobalOnItemClickManager;
+import com.fubang.lihaovv.utils.ScreenUtils;
+import com.fubang.lihaovv.utils.Utils;
+import com.google.gson.Gson;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.Header;
-import com.xlg.android.protocol.JoinRoomError;
 import com.xlg.android.protocol.JoinRoomResponse;
 import com.xlg.android.protocol.MicState;
 import com.xlg.android.protocol.RoomChatMsg;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
 import com.xlg.android.protocol.RoomUserInfo;
-import com.xlg.android.video.AVModuleMgr;
-import com.xlg.android.video.AVNotify;
 import com.xlg.android.video.AudioPlay;
 import com.zhuyunjian.library.StartUtil;
 
+import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
+import org.yj.media.Media;
+import org.yj.media.RecvRtmp;
+import org.yj.media.RecvRtmpCallback;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -109,11 +112,10 @@ import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.danmaku.parser.IDataSource;
 import master.flame.danmaku.danmaku.parser.android.BiliDanmukuParser;
 import master.flame.danmaku.ui.widget.DanmakuView;
-import sample.room.MicNotify;
 import sample.room.RoomMain;
 
 @EActivity(R.layout.activity_room)
-public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, View.OnClickListener {
+public class RoomActivity extends BaseActivity {
 
     @ViewById(R.id.linear_new_container)
     LinearLayout linearLayout;
@@ -121,24 +123,20 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     EditText editText;
     @ViewById(R.id.room_new_chat_send)
     Button sendBtn;
-    //        @ViewById(R.id.room_message_list)
-//    ListView listView;
     @ViewById(R.id.room_new_gift)
     ImageView giftImage;
     @ViewById(R.id.chat_image_btn)
     ImageButton faceButton;
-    //    @ViewById(R.id.room_send_user)
-//    Button userSendBtn;
     @ViewById(R.id.test_new_back_btn)
     ImageView backImage;
     @ViewById(R.id.test_new_controll)
     RelativeLayout testController;
     @ViewById(R.id.test_new_full)
     ImageView fullImage;
+    @ViewById(R.id.iv_room_setting)
+    ImageView ivRoomSetting;
     @ViewById(R.id.room_new_id_test)
     TextView roomIdTv;
-    //    @ViewById(R.id.send_new_control)
-//    LinearLayout sendControl;
     @ViewById(R.id.follow_new_image)
     ImageView followImage;
     @ViewById(R.id.room_back_image)
@@ -153,7 +151,20 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     RelativeLayout roomControl2;
     @ViewById(R.id.room_new_control3)
     RelativeLayout roomControl3;
-
+    @ViewById(R.id.emotion_new_layout)
+    RelativeLayout emotionLayout;
+    @ViewById(R.id.edit_new_text)
+    EditText roomMessageEdit;
+    @ViewById(R.id.emotion_new_button)
+    ImageView emotionBtn;
+    @ViewById(R.id.room_vp)
+    ViewPager viewPager;
+    @ViewById(R.id.game_btn)
+    ImageView gameBtn;
+    @ViewById(R.id.room_new_viewpager)
+    ViewPager viewPager_content;
+    @ViewById(R.id.room_new_tablayout)
+    TabLayout tabLayout;
     private Button giftSendBtn;
     private GridView gridView;
     private ListView userList;
@@ -163,7 +174,6 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
 
     private RoomChatAdapter adapter;
 
-    private AVModuleMgr mgr = null;
     private SurfaceView surfaceView;
     private SurfaceView surfaceView2;
     private SurfaceView surfaceView3;
@@ -171,10 +181,6 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     DanmakuView danmakuView;
     private DanmakuContext mContext;
     private BaseDanmakuParser mParser;
-    //    @ViewById(R.id.text_surface4)
-//    SurfaceView surfaceView4;
-//    @ViewById(R.id.text_surface5)
-//    SurfaceView surfaceView5;
     private Bitmap bmp;
     private Bitmap bmp1;
     private Bitmap bmp2;
@@ -183,7 +189,7 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     private int mic1 = 1;
     private int mic2 = 2;
     private static AudioPlay play = new AudioPlay();
-    private RoomMain roomMain = new RoomMain(this);
+    private RoomMain roomMain = new RoomMain();
     private Context context;
 
     private PopupWindow popupWindow;
@@ -203,7 +209,6 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     public static List<RoomUserInfo> userInfos = new ArrayList<>();
     private RoomUserInfo sendToUser;
     private UserAdapter userAdapter;
-    private int micid;
 
     private String roomPwd;
     private String roomIp;
@@ -213,7 +218,8 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     private int actorid;
     private boolean followflag = true;
     private int connectNumbaer = 1;
-    private List<RoomUserInfo> micUsers;
+    private List<RoomUserInfo> micUsers = new ArrayList<>();
+    ;
     private String mediaIp;
     private int mediaPort;
     private int mediaRand;
@@ -222,22 +228,126 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     private boolean mStop = false;
 
     static Activity roomActivity;
-    @ViewById(R.id.game_btn)
-    ImageView gameBtn;
-    @ViewById(R.id.room_new_viewpager)
-    ViewPager viewPagers;
-    @ViewById(R.id.room_new_tablayout)
-    TabLayout tabLayout;
+
     private List<Fragment> fragments = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
     private int chatToFlag = 0;
     private int ssrcFlag;
+    private EmotionInputDetector mDetector;
+
+    private List<View> views = new ArrayList<>();
+
+    private View view1, view2, view3;
+    private RecvRtmp rtmp, rtmp2, rtmp3;
+    private org.yj.media.AudioPlay pcmPlay = new org.yj.media.AudioPlay();
+    private org.yj.media.AudioPlay pcmPlay2 = new org.yj.media.AudioPlay();
+    private org.yj.media.AudioPlay pcmPlay3 = new org.yj.media.AudioPlay();
+
+    //开始加入房间
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isRunning = true;
+
+        configuration = getResources().getConfiguration();
+        switch (micFlag) {
+            case 0:
+                if (rtmp != null) {
+                    rtmp.Start();
+                }
+                if (pcmPlay != null) {
+                    pcmPlay.start();
+                }
+                break;
+            case 1:
+                if (rtmp2 != null) {
+                    rtmp2.Start();
+                }
+                if (pcmPlay2 != null) {
+                    pcmPlay2.start();
+                }
+                break;
+            case 2:
+                if (rtmp3 != null) {
+                    rtmp3.Start();
+                }
+                if (pcmPlay3 != null) {
+                    pcmPlay3.start();
+                }
+                break;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mStop = false;
+                if (roomMain.getRoom() != null) {
+                    if (!roomMain.getRoom().isOK()) {
+                        roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isRunning = false;
+        mStop = true;
+        switch (micFlag) {
+            case 0:
+                if (rtmp != null) {
+                    rtmp.Stop();
+                }
+                if (pcmPlay != null) {
+                    pcmPlay.stop();
+                }
+                break;
+            case 1:
+                if (rtmp2 != null) {
+                    rtmp2.Stop();
+                }
+                if (pcmPlay2 != null) {
+                    pcmPlay2.stop();
+                }
+                break;
+            case 2:
+                if (rtmp3 != null) {
+                    rtmp3.Stop();
+                }
+                if (pcmPlay3 != null) {
+                    pcmPlay3.stop();
+                }
+                break;
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (roomMain.getRoom() != null) {
+                    roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));
+                    roomMain.getRoom().getChannel().Close();
+                }
+            }
+        }).start();
+        isRunning = false;
+        rtmp.Release();
+        pcmPlay.stop();
+        pcmPlay = null;
+        EventBus.getDefault().unregister(this);
+
+        super.onDestroy();
+    }
 
     @Override
     public void before() {
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        // 防止锁屏
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         app = (App) getApplication();
         roomPwd = getIntent().getStringExtra("roomPwd");
         roomIp = getIntent().getStringExtra("roomIp");
@@ -246,35 +356,22 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         ip = ports[0];
         port = Integer.parseInt(ports[1]);
         roomId = Integer.parseInt(getIntent().getStringExtra("roomId"));
-//        RoomChatMsg joinMsg = new RoomChatMsg();
-//        joinMsg.setSrcid(Integer.parseInt(StartUtil.getUserId(this)));
-//        joinMsg.setSrcalias(StartUtil.getUserName(this));
-//        joinMsg.setContent("加入了房间");
-//        data.add(joinMsg);
-//        Log.d("123",roomId+"roomId");
         EventBus.getDefault().register(this);
         context = this;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
+            }
+        }).start();
+
 
     }
 
-    private EmotionInputDetector mDetector;
-    @ViewById(R.id.emotion_new_layout)
-    RelativeLayout emotionLayout;
-    //    @ViewById(R.id.room_new_message_list)
-//    ListView roomMessageList;
-    @ViewById(R.id.edit_new_text)
-    EditText roomMessageEdit;
-    @ViewById(R.id.emotion_new_button)
-    ImageView emotionBtn;
-
-    @ViewById(R.id.room_vp)
-    ViewPager viewPager;
-    private List<View> views = new ArrayList<>();
-
-    private View view1, view2, view3;
 
     @Override
     public void initView() {
+
         LayoutInflater inflater = getLayoutInflater();
         view1 = inflater.inflate(R.layout.page_surface, null);
         view2 = inflater.inflate(R.layout.page_surface2, null);
@@ -282,82 +379,60 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         surfaceView = (SurfaceView) view1.findViewById(R.id.surface1);
         surfaceView2 = (SurfaceView) view2.findViewById(R.id.surface2);
         surfaceView3 = (SurfaceView) view3.findViewById(R.id.surface3);
+
+
+        initDanmu();
+        for (int i = 0; i < AppConstant.ROOM_TYPE_TITLE.length; i++) {
+            titles.add(AppConstant.ROOM_TYPE_TITLE[i]);
+        }
+        fragments.add(CommonFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(0)).build());
+        fragments.add(PersonFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
+        fragments.add(LookFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(2)).build());
+        fragments.add(MicQuenFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
+        roomIdTv.setText(roomId + "");
+        roomActivity = this;
+//        if (mDetector != null) {
+//            mDetector = null;
+//        }
+        mDetector = EmotionInputDetector.with(this)
+                .setEmotionView(emotionLayout)
+                .bindToContent(chatLine)
+                .bindToEditText(roomMessageEdit)
+                .bindToEmotionButton(emotionBtn)
+                .build();
+
+        setUpEmotionViewPager();
+
+    }
+
+    @Override
+    public void initListener() {
+        initRevListener();
+        backImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         surfaceView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 testController.setVisibility(View.VISIBLE);
-                AlphaAnimation animation1 = new AlphaAnimation(1.0f, 0.0f);
-                animation1.setDuration(100 * 100);
-                animation1.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        testController.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                testController.setAnimation(animation1);
-                animation1.start();
+                animaView(testController);
             }
         });
         surfaceView3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 testController.setVisibility(View.VISIBLE);
-                AlphaAnimation animation1 = new AlphaAnimation(1.0f, 0.0f);
-                animation1.setDuration(100 * 100);
-                animation1.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        testController.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                testController.setAnimation(animation1);
-                animation1.start();
+                animaView(testController);
             }
         });
         surfaceView2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 testController.setVisibility(View.VISIBLE);
-                AlphaAnimation animation1 = new AlphaAnimation(1.0f, 0.0f);
-                animation1.setDuration(100 * 100);
-                animation1.setAnimationListener(new Animation.AnimationListener() {
-                    @Override
-                    public void onAnimationStart(Animation animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animation animation) {
-                        testController.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animation animation) {
-
-                    }
-                });
-                testController.setAnimation(animation1);
-                animation1.start();
+                animaView(testController);
             }
         });
         views.add(view1);
@@ -386,10 +461,7 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
                 return views.get(position);
             }
         };
-
-
         viewPager.setAdapter(pagerAdapter);
-
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -397,13 +469,32 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
 
             @Override
             public void onPageSelected(int position) {
-                KLog.e(position);
                 micFlag = position;
+                switch (micFlag) {
+                    case 0:
+                        KLog.e(micFlag);
+                        rtmp.SetUrl("http://www.pppktv.com/test.flv");
+                        rtmp.Start();
+                        pcmPlay.start();
+                        break;
+                    case 1:
+                        KLog.e(micFlag);
+                        rtmp2.SetUrl("http://www.pppktv.com/test.flv");
+                        rtmp2.Start();
+                        pcmPlay2.start();
+                        break;
+                    case 2:
+                        KLog.e(micFlag);
+                        rtmp3.SetUrl("http://www.pppktv.com/test.flv");
+                        rtmp3.Start();
+                        pcmPlay3.start();
+                        break;
+                }
+
                 if (micUsers != null) {
                     for (int i = 0; i < micUsers.size(); i++) {
                         if (micUsers.get(i).getMicindex() == micFlag) {
                             giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
-//                            Log.d("123","toid---"+toid+"toName"+toName);
                         }
                     }
                 }
@@ -414,75 +505,6 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
 
             }
         });
-
-
-        initDanmu();
-        for (int i = 0; i < AppConstant.ROOM_TYPE_TITLE.length; i++) {
-            titles.add(AppConstant.ROOM_TYPE_TITLE[i]);
-        }
-        fragments.add(CommonFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(0)).build());
-        fragments.add(PersonFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
-        fragments.add(LookFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(2)).build());
-        fragments.add(MicQuenFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
-        roomIdTv.setText(roomId + "");
-        roomActivity = this;
-//        if (mDetector != null) {
-//            mDetector = null;
-//        }
-        mDetector = EmotionInputDetector.with(this)
-                .setEmotionView(emotionLayout)
-                .bindToContent(chatLine)
-                .bindToEditText(roomMessageEdit)
-                .bindToEmotionButton(emotionBtn)
-                .build();
-
-        setUpEmotionViewPager();
-//        textBackImage.setVisibility(View.VISIBLE);
-//        surfaceView.setVisibility(View.GONE);
-        backImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-//        roomIdTv.setText(roomId+"");
-
-//        ControllerUtil.showAndHide(testController,roomControl);
-//        Log.d("123","oncreate---");
-        RoomUserInfo roomUser = new RoomUserInfo();
-        roomUser.setUseralias("大厅");
-        userInfos.add(roomUser);
-
-        adapter = new RoomChatAdapter(data, this);
-        configuration = getResources().getConfiguration();
-        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-//            listView.setAdapter(adapter);
-            showWindow();
-//            showFace();
-//            showUser();
-        }
-
-//        textChange.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                finish();
-////                startActivity(RoomLandActivity_.intent(RoomActivity.this).extra("roomIp",roomIp).extra("roomId",roomId+"").get());
-//
-//                if (micUsers.size() != 1 && mgr != null) {
-//                    mgr.DelAudioStream(ssrc);
-//                    mgr.DelVideoStream(ssrc);
-//                    if (toid == micUsers.get(0).getUserid()) {
-//                        buddyid = micUsers.get(1).getUserid();
-//                        toName = micUsers.get(1).getUseralias();
-//                        StartAV(mediaIp, mediaPort, mediaRand, micUsers.get(micUsers.size() - 1).getUserid());
-//                    }else {
-//                        buddyid = micUsers.get(0).getUserid();
-//                        toName = micUsers.get(0).getUseralias();
-//                        StartAV(mediaIp, mediaPort, mediaRand, micUsers.get(0).getUserid());
-//                    }
-//                }
-//            }
-//        });
         //收藏房间
         followImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -504,13 +526,12 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
                 startActivity(RoomLandActivity_.intent(RoomActivity.this).extra("roomIp", roomIp).extra("roomId", roomId + "").extra("roomPwd", roomPwd + "").get());
             }
         });
-//        roomControl.setOnTouchListener(this);
         //游戏
         gameBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String pwd = StartUtil.getUserPwd(RoomActivity.this);
-                String mdPwd = stringToMD5(pwd);
+                String mdPwd = Utils.stringToMD5(pwd);
                 String userId = StartUtil.getUserId(RoomActivity.this);
                 String mac = StartUtil.getDeviceId(RoomActivity.this);
                 StringBuilder gameUrl = new StringBuilder(GAME_URL);
@@ -524,41 +545,7 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
 //                startActivity(GameActivity_.intent(RoomNewActivity.this).get());
             }
         });
-//        roomControl.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
-//        roomControl2.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                if (micUsers.size()>1) {
-//                textBackImage.setVisibility(View.VISIBLE);
-//                surfaceView.setVisibility(View.GONE);
-//                textBackImage2.setVisibility(View.VISIBLE);
-//                surfaceView2.setVisibility(View.GONE);
-//                int a = mic0;
-//                mic0 = mic1;
-//                mic1 = a;
-////                }
-//            }
-//        });
-//        roomControl3.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                if (micUsers.size()>2) {
-//                textBackImage.setVisibility(View.VISIBLE);
-//                surfaceView.setVisibility(View.GONE);
-//                textBackImage3.setVisibility(View.VISIBLE);
-//                surfaceView3.setVisibility(View.GONE);
-//                int a = mic0;
-//                mic0 = mic2;
-//                mic2 = a;
-////                }
-//            }
-//        });
-        viewPagers.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager_content.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -574,38 +561,183 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
 
             }
         });
+        rtmp.SetUrl("http://www.pppktv.com/test.flv");
+        rtmp.Start();
+        pcmPlay.start();
+    }
+
+    private void initRevListener() {
+        rtmp = Media.CreateRecvRtmp();
+        rtmp.SetCallback(new RecvRtmpCallback() {
+            @Override
+            public void OnRecvRtmpStart() {
+
+            }
+
+            @Override
+            public void OnRecvRtmpPlayVideo(Bitmap bmp) {
+                if (micFlag != 0) {
+                    return;
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textBackImage.setVisibility(View.GONE);
+                    }
+                });
+                try {
+                    if (null != surfaceView.getHolder()) {
+                        SurfaceHolder holder = surfaceView.getHolder();
+                        if (null == holder) {
+                            return;
+                        }
+                        // 显示照片
+                        Canvas canvas = holder.lockCanvas();
+                        if (canvas != null) {
+                            Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
+                            Rect dst = new Rect(0, 0,
+                                    ScreenUtils.getScreenWidth(context),
+                                    ScreenUtils.dp2px(context, surfaceView.getHeight()));
+                            canvas.drawBitmap(bmp, src, dst, null);
+                            holder.unlockCanvasAndPost(canvas);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
+
+            @Override
+            public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
+                if (micFlag != 0) {
+                    return;
+                }
+                pcmPlay.setConfig(sample, channel);
+                pcmPlay.play(pcm);
+                KLog.d("*****************************: OnRtmpPlayAudio:" + sample + ":" + channel + ":" + pcm.length);
+            }
+
+            @Override
+            public void OnRecvRtmpStop() {
+
+            }
+        });
+        rtmp2 = Media.CreateRecvRtmp();
+        rtmp2.SetCallback(new RecvRtmpCallback() {
+            @Override
+            public void OnRecvRtmpStart() {
+
+            }
+
+            @Override
+            public void OnRecvRtmpPlayVideo(Bitmap bmp) {
+                if (micFlag != 1) {
+                    return;
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textBackImage.setVisibility(View.GONE);
+                    }
+                });
+                try {
+                    if (null != surfaceView2.getHolder()) {
+                        SurfaceHolder holder = surfaceView2.getHolder();
+                        if (null == holder) {
+                            return;
+                        }
+                        // 显示照片
+                        Canvas canvas = holder.lockCanvas();
+                        if (canvas != null) {
+                            Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
+                            Rect dst = new Rect(0, 0,
+                                    ScreenUtils.getScreenWidth(context),
+                                    ScreenUtils.dp2px(context, surfaceView.getHeight()));
+                            canvas.drawBitmap(bmp, src, dst, null);
+                            holder.unlockCanvasAndPost(canvas);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
+
+            @Override
+            public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
+                if (micFlag != 1) {
+                    return;
+                }
+                pcmPlay2.setConfig(sample, channel);
+                pcmPlay2.play(pcm);
+                KLog.d("*****************************: OnRtmpPlayAudio:" + sample + ":" + channel + ":" + pcm.length);
+            }
+
+            @Override
+            public void OnRecvRtmpStop() {
+
+            }
+        });
+        rtmp3 = Media.CreateRecvRtmp();
+        rtmp3.SetCallback(new RecvRtmpCallback() {
+            @Override
+            public void OnRecvRtmpStart() {
+
+            }
+
+            @Override
+            public void OnRecvRtmpPlayVideo(Bitmap bmp) {
+                if (micFlag != 2) {
+                    return;
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textBackImage.setVisibility(View.GONE);
+                    }
+                });
+
+                try {
+                    if (null != surfaceView3.getHolder()) {
+                        SurfaceHolder holder = surfaceView3.getHolder();
+                        if (null == holder) {
+                            return;
+                        }
+                        // 显示照片
+                        Canvas canvas = holder.lockCanvas();
+                        if (canvas != null) {
+                            Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
+                            Rect dst = new Rect(0, 0,
+                                    ScreenUtils.getScreenWidth(context),
+                                    ScreenUtils.dp2px(context, surfaceView.getHeight()));
+                            canvas.drawBitmap(bmp, src, dst, null);
+                            holder.unlockCanvasAndPost(canvas);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+            }
+
+            @Override
+            public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
+                if (micFlag != 2) {
+                    return;
+                }
+                pcmPlay3.setConfig(sample, channel);
+                pcmPlay3.play(pcm);
+                KLog.d("*****************************: OnRtmpPlayAudio:" + sample + ":" + channel + ":" + pcm.length);
+            }
+
+            @Override
+            public void OnRecvRtmpStop() {
+
+            }
+        });
+
     }
 
     public static final String GAME_URL = "http://120.26.108.184:98/game.htm?ip=120.26.108.184&port=9999&memberid=";
 
-    /**
-     * 将字符串转成MD5值
-     *
-     * @param string
-     * @return
-     */
-    public static String stringToMD5(String string) {
-        byte[] hash;
-
-        try {
-            hash = MessageDigest.getInstance("MD5").digest(string.getBytes("UTF-8"));
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return null;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        StringBuilder hex = new StringBuilder(hash.length * 2);
-        for (byte b : hash) {
-            if ((b & 0xFF) < 0x10)
-                hex.append("0");
-            hex.append(Integer.toHexString(b & 0xFF));
-        }
-
-        return hex.toString();
-    }
 
     @Override
     public void onBackPressed() {
@@ -683,32 +815,8 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
                     if (micUsers.get(i).getMicindex() == micFlag) {
                         toid = micUsers.get(i).getUserid();
                         toName = micUsers.get(i).getUseralias();
-//                            Log.d("123","toid---"+toid+"toName"+toName);
                     }
                 }
-//                }else if (giftToUser.getText().toString().equals("2")){
-//                    for (int i = 0; i < micUsers.size(); i++) {
-//                        if (micUsers.get(i).getMicindex()==1){
-//                            toid = micUsers.get(i).getUserid();
-//                            toName = micUsers.get(i).getUseralias();
-////                            Log.d("123","toid---"+toid+"toName"+toName);
-//                        }
-//                    }
-//                }else if (giftToUser.getText().toString().equals("3")){
-//                    for (int i = 0; i < micUsers.size(); i++) {
-//                        if (micUsers.get(i).getMicindex()==2){
-//                            toid = micUsers.get(i).getUserid();
-//                            toName = micUsers.get(i).getUseralias();
-////                            Log.d("123","toid---"+toid+"toName"+toName);
-//                        }
-//                    }
-//                }else
-////                        (giftToUser.getText().toString()!="1" &&giftToUser.getText().toString()!="2"&&giftToUser.getText().toString()!="3")
-//                {
-//                    Toast.makeText(RoomNewActivity.this, "赠送麦序错误,请重新选择", Toast.LENGTH_SHORT).show();
-//                    toid = -1;
-//                    toName = "";
-//                }
                 final int count = Integer.parseInt(giftCount.getText().toString());
                 Log.d("123", "toid--" + toid + "---giftId---" + giftId + "---count---" + count + "---toName---" + toName);
                 new Thread(new Runnable() {
@@ -720,139 +828,157 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
 
                 giftName.setText("送给");
                 popupWindow.dismiss();
-//                sendControl.setVisibility(View.VISIBLE);
             }
         });
         popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         ColorDrawable dw = new ColorDrawable(0xffffffff);
         popupWindow.setBackgroundDrawable(dw);
-//        popupWindow.showAsDropDown(giftImage);
-//        popupWindow.showAtLocation(roomInputLinear,Gravity.BOTTOM,0,0);
         WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
         int height = wm.getDefaultDisplay().getHeight();
         popupWindow.setHeight(height / 2);
         popupWindow.setOutsideTouchable(true);
     }
 
-    //手指按下的点为(x1, y1)手指离开屏幕的点为(x2, y2)
-    float x1 = 0;
-    float x2 = 0;
-    float y1 = 0;
-    float y2 = 0;
-
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.linear_new_container:
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                break;
-            case R.id.chat_image_btn:
-                popupWindow.dismiss();
-                if (faceWindow.isShowing()) {
-                    faceWindow.dismiss();
-                } else {
-//                    Log.d("123","showPop------------------");
-//                    faceWindow.showAsDropDown(faceButton);
-                    //防止虚拟软键盘被弹出菜单遮住
-                    faceWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-                }
-                break;
-            //点击礼物图标
-            case R.id.room_new_gift:
-//                faceWindow.dismiss();
-                if (popupWindow.isShowing()) {
-                    popupWindow.dismiss();
-//                    sendControl.setVisibility(View.VISIBLE);
-                } else {
-//                    Log.d("123","showPop------------------");
-                    popupWindow.showAsDropDown(giftImage);
-                    if (micUsers != null) {
-                        for (int i = 0; i < micUsers.size(); i++) {
-                            if (micUsers.get(i).getMicindex() == micFlag) {
-                                giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
-//                            Log.d("123","toid---"+toid+"toName"+toName);
-                            }
-                        }
-                    }
-//                    sendControl.setVisibility(View.GONE);
-                    //防止虚拟软键盘被弹出菜单遮住
-//                    popupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-                }
-                break;
-//            case R.id.room_send_user:
-//                if (userWindow.isShowing()){
-//                    userWindow.dismiss();
-//                }else {
-//                    userWindow.showAsDropDown(userSendBtn);
-//                }
-//                break;
-
-        }
-    }
 
     @Override
     public void initData() {
         HomeTitleAdapter adapter = new HomeTitleAdapter(getSupportFragmentManager(), fragments, titles);
-        viewPagers.setAdapter(adapter);
-        viewPagers.setOffscreenPageLimit(2);
-        tabLayout.setupWithViewPager(viewPagers);
+        viewPager_content.setAdapter(adapter);
+        viewPager_content.setOffscreenPageLimit(2);
+        tabLayout.setupWithViewPager(viewPager_content);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
 
-//        tabLayout.setVisibility(View.GONE);
         //发送聊天消息
-        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            sendBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    Log.d("111","chatToFlag--->"+chatToFlag+"---sendtouser"+sendToUser.getUserid());
-                    if (!TextUtils.isEmpty(editText.getText())) {
-//                        if (userSendBtn.getText().toString().contains("大厅")) {
-                        final String msgText = editText.getText().toString();
-                        if (chatToFlag == 0) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0, (byte) 0, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + msgText + "</FONT>", StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
-//                                    editText.setText("");
-                                }
-                            }).start();
+        sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!TextUtils.isEmpty(editText.getText())) {
+                    final String msgText = editText.getText().toString();
+                    if (chatToFlag == 0) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0, (byte) 0, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + msgText + "</FONT>", StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
+                            }
+                        }).start();
 
-//                        } else if (!TextUtils.isEmpty(sendToUser.getUseralias())) {
-                        } else if (sendToUser != null) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    roomMain.getRoom().getChannel().sendChatMsg(sendToUser.getUserid(), (byte) 0, (byte) 1, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + msgText + "</FONT>", StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
-                                    editText.setText("");
-                                }
-                            }).start();
-                        } else {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0, (byte) 0, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + msgText + "</FONT>", StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
-//                                    editText.setText("");
-                                }
-                            }).start();
-                        }
-                        editText.setText("");
-                        ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(RoomActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    } else if (sendToUser != null) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                roomMain.getRoom().getChannel().sendChatMsg(sendToUser.getUserid(), (byte) 0, (byte) 1, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + msgText + "</FONT>", StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
+                                editText.setText("");
+                            }
+                        }).start();
+                    } else {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0, (byte) 0, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + msgText + "</FONT>", StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
+                            }
+                        }).start();
                     }
+                    editText.setText("");
+                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(RoomActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+            }
+        });
+    }
+
+    //添加弹幕
+    private void addDanmaku(boolean islive, Spanned chatmsg) {
+        BaseDanmaku danmaku = mContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
+        if (danmaku == null || danmakuView == null) {
+            return;
+        }
+        danmaku.text = chatmsg;
+        danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
+        danmaku.isLive = islive;
+        danmaku.time = danmakuView.getCurrentTime() + 4800;
+        danmaku.textSize = 25f * (mParser.getDisplayer().getDensity() - 0.6f);
+        danmaku.textColor = Color.WHITE;
+        danmaku.textShadowColor = Color.WHITE;
+        danmakuView.addDanmaku(danmaku);
+    }
+
+    //弹幕初始化
+    public void initDanmu() {
+        // 设置最大显示行数
+        HashMap<Integer, Integer> maxLinesPair = new HashMap<Integer, Integer>();
+        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 1); // 滚动弹幕最大显示5行
+        // 设置是否禁止重叠
+        HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<Integer, Boolean>();
+        overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
+        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_TOP, true);
+
+
+        mContext = DanmakuContext.create();
+        mContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3).setDuplicateMergingEnabled(false).setScrollSpeedFactor(1.2f).setScaleTextSize(1.2f)
+                .setCacheStuffer(new SpannedCacheStuffer(), new BaseCacheStuffer.Proxy() {
+                    @Override
+                    public void prepareDrawing(BaseDanmaku danmaku, boolean fromWorkerThread) {
+                        danmakuView.invalidateDanmaku(danmaku, false);
+                    }
+
+                    @Override
+                    public void releaseResource(BaseDanmaku danmaku) {
+
+                    }
+                }) // 图文混排使用SpannedCacheStuffer
+                .setMaximumLines(maxLinesPair)
+                .preventOverlapping(overlappingEnablePair);
+        if (danmakuView != null) {
+            mParser = createParser(this.getResources().openRawResource(R.raw.comments));
+            danmakuView.setCallback(new master.flame.danmaku.controller.DrawHandler.Callback() {
+                @Override
+                public void updateTimer(DanmakuTimer timer) {
+                }
+
+                @Override
+                public void drawingFinished() {
+                }
+
+                @Override
+                public void danmakuShown(BaseDanmaku danmaku) {
+                }
+
+                @Override
+                public void prepared() {
+                    danmakuView.start();
                 }
             });
-            giftImage.setOnClickListener(this);
-//            faceButton.setOnClickListener(this);
-            linearLayout.setOnClickListener(this);
-//            userSendBtn.setOnClickListener(this);
-//            mDetector = EmotionInputDetector.with(this)
-//                    .setEmotionView(emotionLayout)
-//                    .bindToContent(roomMessageList)
-//                    .bindToEditText(roomMessageEdit)
-//                    .bindToEmotionButton(emotionBtn)
-//                    .build();
+
+            danmakuView.prepare(mParser, mContext);
+            danmakuView.enableDanmakuDrawingCache(true);
+
         }
+
+    }
+
+    private BaseDanmakuParser createParser(InputStream stream) {
+
+        if (stream == null) {
+            return new BaseDanmakuParser() {
+
+                @Override
+                protected Danmakus parse() {
+                    return new Danmakus();
+                }
+            };
+        }
+
+        ILoader loader = DanmakuLoaderFactory.create(DanmakuLoaderFactory.TAG_BILI);
+
+        try {
+            loader.load(stream);
+        } catch (IllegalDataException e) {
+            e.printStackTrace();
+        }
+        BaseDanmakuParser parser = new BiliDanmukuParser();
+        IDataSource<?> dataSource = loader.getDataSource();
+        parser.load(dataSource);
+        return parser;
+
     }
 
     //接收礼物消息更新
@@ -948,7 +1074,7 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     @Subscriber(tag = "SendToUser")
     public void getSendToUser(RoomUserInfo obj) {
         sendToUser = obj;
-        viewPagers.setCurrentItem(1, true);
+        viewPager_content.setCurrentItem(1, true);
     }
 
     //踢出房间
@@ -990,9 +1116,6 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     //加入房间错误
     @Subscriber(tag = "joinRoomError")
     public void jionRoomError(final int err) {
-//        runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
         if (err == 503) {
             Toast.makeText(this, "房间密码错误请输入", Toast.LENGTH_SHORT).show();
             // 弹出自定义dialog
@@ -1043,9 +1166,6 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         } else if (err == 417) {
             Toast.makeText(RoomActivity.this, "该房间限制等级进入", Toast.LENGTH_SHORT).show();
         }
-//            }
-//        });
-
     }
 
     //加入房间失败时尝试换ip端口号再加入
@@ -1084,13 +1204,9 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
     //接收服务器发送的消息更新列表
     @Subscriber(tag = "RoomChatMsg")
     public void getRoomChatMsg(RoomChatMsg msg) {
-//        Log.d("123",msg.getContent());
         if (msg.getMsgtype() == 0) {
             if (msg.getIsprivate() == 0) {
-                //("<b><FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:17px; COLOR:#FF0000\">/mr599</FONT></b>")) {
-                //<b><FONT style="FONT-FAMILY:宋体;FONT-SIZE:17px; COLOR:#FF0000">/mr599</FONT></b>
                 EventBus.getDefault().post(msg, "CommonMsg");
-//                listView.setSelection(listView.getCount() - 1);
             }
         }
         if (msg.getMsgtype() == 0) {
@@ -1108,118 +1224,6 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         }
     }
 
-    //    =>Class: class com.xlg.android.protocol.RoomChatMsg
-//    t: <FONT style="color=purple; font-size:17px">祝贺<FONT color=#2248DD>1616(1616)</FONT>在【<FONT color=#ff6900>争霸车行</FONT>】赢得金币:<FONT color=#fc000a>11270000</FONT></FONT>
-//    =>Dstplatformid: 0
-//    =>Dstvcbid: 0
-//    =>Familyid: 0
-//    =>Isprivate: 0
-//    =>Msgtype: 12
-//    =>Srcalias:
-//    =>Srcid: 2
-//    =>Srclevel: 0
-//    =>Srcplatformid: 0
-//    =>Srcsealid: 0
-//    =>Textlen: 177
-//    =>Toalias:
-//    =>Toid: 10000
-//    =>Vcbid: 0
-    //添加弹幕
-    private void addDanmaku(boolean islive, Spanned chatmsg) {
-        BaseDanmaku danmaku = mContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
-        if (danmaku == null || danmakuView == null) {
-            return;
-        }
-        danmaku.text = chatmsg;
-        danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
-        danmaku.isLive = islive;
-        danmaku.time = danmakuView.getCurrentTime() + 4800;
-        danmaku.textSize = 25f * (mParser.getDisplayer().getDensity() - 0.6f);
-        danmaku.textColor = Color.WHITE;
-        danmaku.textShadowColor = Color.WHITE;
-        danmakuView.addDanmaku(danmaku);
-
-    }
-
-    //弹幕初始化
-    public void initDanmu() {
-        // 设置最大显示行数
-        HashMap<Integer, Integer> maxLinesPair = new HashMap<Integer, Integer>();
-        maxLinesPair.put(BaseDanmaku.TYPE_SCROLL_RL, 1); // 滚动弹幕最大显示5行
-        // 设置是否禁止重叠
-        HashMap<Integer, Boolean> overlappingEnablePair = new HashMap<Integer, Boolean>();
-        overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL, true);
-        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_TOP, true);
-
-
-        mContext = DanmakuContext.create();
-        mContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3).setDuplicateMergingEnabled(false).setScrollSpeedFactor(1.2f).setScaleTextSize(1.2f)
-                .setCacheStuffer(new SpannedCacheStuffer(), new BaseCacheStuffer.Proxy() {
-                    @Override
-                    public void prepareDrawing(BaseDanmaku danmaku, boolean fromWorkerThread) {
-                        danmakuView.invalidateDanmaku(danmaku, false);
-                    }
-
-                    @Override
-                    public void releaseResource(BaseDanmaku danmaku) {
-
-                    }
-                }) // 图文混排使用SpannedCacheStuffer
-                .setMaximumLines(maxLinesPair)
-                .preventOverlapping(overlappingEnablePair);
-        if (danmakuView != null) {
-            mParser = createParser(this.getResources().openRawResource(R.raw.comments));
-            danmakuView.setCallback(new master.flame.danmaku.controller.DrawHandler.Callback() {
-                @Override
-                public void updateTimer(DanmakuTimer timer) {
-                }
-
-                @Override
-                public void drawingFinished() {
-                }
-
-                @Override
-                public void danmakuShown(BaseDanmaku danmaku) {
-                }
-
-                @Override
-                public void prepared() {
-                    danmakuView.start();
-                }
-            });
-
-            danmakuView.prepare(mParser, mContext);
-            danmakuView.enableDanmakuDrawingCache(true);
-
-        }
-
-    }
-
-    private BaseDanmakuParser createParser(InputStream stream) {
-
-        if (stream == null) {
-            return new BaseDanmakuParser() {
-
-                @Override
-                protected Danmakus parse() {
-                    return new Danmakus();
-                }
-            };
-        }
-
-        ILoader loader = DanmakuLoaderFactory.create(DanmakuLoaderFactory.TAG_BILI);
-
-        try {
-            loader.load(stream);
-        } catch (IllegalDataException e) {
-            e.printStackTrace();
-        }
-        BaseDanmakuParser parser = new BiliDanmukuParser();
-        IDataSource<?> dataSource = loader.getDataSource();
-        parser.load(dataSource);
-        return parser;
-
-    }
 
     //用户离开房间
     @Subscriber(tag = "RoomKickoutUserInfo")
@@ -1240,54 +1244,13 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         KLog.e(userInfo.getUserid() + "加入房间");
     }
 
-    //开始加入房间
-    @Override
-    protected void onResume() {
-        super.onResume();
-        isRunning = true;
-        micUsers = new ArrayList<>();
-        configuration = getResources().getConfiguration();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mStop = false;
-                play.start();
-                Log.d("123", "chongxingqidong");
-                roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
-            }
-        }).start();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        isRunning = false;
-//        mStop = true;
-        if (mgr != null) {
-            final AVModuleMgr tmp = mgr;
-            mgr = null;
-            play.stop();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    tmp.StopRTPSession();
-                    tmp.Uninit();
-                    if (roomMain.getRoom() != null) {
-                        roomMain.getRoom().getChannel().sendLeaveRoom(Integer.parseInt(StartUtil.getUserId(RoomActivity.this)));
-                        roomMain.getRoom().onDisconnected();
-                    }
-                }
-            }).start();
-        }
-    }
-
     //上公麦提示   1
     @Subscriber(tag = "upMicState")
-    public void upMicState(MicState obj) {
+    public void upMicState(final MicState obj) {
         new Thread(new Runnable() {//上下麦后获取拍卖列表
             @Override
             public void run() {
-                roomMain.getRoom().getChannel().getMicList();//获取拍卖列表
+                roomMain.getRoom().getChannel().getMicList();//获取排麦列表
             }
         }).start();
         for (int i = 0; i < userInfos.size(); i++) {
@@ -1296,30 +1259,27 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
                 micUsers.add(userInfos.get(i));
             }
         }
-        micid = obj.getUserid();
-        ssrc = ~micid + 0x1314;
-//        ssrc = obj.getUserid();
-        //创建视频接收流
-        // TODO Auto-generated method stub
-        if (null == mgr) {
-            mgr = new AVModuleMgr();
-            Log.d("123", "mgr-----new--" + mgr);
-            mgr.Init();
-            Log.d("123", "===uid" + micid);
-            mgr.CreateRTPSession(0);
-//            mgr.SetServerAddr2(mediaIp, mediaPort, 0);
-            mgr.StartRTPSession();
-        }
-        mgr.AddRTPRecver(0, ssrc, 99, 1000);
-        mgr.SetRTPRecverARQMode(ssrc, 99, 1);
-
-        mgr.AddRTPRecver(0, ssrc, 97, 1000);
-        mgr.SetRTPRecverARQMode(ssrc, 97, 1);
-//        Log.d("123","ssrc====="+ssrc);
-        mgr.AddVideoStream(ssrc, 0, 1, this);
-        if (!isplaying)
-            mgr.AddAudioStream(ssrc, 1, this);
-
+        String room_name = "lihao_" + obj.getUserid() + "_" + obj.getUserid();
+        OkGo.<String>get(AppConstant.GET_RTMP_URL)
+                .params("streamKey", room_name)
+                .tag(this)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        RtmpEntity rtmp = new Gson().fromJson(response.body(), RtmpEntity.class);
+                        switch (obj.getMicindex()) {
+                            case 0:
+                                map_trmp_play.put(0, rtmp.getRTMPPlayURL());
+                                break;
+                            case 1:
+                                map_trmp_play.put(1, rtmp.getRTMPPlayURL());
+                                break;
+                            case 2:
+                                map_trmp_play.put(2, rtmp.getRTMPPlayURL());
+                                break;
+                        }
+                    }
+                });
 
     }
 
@@ -1333,416 +1293,72 @@ public class RoomActivity extends BaseActivity implements MicNotify, AVNotify, V
         }
     }
 
+    private HashMap<Integer, String> map_trmp_play;
+
     //麦上几个人就添加视频流
     @Subscriber(tag = "onMicUser")
-    public void getonMicUser(RoomUserInfo obj) {
+    public void getonMicUser(final RoomUserInfo obj) {
         textBackImage.setVisibility(View.GONE);
-        if (obj.getMicindex() == 0) {
-            sendToUser = obj;
-        }
         micUsers.add(obj);
-//        actorid = obj.getActorid();
-//        buddyid = obj.getUserid();
-//        toName = obj.getUseralias();
-        if (obj.getMicindex() != 0) {
-            micid = obj.getUserid();
-            Log.d("123", "micid=====" + micid);
-            ssrc = ~micid + 0x1314;
-            mgr.AddRTPRecver(0, ssrc, 99, 1000);
-            mgr.SetRTPRecverARQMode(ssrc, 99, 1);
+        String room_name = "lihao_" + obj.getUserid() + "_" + obj.getUserid();
+        OkGo.<String>get(AppConstant.GET_RTMP_URL)
+                .params("streamKey", room_name)
+                .tag(this)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        RtmpEntity rtmp = new Gson().fromJson(response.body(), RtmpEntity.class);
+                        switch (obj.getMicindex()) {
+                            case 0:
+                                map_trmp_play.put(0, rtmp.getRTMPPlayURL());
+                                break;
+                            case 1:
+                                map_trmp_play.put(1, rtmp.getRTMPPlayURL());
+                                break;
+                            case 2:
+                                map_trmp_play.put(2, rtmp.getRTMPPlayURL());
+                                break;
+                        }
+                    }
+                });
+        //发起网络去请求主播的rtmp播放地址   未完成
+    }
 
-            mgr.AddRTPRecver(0, ssrc, 97, 1000);
-            mgr.SetRTPRecverARQMode(ssrc, 97, 1);
-            Log.d("123", "ssrc=====" + ssrc);
-            mgr.AddVideoStream(ssrc, 0, 1, this);
-            if (!isplaying) {
-                mgr.AddAudioStream(ssrc, 1, this);
-            }
+    @Click({R.id.linear_new_container, R.id.chat_image_btn, R.id.room_new_gift, R.id.iv_room_setting})
+    void click(View v) {
+        switch (v.getId()) {
+            case R.id.linear_new_container:
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                break;
+            case R.id.chat_image_btn:
+                popupWindow.dismiss();
+                if (faceWindow.isShowing()) {
+                    faceWindow.dismiss();
+                } else {
+                    faceWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                }
+                break;
+            //点击礼物图标
+            case R.id.room_new_gift:
+                if (popupWindow.isShowing()) {
+                    popupWindow.dismiss();
+                } else {
+                    popupWindow.showAsDropDown(giftImage);
+                    if (micUsers != null) {
+                        for (int i = 0; i < micUsers.size(); i++) {
+                            if (micUsers.get(i).getMicindex() == micFlag) {
+                                giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
+                            }
+                        }
+                    }
+                }
+                break;
+            case R.id.iv_room_setting:
+                showWindow();
+                break;
         }
     }
 
-    //开始接收添加视频接收流
-    public void StartAV(String ip, int port, int rand, int uid) {
-        ssrc = uid;
-//        ssrc = rand - uid;
-//        if (rand < 1800000000)
-//            rand = 1800000000;
-//        ssrc = rand - uid;
-        ssrc = ~uid + 0x1314;
-
-        mgr.AddRTPRecver(0, ssrc, 99, 1000);
-        mgr.SetRTPRecverARQMode(ssrc, 99, 1);
-
-        mgr.AddRTPRecver(0, ssrc, 97, 1000);
-        mgr.SetRTPRecverARQMode(ssrc, 97, 1);
-        Log.d("123", "ssrc=====" + ssrc);
-//        isplaying = true;
-        mgr.AddAudioStream(ssrc, 1, this);
-        mgr.AddVideoStream(ssrc, 0, 1, this);
-    }
-
-    //接收视频流
-    @Override
-    public void onVideo(int ssrc, int width, int height, byte[] img) {
-        //判断几个在麦序上
-        //判断几个在麦序上
-        if (!isRunning) {
-            return;
-        }
-        if (micUsers.size() == 1) {
-            //一麦显示一麦,二麦显示二麦,三麦显示三麦
-            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (~micUsers.get(0).getUserid() + 0x1314))) {
-                // 删除旧的
-                if (null != bmp) {
-                    if (width != bmp.getWidth() || height != bmp.getHeight()) {
-                        bmp = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp) {
-                    bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView.getHolder()) {
-                    Canvas canvas = surfaceView.getHolder().lockCanvas();
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView.getWidth(), surfaceView.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (~micUsers.get(0).getUserid() + 0x1314))) {
-                // 删除旧的
-                if (null != bmp1) {
-                    if (width != bmp1.getWidth() || height != bmp1.getHeight()) {
-                        bmp1 = null;
-                    }
-                }
-                // 创建新的
-                if (null == bmp1) {
-                    bmp1 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp1.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView2.getHolder()) {
-                    Canvas canvas = surfaceView2.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView2.getWidth(), surfaceView2.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp1, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView2.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (~micUsers.get(0).getUserid() + 0x1314))) {
-                // 删除旧的
-                if (null != bmp2) {
-                    if (width != bmp2.getWidth() || height != bmp2.getHeight()) {
-                        bmp2 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp2) {
-                    bmp2 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp2.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView3.getHolder()) {
-                    Canvas canvas = surfaceView3.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView3.getWidth(), surfaceView3.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp2, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView3.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            }
-        }
-        if (micUsers.size() == 2) {
-            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic0 && ssrc == (~micUsers.get(1).getUserid() + 0x1314))) {
-                // 删除旧的
-                if (null != bmp) {
-                    if (width != bmp.getWidth() || height != bmp.getHeight()) {
-                        bmp = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp) {
-                    bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView.getHolder()) {
-                    Canvas canvas = surfaceView.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView.getWidth(), surfaceView.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic1 && ssrc == (~micUsers.get(1).getUserid() + 0x1314))) {
-                // 删除旧的
-                if (null != bmp1) {
-                    if (width != bmp1.getWidth() || height != bmp1.getHeight()) {
-                        bmp1 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp1) {
-                    bmp1 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp1.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView2.getHolder()) {
-                    Canvas canvas = surfaceView2.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView2.getWidth(), surfaceView2.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp1, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView2.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic2 && ssrc == (~micUsers.get(1).getUserid() + 0x1314))) {
-                // 删除旧的
-                if (null != bmp2) {
-                    if (width != bmp2.getWidth() || height != bmp2.getHeight()) {
-                        bmp2 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp2) {
-                    bmp2 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp2.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView3.getHolder()) {
-                    Canvas canvas = surfaceView3.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView3.getWidth(), surfaceView3.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp2, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView3.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            }
-        }
-        if (micUsers.size() == 3) {
-            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic0 && ssrc == (~micUsers.get(1).getUserid() + 0x1314)) ||
-                    (micUsers.get(2).getMicindex() == mic0 && ssrc == (~micUsers.get(2).getUserid() + 0x1314))) {
-
-                // 删除旧的
-                if (null != bmp) {
-                    if (width != bmp.getWidth() || height != bmp.getHeight()) {
-                        bmp = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp) {
-                    bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView.getHolder()) {
-                    Canvas canvas = surfaceView.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView.getWidth(), surfaceView.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic1 && ssrc == (~micUsers.get(1).getUserid() + 0x1314)) ||
-                    (micUsers.get(2).getMicindex() == mic1 && ssrc == (~micUsers.get(2).getUserid() + 0x1314))) {
-                // 删除旧的
-                if (null != bmp1) {
-                    if (width != bmp1.getWidth() || height != bmp1.getHeight()) {
-                        bmp1 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp1) {
-                    bmp1 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp1.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView2.getHolder()) {
-                    Canvas canvas = surfaceView2.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView2.getWidth(), surfaceView2.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp1, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView2.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic2 && ssrc == (~micUsers.get(1).getUserid() + 0x1314)) ||
-                    (micUsers.get(2).getMicindex() == mic2 && ssrc == (~micUsers.get(2).getUserid() + 0x1314))) {
-                // 删除旧的
-                if (null != bmp2) {
-                    if (width != bmp2.getWidth() || height != bmp2.getHeight()) {
-                        bmp2 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp2) {
-                    bmp2 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp2.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView3.getHolder()) {
-                    Canvas canvas = surfaceView3.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView3.getWidth(), surfaceView3.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp2, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView3.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            }
-        }
-
-
-    }
-
-    //音频接收播放
-    @Override
-    public void onAudio(int ssrc, int sample, int channel, byte[] pcm) {
-        KLog.e("========== onAudio: " + sample + ":" + channel + "(" + pcm.length + ")");
-        if (!isRunning) {
-            return;
-        }
-        if (play != null) {
-            isplaying = true;
-            play.setConfig(sample, channel);
-            play.play(pcm);
-        }
-    }
-
-    @Override
-    public void onMic(String ip, int port, int rand, int uid) {
-        mediaIp = ip;
-        mediaPort = port;
-        mediaRand = rand;
-        //创建视频接收流
-        if (null == mgr) {
-            mgr = new AVModuleMgr();
-            Log.d("123", "mgr-----new--" + mgr);
-            mgr.Init();
-            Log.d("123", "===uid" + uid);
-            mgr.CreateRTPSession(0);
-            mgr.SetServerAddr2(ip, port, 0);
-            mgr.StartRTPSession();
-            StartAV(ip, port, rand, uid);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (roomMain.getRoom() != null) {
-                    roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));
-                    roomMain.getRoom().getChannel().Close();
-                }
-            }
-        }).start();
-        isRunning = false;
-        super.onDestroy();
-        if (mgr == null) {
-
-        } else {
-            mgr.StopRTPSession();
-//            mgr.DelRTMPRecver(ssrc);
-            mgr.Uninit();
-            play.stop();
-        }
-        EventBus.getDefault().unregister(this);
-    }
 
 }

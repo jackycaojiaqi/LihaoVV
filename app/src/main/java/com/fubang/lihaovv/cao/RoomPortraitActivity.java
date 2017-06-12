@@ -186,7 +186,7 @@ public class RoomPortraitActivity extends BaseActivity implements MicNotify {
     private int port;
     private int roomId;
 
-    RoomMain roomMain = new RoomMain(this);
+    RoomMain roomMain = new RoomMain();
     private Configuration configuration;
     private boolean isRunning = false;
     private boolean isplaying = false;

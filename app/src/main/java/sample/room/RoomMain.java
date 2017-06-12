@@ -2,10 +2,9 @@ package sample.room;
 
 public class RoomMain {
 	private MyRoom room ;
-	private MicNotify micNotify;
 
-	public RoomMain(MicNotify micNotify) {
-		this.micNotify = micNotify;
+	public RoomMain() {
+
 	}
 
 	public MyRoom getRoom() {
@@ -17,7 +16,7 @@ public class RoomMain {
 	}
 
 	public void Start(int roomId, int userId, String userPwd, String ip, int port, String pwd){
-		room = new MyRoom(micNotify);
+		room = new MyRoom();
 		
 		room.getChannel().setRoomID(roomId);
 		room.getChannel().setUserID(userId);

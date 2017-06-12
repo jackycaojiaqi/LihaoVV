@@ -4,8 +4,6 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 public class AudioPlay {
 	private boolean isPlaying = false;
 
@@ -15,7 +13,6 @@ public class AudioPlay {
 	private int audioBit = -1; // 采样位数
 	private int audioChannel = -1; // 声道
 	private int audioBlock = -1; // 原始块大小
-	private ConcurrentLinkedQueue<byte[]> audioData = new ConcurrentLinkedQueue<byte[]>();
 	private AudioTrack audioTrack; // 音频播放类
 	private byte blockBuff[];
 	private byte adpcmBuff[];
@@ -33,7 +30,7 @@ public class AudioPlay {
 	 * 开始播放
 	 */
 	public void play(byte[] head) {
-		if(false == isStop) {
+		if(false == isStop && null != audioTrack) {
 			try{
 				audioTrack.write(head, 0, head.length);
 				audioTrack.flush();
@@ -62,6 +59,7 @@ public class AudioPlay {
 	 * 设置采样率
 	 */
 	public void setConfig(int sample, int channel) {
+//		System.out.println("====================audioTrack.play():stop:" + isStop);
 		if(false != isStop) {
 			return;
 		}
@@ -88,6 +86,7 @@ public class AudioPlay {
 					AudioFormat.ENCODING_PCM_16BIT, bufsize,
 					AudioTrack.MODE_STREAM);
 			audioTrack.play();
+			System.out.println("====================audioTrack.play()");
 		} catch( Exception e) {
 			System.out.println("onAudio error: " + e.getMessage());
 			e.printStackTrace();

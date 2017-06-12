@@ -17,10 +17,11 @@ public class PushRtmp {
     private int m_aSample;
     private int m_aChannel;
     private int m_aBit;
+    private PushRtmpCallback m_callback;
 
     private LinkedList<Data> list;
     private Object locker;
-    private int lastAACTime;
+    private int lastAACTime = -1;
 
     private static native int _open(long ins, String path, int vWidth, int vHeight, int aSample, int aChannel, int aBit);
     private static native int _send(long ins, int type, byte[] data, int flag, int timespec);
@@ -32,6 +33,10 @@ public class PushRtmp {
         locker = new Object();
         list = new LinkedList<Data>();
         m_start = System.currentTimeMillis();
+    }
+
+    public void SetCallback(PushRtmpCallback cb) {
+        m_callback = cb;
     }
 
     public int Open(String path, int vWidth, int vHeight, int aSample, int aChannel) {
@@ -74,10 +79,15 @@ public class PushRtmp {
 
     public int SendH264(byte [] data, int len, int flag) {
         Data d = new Data();
+        int h264Time = (int)(System.currentTimeMillis() - m_start);
+        // 防止与声音时间同步
+        if((Math.abs(h264Time - lastAACTime) % 23) == 0) {
+            h264Time += 1;
+        }
 
         d.Data = Arrays.copyOf(data, len);
         d.Flag = flag;
-        d.Timespec = (int)(System.currentTimeMillis() - m_start);
+        d.Timespec = h264Time;
         d.Type = 0; // 视频
 
         return addData(d);
@@ -87,8 +97,7 @@ public class PushRtmp {
         Data d = new Data();
         int aacTime = (int)(System.currentTimeMillis() - m_start);
         // 校正aac时间
-        if(lastAACTime > 0 && (aacTime - lastAACTime) < 23) {
-            System.out.println("===================: replace time:" + aacTime + ":" + lastAACTime);
+        if(lastAACTime > 0) {
             aacTime = lastAACTime + 23;
         }
 
@@ -110,16 +119,16 @@ public class PushRtmp {
             }
 
             // 加入到时间戳相对的位置
-            for(int i = list.size() - 1; i >= 0; i--) {
-                Data e = list.get(i);
-                if(e.Timespec < d.Timespec) {
-                    list.add(i + 1, d);
+            for(int i = 0; i < list.size(); i++) {
+                Data t = list.get(i);
+                if(d.Timespec < t.Timespec) {
+                    list.add(0, d);
                     return 0;
                 }
             }
 
             // 加入队列队前
-            list.addFirst(d);
+            list.addLast(d);
         }
 
         return 0;
@@ -138,6 +147,19 @@ public class PushRtmp {
         return _release(m_ins);
     }
 
+    // 回调事件
+    private void callStart() {
+        if(null != m_callback) {
+            m_callback.OnPushRtmpStart();
+        }
+    }
+
+    private void callStop() {
+        if(null != m_callback) {
+            m_callback.OnPushRtmpStop();
+        }
+    }
+    // 发送线程
     private void sendRun() {
         while(false != m_running) {
             Data data = null;
@@ -145,8 +167,14 @@ public class PushRtmp {
             // 从队列中读取
             synchronized (locker) {
                 // 保证发出去的时间戳是正确的
-                if(list.size() > 5) {
-                    data = list.pop();
+                if(list.size() > 0) {
+                    data = list.get(0);
+                    if(-1 != lastAACTime &&
+                            data.Timespec <= lastAACTime) {
+                        data = list.pop();
+                    } else {
+                        data = null;
+                    }
                 }
             }
 
@@ -162,7 +190,7 @@ public class PushRtmp {
 
             // 执行发送数据
             int ret = _send(m_ins, data.Type, data.Data, data.Flag, data.Timespec + 100);
-            System.out.println("===:type("+data.Type+")"+data.Timespec+":" + ret + ",Flag(" + data.Flag + ")");
+            // System.out.println("===:type("+data.Type+")"+data.Timespec+":" + ret + ",Flag(" + data.Flag + ")");
             if(-1 != ret) {
                 continue;
             }
@@ -174,6 +202,7 @@ public class PushRtmp {
                 }
             }
 
+            callStop();
             // 先关闭对像
             _close(m_ins);
             // 再打开对像
@@ -182,11 +211,12 @@ public class PushRtmp {
                         m_vWidth, m_vHeight,
                         m_aSample, m_aChannel, m_aBit);
                 if(0 == ret) {
-                    System.out.println("===连接"+m_path+"成功");
+                    callStart();
+                    System.out.println("=======connect <" + m_path + "> success" );
                     break;
                 }
 
-                System.out.println("===连接"+m_path+"失败:" + ret);
+                System.out.println("=======connect <" + m_path + "> faild: " + ret);
                 // 连接失败，需要暂停一会再试
                 try {
                     Thread.sleep(100);

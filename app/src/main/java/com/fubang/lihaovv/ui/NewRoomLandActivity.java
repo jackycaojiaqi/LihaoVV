@@ -132,7 +132,7 @@ public class NewRoomLandActivity extends BaseActivity implements AVNotify, MicNo
     SurfaceView surfaceView;
     private Bitmap bmp;
     private static AudioPlay play = new AudioPlay();
-    private RoomMain roomMain = new RoomMain(this);
+    private RoomMain roomMain = new RoomMain();
 
     private PopupWindow popupWindow;
     private PopupWindow faceWindow;

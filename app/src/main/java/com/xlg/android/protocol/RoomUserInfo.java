@@ -60,7 +60,17 @@ public class RoomUserInfo {
 	@StructOrder(26)
 	private byte[]				clastloginmac = new byte[32];					//头像id
 
-// 	int				nshiledgiftonsmallspeaker; //送的礼物是否上广播和跑道显示
+	private String rtmp_paly_url;
+
+	public String getRtmp_paly_url() {
+		return rtmp_paly_url;
+	}
+
+	public void setRtmp_paly_url(String rtmp_paly_url) {
+		this.rtmp_paly_url = rtmp_paly_url;
+	}
+
+	// 	int				nshiledgiftonsmallspeaker; //送的礼物是否上广播和跑道显示
 // 	int				nshiledgiftshow;		//是否屏蔽礼物的滚动显示效果
 // 	int				nshiledgifteffectsound;	//是否屏蔽礼物/烟花的flash效果和道具声音
 // 	int				nshileddalabasound;		//是否屏蔽大喇叭声音效果

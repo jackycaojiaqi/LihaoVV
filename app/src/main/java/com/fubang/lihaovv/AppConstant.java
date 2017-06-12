@@ -30,12 +30,13 @@ public class AppConstant {
     public static final String PAGE = "page";
     public static final String GROUP = "group";
 
-
-
     //设置图片缓存地址
     public static final String IMAGE_CACHE = App_.getInstance().getCacheDir().getAbsolutePath()+"";
     public static File getCacheFile(){
         File file = new File(IMAGE_CACHE);
         return file;
     }
+
+
+    public static final String GET_RTMP_URL = "http://120.26.50.117:88/rtmp_pub.php?";//李好客户端获取rtmp地址
 }

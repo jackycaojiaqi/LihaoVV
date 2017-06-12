@@ -96,8 +96,8 @@
     <Wechat
         Id="4"
         SortId="4"
-        AppId="wx7d37a760a060d051"
-        AppSecret="d29652b8b82419fc974799c17a1c33c4"
+        AppId="wx48b1bc9fff87a9ef"
+        AppSecret="e9251c14e0bbc5bb7bbedaec00f349ba"
         BypassApproval="true"
         Enable="true" />
     
