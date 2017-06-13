@@ -8,9 +8,14 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.hardware.Camera;
 import android.net.Uri;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -86,15 +91,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
+import org.yj.media.AudioCapture;
+import org.yj.media.AudioCaptureCallback;
+import org.yj.media.EncodeAAC;
+import org.yj.media.EncodeH264;
 import org.yj.media.Media;
+import org.yj.media.MediaData;
+import org.yj.media.PushRtmp;
 import org.yj.media.RecvRtmp;
 import org.yj.media.RecvRtmpCallback;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -115,7 +129,7 @@ import master.flame.danmaku.ui.widget.DanmakuView;
 import sample.room.RoomMain;
 
 @EActivity(R.layout.activity_room)
-public class RoomActivity extends BaseActivity {
+public class RoomActivity extends BaseActivity implements Camera.PreviewCallback, AudioCaptureCallback, SurfaceHolder.Callback {
 
     @ViewById(R.id.linear_new_container)
     LinearLayout linearLayout;
@@ -165,6 +179,10 @@ public class RoomActivity extends BaseActivity {
     ViewPager viewPager_content;
     @ViewById(R.id.room_new_tablayout)
     TabLayout tabLayout;
+    @ViewById(R.id.sv_upmic)
+    SurfaceView svUpmic;
+
+
     private Button giftSendBtn;
     private GridView gridView;
     private ListView userList;
@@ -269,6 +287,7 @@ public class RoomActivity extends BaseActivity {
                 break;
             case 2:
                 if (rtmp3 != null) {
+
                     rtmp3.Start();
                 }
                 if (pcmPlay3 != null) {
@@ -340,7 +359,13 @@ public class RoomActivity extends BaseActivity {
         pcmPlay.stop();
         pcmPlay = null;
         EventBus.getDefault().unregister(this);
-
+        //关闭推流
+        if (h264 != null && audio != null && aac != null && rtmp_push != null) {
+            h264.Release();
+            audio.Stop();
+            aac.Release();
+            rtmp_push.Release();
+        }
         super.onDestroy();
     }
 
@@ -371,7 +396,7 @@ public class RoomActivity extends BaseActivity {
 
     @Override
     public void initView() {
-
+        initRevListener();
         LayoutInflater inflater = getLayoutInflater();
         view1 = inflater.inflate(R.layout.page_surface, null);
         view2 = inflater.inflate(R.layout.page_surface2, null);
@@ -407,7 +432,7 @@ public class RoomActivity extends BaseActivity {
 
     @Override
     public void initListener() {
-        initRevListener();
+
         backImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -472,29 +497,41 @@ public class RoomActivity extends BaseActivity {
                 micFlag = position;
                 switch (micFlag) {
                     case 0:
-                        KLog.e(micFlag);
-                        rtmp.SetUrl("http://www.pppktv.com/test.flv");
-                        rtmp.Start();
+                        if (pcmPlay2 != null) {
+                            pcmPlay2.stop();
+                        }
+                        if (pcmPlay3 != null) {
+                            pcmPlay3.stop();
+                        }
                         pcmPlay.start();
                         break;
                     case 1:
+                        if (pcmPlay != null) {
+                            pcmPlay.stop();
+                        }
+                        if (pcmPlay3 != null) {
+                            pcmPlay3.stop();
+                        }
                         KLog.e(micFlag);
-                        rtmp2.SetUrl("http://www.pppktv.com/test.flv");
-                        rtmp2.Start();
                         pcmPlay2.start();
                         break;
                     case 2:
+                        if (pcmPlay2 != null) {
+                            pcmPlay2.stop();
+                        }
+                        if (pcmPlay != null) {
+                            pcmPlay.stop();
+                        }
                         KLog.e(micFlag);
-                        rtmp3.SetUrl("http://www.pppktv.com/test.flv");
-                        rtmp3.Start();
                         pcmPlay3.start();
                         break;
                 }
-
                 if (micUsers != null) {
                     for (int i = 0; i < micUsers.size(); i++) {
                         if (micUsers.get(i).getMicindex() == micFlag) {
-                            giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
+                            if (giftToUser != null) {
+                                giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
+                            }
                         }
                     }
                 }
@@ -561,122 +598,16 @@ public class RoomActivity extends BaseActivity {
 
             }
         });
-        rtmp.SetUrl("http://www.pppktv.com/test.flv");
-        rtmp.Start();
-        pcmPlay.start();
     }
 
     private void initRevListener() {
-        rtmp = Media.CreateRecvRtmp();
-        rtmp.SetCallback(new RecvRtmpCallback() {
-            @Override
-            public void OnRecvRtmpStart() {
+        initRevListener1();
+        initRevListener2();
+        initRevlistener3();
 
-            }
+    }
 
-            @Override
-            public void OnRecvRtmpPlayVideo(Bitmap bmp) {
-                if (micFlag != 0) {
-                    return;
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textBackImage.setVisibility(View.GONE);
-                    }
-                });
-                try {
-                    if (null != surfaceView.getHolder()) {
-                        SurfaceHolder holder = surfaceView.getHolder();
-                        if (null == holder) {
-                            return;
-                        }
-                        // 显示照片
-                        Canvas canvas = holder.lockCanvas();
-                        if (canvas != null) {
-                            Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
-                            Rect dst = new Rect(0, 0,
-                                    ScreenUtils.getScreenWidth(context),
-                                    ScreenUtils.dp2px(context, surfaceView.getHeight()));
-                            canvas.drawBitmap(bmp, src, dst, null);
-                            holder.unlockCanvasAndPost(canvas);
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println(e);
-                }
-            }
-
-            @Override
-            public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
-                if (micFlag != 0) {
-                    return;
-                }
-                pcmPlay.setConfig(sample, channel);
-                pcmPlay.play(pcm);
-                KLog.d("*****************************: OnRtmpPlayAudio:" + sample + ":" + channel + ":" + pcm.length);
-            }
-
-            @Override
-            public void OnRecvRtmpStop() {
-
-            }
-        });
-        rtmp2 = Media.CreateRecvRtmp();
-        rtmp2.SetCallback(new RecvRtmpCallback() {
-            @Override
-            public void OnRecvRtmpStart() {
-
-            }
-
-            @Override
-            public void OnRecvRtmpPlayVideo(Bitmap bmp) {
-                if (micFlag != 1) {
-                    return;
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textBackImage.setVisibility(View.GONE);
-                    }
-                });
-                try {
-                    if (null != surfaceView2.getHolder()) {
-                        SurfaceHolder holder = surfaceView2.getHolder();
-                        if (null == holder) {
-                            return;
-                        }
-                        // 显示照片
-                        Canvas canvas = holder.lockCanvas();
-                        if (canvas != null) {
-                            Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
-                            Rect dst = new Rect(0, 0,
-                                    ScreenUtils.getScreenWidth(context),
-                                    ScreenUtils.dp2px(context, surfaceView.getHeight()));
-                            canvas.drawBitmap(bmp, src, dst, null);
-                            holder.unlockCanvasAndPost(canvas);
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println(e);
-                }
-            }
-
-            @Override
-            public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
-                if (micFlag != 1) {
-                    return;
-                }
-                pcmPlay2.setConfig(sample, channel);
-                pcmPlay2.play(pcm);
-                KLog.d("*****************************: OnRtmpPlayAudio:" + sample + ":" + channel + ":" + pcm.length);
-            }
-
-            @Override
-            public void OnRecvRtmpStop() {
-
-            }
-        });
+    private void initRevlistener3() {
         rtmp3 = Media.CreateRecvRtmp();
         rtmp3.SetCallback(new RecvRtmpCallback() {
             @Override
@@ -686,46 +617,45 @@ public class RoomActivity extends BaseActivity {
 
             @Override
             public void OnRecvRtmpPlayVideo(Bitmap bmp) {
-                if (micFlag != 2) {
-                    return;
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textBackImage.setVisibility(View.GONE);
-                    }
-                });
-
-                try {
-                    if (null != surfaceView3.getHolder()) {
-                        SurfaceHolder holder = surfaceView3.getHolder();
-                        if (null == holder) {
-                            return;
+                if (micFlag == 2) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textBackImage.setVisibility(View.GONE);
                         }
-                        // 显示照片
-                        Canvas canvas = holder.lockCanvas();
-                        if (canvas != null) {
-                            Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
-                            Rect dst = new Rect(0, 0,
-                                    ScreenUtils.getScreenWidth(context),
-                                    ScreenUtils.dp2px(context, surfaceView.getHeight()));
-                            canvas.drawBitmap(bmp, src, dst, null);
-                            holder.unlockCanvasAndPost(canvas);
-                        }
+                    });
+                    if (is_pushing) {//正在推流则返回
+                        return;
                     }
-                } catch (Exception e) {
-                    System.out.println(e);
+                    try {
+                        if (null != surfaceView3.getHolder()) {
+                            SurfaceHolder holder = surfaceView3.getHolder();
+                            if (null == holder) {
+                                return;
+                            }
+                            // 显示照片
+                            Canvas canvas = holder.lockCanvas();
+                            if (canvas != null) {
+                                Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
+                                Rect dst = new Rect(0, 0,
+                                        ScreenUtils.getScreenWidth(context),
+                                        ScreenUtils.dp2px(context, surfaceView.getHeight()));
+                                canvas.drawBitmap(bmp, src, dst, null);
+                                holder.unlockCanvasAndPost(canvas);
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
                 }
             }
 
             @Override
             public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
-                if (micFlag != 2) {
-                    return;
+                if (micFlag == 2) {
+                    pcmPlay3.setConfig(sample, channel);
+                    pcmPlay3.play(pcm);
                 }
-                pcmPlay3.setConfig(sample, channel);
-                pcmPlay3.play(pcm);
-                KLog.d("*****************************: OnRtmpPlayAudio:" + sample + ":" + channel + ":" + pcm.length);
             }
 
             @Override
@@ -733,7 +663,123 @@ public class RoomActivity extends BaseActivity {
 
             }
         });
+    }
 
+    private void initRevListener2() {
+        rtmp2 = Media.CreateRecvRtmp();
+        rtmp2.SetCallback(new RecvRtmpCallback() {
+            @Override
+            public void OnRecvRtmpStart() {
+
+            }
+
+            @Override
+            public void OnRecvRtmpPlayVideo(Bitmap bmp) {
+                if (micFlag == 1) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textBackImage.setVisibility(View.GONE);
+                        }
+                    });
+                    if (is_pushing) {//正在推流则返回
+                        return;
+                    }
+                    try {
+                        if (null != surfaceView2.getHolder()) {
+                            SurfaceHolder holder = surfaceView2.getHolder();
+                            if (null == holder) {
+                                return;
+                            }
+                            // 显示照片
+                            Canvas canvas = holder.lockCanvas();
+                            if (canvas != null) {
+                                Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
+                                Rect dst = new Rect(0, 0,
+                                        ScreenUtils.getScreenWidth(context),
+                                        ScreenUtils.dp2px(context, surfaceView.getHeight()));
+                                canvas.drawBitmap(bmp, src, dst, null);
+                                holder.unlockCanvasAndPost(canvas);
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                }
+            }
+
+            @Override
+            public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
+                if (micFlag == 1) {
+                    pcmPlay2.setConfig(sample, channel);
+                    pcmPlay2.play(pcm);
+                }
+            }
+
+            @Override
+            public void OnRecvRtmpStop() {
+
+            }
+        });
+    }
+
+    private void initRevListener1() {
+        rtmp = Media.CreateRecvRtmp();
+        rtmp.SetCallback(new RecvRtmpCallback() {
+            @Override
+            public void OnRecvRtmpStart() {
+
+            }
+
+            @Override
+            public void OnRecvRtmpPlayVideo(Bitmap bmp) {
+                if (micFlag == 0) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            textBackImage.setVisibility(View.GONE);
+                        }
+                    });
+                    if (is_pushing) {//正在推流则返回
+                        return;
+                    }
+                    KLog.e(bmp.getWidth() + " ");
+                    try {
+                        if (null != surfaceView.getHolder()) {
+                            SurfaceHolder holder = surfaceView.getHolder();
+                            if (null == holder) {
+                                return;
+                            }
+                            // 显示照片
+                            Canvas canvas = holder.lockCanvas();
+                            if (canvas != null) {
+                                Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
+                                Rect dst = new Rect(0, 0,
+                                        ScreenUtils.getScreenWidth(context),
+                                        ScreenUtils.dp2px(context, surfaceView.getHeight()));
+                                canvas.drawBitmap(bmp, src, dst, null);
+                                holder.unlockCanvasAndPost(canvas);
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
+                }
+            }
+
+            @Override
+            public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
+                if (micFlag == 0) {
+                    pcmPlay.setConfig(sample, channel);
+                    pcmPlay.play(pcm);
+                }
+            }
+
+            @Override
+            public void OnRecvRtmpStop() {
+
+            }
+        });
     }
 
     public static final String GAME_URL = "http://120.26.108.184:98/game.htm?ip=120.26.108.184&port=9999&memberid=";
@@ -842,6 +888,9 @@ public class RoomActivity extends BaseActivity {
 
     @Override
     public void initData() {
+        map_trmp_play.put(0, "null");
+        map_trmp_play.put(1, "null");
+        map_trmp_play.put(2, "null");
         HomeTitleAdapter adapter = new HomeTitleAdapter(getSupportFragmentManager(), fragments, titles);
         viewPager_content.setAdapter(adapter);
         viewPager_content.setOffscreenPageLimit(2);
@@ -1244,6 +1293,18 @@ public class RoomActivity extends BaseActivity {
         KLog.e(userInfo.getUserid() + "加入房间");
     }
 
+    static Camera camera;
+    private long lastCapture;
+
+    private int vWidth = 352;
+    private int vHeight = 288;
+    private byte[] convertCache = new byte[vWidth * vHeight * 3 / 2];
+
+    private EncodeH264 h264;
+    private AudioCapture audio;
+    private EncodeAAC aac;
+    private PushRtmp rtmp_push;
+
     //上公麦提示   1
     @Subscriber(tag = "upMicState")
     public void upMicState(final MicState obj) {
@@ -1270,17 +1331,42 @@ public class RoomActivity extends BaseActivity {
                         switch (obj.getMicindex()) {
                             case 0:
                                 map_trmp_play.put(0, rtmp.getRTMPPlayURL());
+                                handler.sendEmptyMessage(MSG_PLAY_MIC_1);
                                 break;
                             case 1:
                                 map_trmp_play.put(1, rtmp.getRTMPPlayURL());
+                                handler.sendEmptyMessage(MSG_PLAY_MIC_2);
                                 break;
                             case 2:
                                 map_trmp_play.put(2, rtmp.getRTMPPlayURL());
+                                handler.sendEmptyMessage(MSG_PLAY_MIC_3);
                                 break;
+                        }
+                        KLog.e(obj.getMicindex() + rtmp.getRTMPPlayURL());
+                        //如果上公麦的id是自己，则执行上麦逻辑
+                        if (Integer.parseInt(StartUtil.getUserId(context)) == obj.getUserid()) {
+                            textBackImage.setVisibility(View.GONE);
+                            svUpmic.setVisibility(View.VISIBLE);
+                            if (!is_sv_created) {
+                                svUpmic.getHolder().addCallback(RoomActivity.this);
+                            }
+                            // 开启视频采集
+                            h264 = Media.CreateEncodeH264();
+                            int ret = h264.Open(vHeight, vWidth);
+                            KLog.e("EncodeH264::Open()" + ret);
+                            // 开启声音采集
+                            audio = new AudioCapture(RoomActivity.this);
+                            audio.Start(44100, 2);
+                            aac = Media.CreateEncodeAAC();
+                            ret = aac.Open(44100, 2);
+                            KLog.e("EncodeAAC::Open()" + ret);
+                            KLog.e("===========:rtmp:" + rtmp.getPublishUrl());
+                            // 启动推送线程
+                            rtmp_push = Media.CreatePushRtmp();
+                            rtmp_push.Open(rtmp.getPublishUrl(), vHeight, vWidth, 44100, 2);
                         }
                     }
                 });
-
     }
 
     //下麦提示
@@ -1291,9 +1377,48 @@ public class RoomActivity extends BaseActivity {
                 micUsers.remove(i);
             }
         }
+        switch (obj.getMicindex()) {
+            case 0:
+
+                map_trmp_play.put(0, "null");
+                rtmp.Stop();
+                pcmPlay.stop();
+                KLog.e("stop===mic0" + obj.getUserid());
+                break;
+            case 1:
+                map_trmp_play.put(1, "null");
+                rtmp2.Stop();
+                pcmPlay2.stop();
+                KLog.e("stop===mic1" + obj.getUserid());
+                break;
+            case 2:
+                map_trmp_play.put(2, "null");
+                rtmp3.Stop();
+                pcmPlay3.stop();
+                KLog.e("stop===mic2" + obj.getUserid());
+                break;
+        }
+        //如果上公麦的id是自己，则隐藏svupmic  并且关闭推流
+        if (Integer.parseInt(StartUtil.getUserId(context)) == obj.getUserid()) {
+            if (h264 != null && audio != null && aac != null && rtmp_push != null) {
+                h264.Release();
+                audio.Stop();
+                aac.Release();
+                rtmp_push.Release();
+            }
+            if (camera != null) {
+                camera.stopPreview();
+                camera.setPreviewCallback(null);
+                camera.release();
+                camera = null;
+            }
+            is_pushing = false;
+            svUpmic.setVisibility(View.GONE);
+        }
     }
 
-    private HashMap<Integer, String> map_trmp_play;
+    private HashMap<Integer, String> map_trmp_play = new HashMap<>();
+
 
     //麦上几个人就添加视频流
     @Subscriber(tag = "onMicUser")
@@ -1307,21 +1432,24 @@ public class RoomActivity extends BaseActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {
-                        RtmpEntity rtmp = new Gson().fromJson(response.body(), RtmpEntity.class);
+                        RtmpEntity rtmpentity = new Gson().fromJson(response.body(), RtmpEntity.class);
                         switch (obj.getMicindex()) {
                             case 0:
-                                map_trmp_play.put(0, rtmp.getRTMPPlayURL());
+                                map_trmp_play.put(0, rtmpentity.getRTMPPlayURL());
+                                handler.sendEmptyMessage(MSG_PLAY_MIC_1);
                                 break;
                             case 1:
-                                map_trmp_play.put(1, rtmp.getRTMPPlayURL());
+                                map_trmp_play.put(1, rtmpentity.getRTMPPlayURL());
+                                handler.sendEmptyMessage(MSG_PLAY_MIC_2);
                                 break;
                             case 2:
-                                map_trmp_play.put(2, rtmp.getRTMPPlayURL());
+                                map_trmp_play.put(2, rtmpentity.getRTMPPlayURL());
+                                handler.sendEmptyMessage(MSG_PLAY_MIC_3);
                                 break;
                         }
+                        KLog.e(obj.getMicindex() + rtmpentity.getRTMPPlayURL());
                     }
                 });
-        //发起网络去请求主播的rtmp播放地址   未完成
     }
 
     @Click({R.id.linear_new_container, R.id.chat_image_btn, R.id.room_new_gift, R.id.iv_room_setting})
@@ -1360,5 +1488,175 @@ public class RoomActivity extends BaseActivity {
         }
     }
 
+    private boolean is_pushing = false;
 
+    //===================上麦推流的回调
+    @Override
+    public void onPreviewFrame(byte[] data, Camera camera) {
+        long curCapture = System.currentTimeMillis();
+        if ((curCapture - lastCapture) < 80) {
+            return;
+        }
+
+        lastCapture = curCapture;
+        // 旋转90度
+        Media.NV21Rotate90(data, vWidth, vHeight, convertCache);
+        // 编码转换
+        Media.NV21toYUV420(data, vHeight, vWidth, convertCache);
+        // 执行编码功能
+        MediaData d = h264.Encode(data);
+
+        if (null != d && d.getLength() > 0) {
+            // 测试时保存到文件
+//            if(null != fosH264) {
+//                try {
+//                    fosH264.write(d.H264, 0, d.Length);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            System.out.println("====================: " + data.length + ";" + (lastCapture / 1000) + ":" + d.Length);
+
+            // 发送出去
+            rtmp_push.SendH264(d.getData(), d.getLength(), d.getFlag());
+            is_pushing = true;
+        } else {
+            System.out.println("xxxxxxxxxxxxxxxxxxxx: " + data.length + ";" + (lastCapture / 1000) + ":" + data.length);
+        }
+    }
+
+    @Override
+    public void onAudioFrame(byte[] data) {
+        for (int i = 0; i < data.length; i += 4096) {
+            int end = i + 4096;
+            if (end > data.length) {
+                end = data.length;
+            }
+
+            byte[] buf = Arrays.copyOfRange(data, i, end);
+            System.out.println("=====:" + i + ":" + buf.length);
+
+            MediaData md = aac.Encode(Arrays.copyOfRange(data, i, end));
+
+            if (null == md) {
+                System.out.println(">>>:" + i + "," + end);
+                return;
+            }
+
+            // 发送出去
+            rtmp_push.SendAAC(md.getData(), md.getLength());
+        }
+    }
+
+    private boolean is_sv_created = false;
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        is_sv_created = true;
+        try {
+            if (camera != null) {//为了解决切换到后台，再重新启动camera会崩溃的bug
+                camera.stopPreview();
+                camera.setPreviewCallback(null);
+                camera.release();
+                camera = null;
+            }
+            camera = Camera.open();
+            // 设置预览界面
+            camera.setPreviewDisplay(holder);
+            // 设置参数
+            Camera.Parameters param = camera.getParameters();
+
+            camera.setDisplayOrientation(90);
+            //param.setRotation(90);
+            param.setPreviewFormat(ImageFormat.NV21);
+            param.setPreviewSize(vWidth, vHeight);
+
+            camera.setParameters(param);
+            camera.startPreview();
+            camera.setPreviewCallback(this);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        is_sv_created = false;
+    }
+
+    private final int MSG_PLAY_MIC_1 = 0X0011;
+    private final int MSG_PLAY_MIC_2 = 0X0012;
+    private final int MSG_PLAY_MIC_3 = 0X0013;
+    public Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {      //判断标志位
+                case MSG_PLAY_MIC_1:
+                    textBackImage.setVisibility(View.GONE);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (pcmPlay2 != null) {
+                                pcmPlay2.stop();
+                            }
+                            if (pcmPlay3 != null) {
+                                pcmPlay3.stop();
+                            }
+                            rtmp.Stop();
+                            rtmp.SetUrl(map_trmp_play.get(0));
+                            KLog.e(micFlag + " " + map_trmp_play.get(0));
+                            rtmp.Start();
+                            pcmPlay.start();
+                        }
+                    }).start();
+
+                    break;
+                case MSG_PLAY_MIC_2:
+                    textBackImage.setVisibility(View.GONE);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (pcmPlay != null) {
+                                pcmPlay.stop();
+                            }
+                            if (pcmPlay3 != null) {
+                                pcmPlay3.stop();
+                            }
+                            rtmp2.Stop();
+                            rtmp2.SetUrl(map_trmp_play.get(1));
+                            KLog.e(micFlag + " " + map_trmp_play.get(1));
+                            rtmp2.Start();
+                            pcmPlay2.start();
+                        }
+                    }).start();
+                    break;
+                case MSG_PLAY_MIC_3:
+                    textBackImage.setVisibility(View.GONE);
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (pcmPlay != null) {
+                                pcmPlay.stop();
+                            }
+                            if (pcmPlay2 != null) {
+                                pcmPlay2.stop();
+                            }
+                            rtmp3.Stop();
+                            rtmp3.SetUrl(map_trmp_play.get(2));
+                            KLog.e(micFlag + " " + map_trmp_play.get(2));
+                            rtmp3.Start();
+                            pcmPlay3.start();
+                        }
+                    }).start();
+                    break;
+            }
+        }
+    };
 }

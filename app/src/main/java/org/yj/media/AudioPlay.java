@@ -4,6 +4,8 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 
+import com.socks.library.KLog;
+
 public class AudioPlay {
 	private boolean isPlaying = false;
 
@@ -35,7 +37,7 @@ public class AudioPlay {
 				audioTrack.write(head, 0, head.length);
 				audioTrack.flush();
 			} catch(Exception e) {
-				System.out.println("onAudio play error:" + e.getMessage());
+				KLog.e("onAudio play error:" + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -86,9 +88,9 @@ public class AudioPlay {
 					AudioFormat.ENCODING_PCM_16BIT, bufsize,
 					AudioTrack.MODE_STREAM);
 			audioTrack.play();
-			System.out.println("====================audioTrack.play()");
+			KLog.e("====================audioTrack.play()");
 		} catch( Exception e) {
-			System.out.println("onAudio error: " + e.getMessage());
+			KLog.e("onAudio error: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}

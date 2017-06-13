@@ -57,6 +57,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
+                <SurfaceView
+                    android:id="@+id/sv_upmic"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
+
                 <com.facebook.drawee.view.SimpleDraweeView
                     android:id="@+id/room_back_image"
                     android:layout_width="match_parent"

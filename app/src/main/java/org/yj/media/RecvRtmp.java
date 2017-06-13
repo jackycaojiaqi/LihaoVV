@@ -15,7 +15,7 @@ public class RecvRtmp {
     private long m_ins;
     private String m_url;
     private RecvRtmpCallback m_callback;
-    private boolean m_running = false;
+    public static boolean m_running = false;
 
     private static native int _open(long m_ins, String url);
 
@@ -48,9 +48,6 @@ public class RecvRtmp {
 
     // 执行接收循环
     public void Start() {
-        if (false != m_running) {
-            return;
-        }
 
         m_running = true;
         // 创建接收线程
@@ -77,7 +74,6 @@ public class RecvRtmp {
         m_running = false;
         _close(m_ins);
     }
-
     public void Release() {
         _release(m_ins);
     }

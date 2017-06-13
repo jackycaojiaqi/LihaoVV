@@ -1,6 +1,9 @@
 package com.fubang.lihaovv.ui;
 
 import android.Manifest;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +45,17 @@ public class SplashActivity extends BaseActivity {
         StartUtil.editDeviceId(this,DeviceUtil.getDeviceId(this));
         Toast.makeText(this, "Contact permission is granted", Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            //结束你的activity
+            finish();
+            return;
+        }
+    }
+
     @Override
     public void initView() {
         PermissionGen.with(SplashActivity.this)
