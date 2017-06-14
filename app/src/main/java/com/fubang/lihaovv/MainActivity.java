@@ -49,7 +49,7 @@ public class MainActivity extends BaseActivity {
         fragments.add(FollowFragment_.builder().build());
         fragments.add(MyFragment_.builder().build());
         //底部按钮切换fragment的工具类
-        new FragmentTabUtils(this,getSupportFragmentManager(),radioGroup,fragments, R.id.main_contaner);
+        new FragmentTabUtils(this, getSupportFragmentManager(), radioGroup, fragments, R.id.main_contaner);
         int version = Integer.parseInt(StartUtil.getVersion(this));
         manager = this.getPackageManager();
 
@@ -58,15 +58,16 @@ public class MainActivity extends BaseActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-        int  versionCode = info.versionCode;
+        int versionCode = info.versionCode;
         String versionname = intToIp(version);
         String versionName = info.versionName;
-        Log.d("123","versionName"+versionName+"versionname"+versionname);
+        Log.d("123", "versionName" + versionName + "versionname" + versionname);
 //        int intversion = ipToInt(versionName);
-        if (!versionname.equals(versionName)){
-            UpdateChecker.checkForDialog(MainActivity.this, AppConstant.DOWNLOAD_URL);
+        if (!versionname.equals(versionName)) {
+//            UpdateChecker.checkForDialog(MainActivity.this, AppConstant.DOWNLOAD_URL);
         }
     }
+
     /**
      * 本机ip
      */
@@ -75,19 +76,20 @@ public class MainActivity extends BaseActivity {
 //        获取wifi服务
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 //        判断wifi是否开启
-        if (!wifiManager.isWifiEnabled()){
+        if (!wifiManager.isWifiEnabled()) {
             wifiManager.setWifiEnabled(true);
         }
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         int ipAddress = wifiInfo.getIpAddress();
         String ip = intToIp(ipAddress);
-        Log.d("123",ip);
+        Log.d("123", ip);
     }
+
     private String intToIp(int i) {
-        return (i & 0xFF ) + "." +
-                ((i >> 8 ) & 0xFF) + "." +
-                ((i >> 16 ) & 0xFF) + "." +
-                ( i >> 24 & 0xFF) ;
+        return (i & 0xFF) + "." +
+                ((i >> 8) & 0xFF) + "." +
+                ((i >> 16) & 0xFF) + "." +
+                (i >> 24 & 0xFF);
     }
 
     public int ipToInt(String ip) {

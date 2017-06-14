@@ -27,6 +27,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -59,6 +60,7 @@ import com.alibaba.livecloud.live.AlivcStatusCode;
 import com.alibaba.livecloud.live.OnLiveRecordErrorListener;
 import com.alibaba.livecloud.live.OnNetworkStatusListener;
 import com.alibaba.livecloud.live.OnRecordStatusListener;
+import com.example.zhouwei.library.CustomPopWindow;
 import com.facebook.drawee.gestures.GestureDetector;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.fubang.lihaovv.App;
@@ -100,6 +102,7 @@ import com.xlg.android.protocol.MicState;
 import com.xlg.android.protocol.RoomChatMsg;
 import com.xlg.android.protocol.RoomKickoutUserInfo;
 import com.xlg.android.protocol.RoomUserInfo;
+import com.xlg.android.protocol.RoomVideoInfo;
 import com.xlg.android.video.AudioPlay;
 import com.zhuyunjian.library.StartUtil;
 
@@ -151,6 +154,8 @@ import sample.room.RoomMain;
 @EActivity(R.layout.activity_room)
 public class RoomActivity extends BaseActivity {
 
+    @ViewById(R.id.ll_room_content)
+    LinearLayout llRoomContent;
     @ViewById(R.id.linear_new_container)
     LinearLayout linearLayout;
     @ViewById(R.id.edit_new_text)
@@ -457,7 +462,9 @@ public class RoomActivity extends BaseActivity {
         // 1 -> hw codec enable, 0 -> disable [recommended]
         int codec = AVOptions.MEDIA_CODEC_AUTO;
         setOptions(codec);
-
+        plVider1.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
+        plVider2.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
+        plVider3.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
         plVider1.setOnErrorListener(mOnErrorListener);
         plVider2.setOnErrorListener(mOnErrorListener);
         plVider3.setOnErrorListener(mOnErrorListener);
@@ -1056,7 +1063,7 @@ public class RoomActivity extends BaseActivity {
     //加入房间返回消息
     @Subscriber(tag = "JoinRoomResponse")
     public void getJoinRoomResponse(JoinRoomResponse obj) {
-//        topline = obj.getTopline() - 1000;
+        mic_guan = obj.getNvideowndtype();
     }
 
     //接收服务器发送的消息更新列表
@@ -1082,6 +1089,12 @@ public class RoomActivity extends BaseActivity {
         }
     }
 
+    //管麦的int 获取
+    @Subscriber(tag = "onRoomVideoNotify")
+    public void onRoomVideoNotify(RoomVideoInfo msg) {
+        KLog.e("管麦：" + msg.getNvideowndtype());
+        mic_guan = msg.getNvideowndtype();
+    }
 
     //用户离开房间
     @Subscriber(tag = "RoomKickoutUserInfo")
@@ -1143,6 +1156,8 @@ public class RoomActivity extends BaseActivity {
                             try {
                                 push_url = rtmp.getPublishUrl();
                                 _CameraSurface.setVisibility(View.VISIBLE);
+                                //通知麦序fragment  已经上麦了
+                                EventBus.getDefault().post("is_upmic", "is_upmic");
                                 if (is_surface_creat) {
                                     mMediaRecorder.startRecord(push_url);
                                 } else {
@@ -1185,7 +1200,7 @@ public class RoomActivity extends BaseActivity {
         for (int i = 0; i < micUsers.size(); i++) {
             if (micUsers.get(i).getUserid() == obj.getUserid()) {
                 //根据micindex关闭对应号的mic
-                KLog.e( micUsers.get(i).getMicindex());
+                KLog.e(micUsers.get(i).getMicindex());
                 switch (micUsers.get(i).getMicindex()) {
                     case 0:
                         map_trmp_play.put(0, "null");
@@ -1204,6 +1219,8 @@ public class RoomActivity extends BaseActivity {
                         break;
                 }
                 micUsers.remove(i);
+                //通知麦序fragment  已经下麦了
+                EventBus.getDefault().post("is_downmic", "is_downmic");
             }
         }
 
@@ -1268,7 +1285,11 @@ public class RoomActivity extends BaseActivity {
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 break;
             case R.id.chat_image_btn:
-                popupWindow.dismiss();
+                if (popupWindow != null) {
+                    if (popupWindow.isShowing()) {
+                        popupWindow.dismiss();
+                    }
+                }
                 if (faceWindow.isShowing()) {
                     faceWindow.dismiss();
                 } else {
@@ -1277,23 +1298,137 @@ public class RoomActivity extends BaseActivity {
                 break;
             //点击礼物图标
             case R.id.room_new_gift:
-                if (popupWindow.isShowing()) {
-                    popupWindow.dismiss();
-                } else {
+                if (popupWindow == null) {
+                    showWindow();
                     popupWindow.showAsDropDown(giftImage);
-                    if (micUsers != null) {
-                        for (int i = 0; i < micUsers.size(); i++) {
-                            if (micUsers.get(i).getMicindex() == micFlag) {
-                                giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
+                } else {
+                    if (popupWindow.isShowing()) {
+                        popupWindow.dismiss();
+                    } else {
+                        popupWindow.showAsDropDown(giftImage);
+                        if (micUsers != null) {
+                            for (int i = 0; i < micUsers.size(); i++) {
+                                if (micUsers.get(i).getMicindex() == micFlag) {
+                                    giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
+                                }
                             }
                         }
                     }
                 }
                 break;
             case R.id.iv_room_setting:
-                showWindow();
+                View contentView = LayoutInflater.from(this).inflate(R.layout.pop_room_control, null);
+                handleControlView(contentView);
+
                 break;
         }
+    }
+
+    private int mic_guan = 0x0000;
+    private boolean is_mic1_guan = false;
+    private boolean is_mic2_guan = false;
+    private boolean is_mic3_guan = false;
+
+    private void handleControlView(View contentView) {
+        final CustomPopWindow popWindow = new CustomPopWindow.PopupWindowBuilder(this)
+                .setView(contentView)//显示的布局，还可以通过设置一个View
+                .setFocusable(true)//是否获取焦点，默认为ture
+                .size(ScreenUtils.getScreenWidth(context), ScreenUtils.getScreenHeight(context))
+                .setOutsideTouchable(true)//是否PopupWindow 以外触摸dissmiss
+                .create()//创建PopupWindow
+                .showAtLocation(llRoomContent, Gravity.CENTER, 0, 0);//显示PopupWindow
+        TextView tv_duomic = (TextView) contentView.findViewById(R.id.tv_room_control_duomic);
+        TextView tv_shoumic = (TextView) contentView.findViewById(R.id.tv_room_control_shoumic);
+        TextView tv_guanmic = (TextView) contentView.findViewById(R.id.tv_room_control_guanmai);
+        TextView tv_guanmic_cancle = (TextView) contentView.findViewById(R.id.tv_room_control_guanmai_cancle);
+        TextView tv_cancle = (TextView) contentView.findViewById(R.id.tv_room_control_cancle);
+        tv_duomic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < micUsers.size(); i++) {
+                            if (micUsers.get(i).getMicindex() == micFlag) {//当前micindex  和主播列表中的micindex一致 则夺该主播的mic
+                                roomMain.getRoom().getChannel().upMicRequest(String.valueOf(micUsers.get(i).getUserid()), Header.MIC_STATUS_PUBLIC_MIC, micFlag);
+                            }
+                        }
+                    }
+                }).start();
+                popWindow.dissmiss();
+            }
+        });
+        tv_shoumic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < micUsers.size(); i++) {
+                            if (micUsers.get(i).getMicindex() == micFlag) {//当前micindex  和主播列表中的micindex一致 则夺该主播的mic
+                                roomMain.getRoom().getChannel().upMicRequest(String.valueOf(micUsers.get(i).getUserid()), Header.MIC_STATUS_DOWN_MIC, micFlag);
+                            }
+                        }
+                    }
+                }).start();
+                popWindow.dissmiss();
+            }
+        });
+
+        tv_guanmic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {//增加管麦
+
+                if (micFlag == 0) {
+                    int temp = 0x0100;
+                    mic_guan = mic_guan | temp;
+                } else if (micFlag == 1) {
+                    int temp = 0x0010;
+                    mic_guan = mic_guan | temp;
+                } else if (micFlag == 2) {
+                    int temp = 0x0001;
+                    mic_guan = mic_guan | temp;
+                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        roomMain.getRoom().getChannel().guanMic(mic_guan);
+                    }
+                }).start();
+                popWindow.dissmiss();
+            }
+        });
+        tv_guanmic_cancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {//增加管麦
+
+                if (micFlag == 0) {
+                    int temp = 0x1011;
+                    mic_guan = mic_guan & temp;
+                } else if (micFlag == 1) {
+                    int temp = 0x1101;
+                    mic_guan = mic_guan & temp;
+                } else if (micFlag == 2) {
+                    int temp = 0x1110;
+                    mic_guan = mic_guan & temp;
+                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        roomMain.getRoom().getChannel().guanMic(mic_guan);
+                    }
+                }).start();
+                popWindow.dissmiss();
+            }
+        });
+        tv_cancle.setOnClickListener(new View.OnClickListener()
+
+        {
+            @Override
+            public void onClick(View v) {
+                popWindow.dissmiss();
+            }
+        });
     }
 
 
@@ -1545,6 +1680,7 @@ public class RoomActivity extends BaseActivity {
 
     private void startPreview(final SurfaceHolder holder) {
         mMediaRecorder.prepare(mConfigure, mPreviewSurface);
+        mMediaRecorder.setZoom(0.5f);
         mMediaRecorder.setPreviewSize(_CameraSurface.getMeasuredWidth(), _CameraSurface.getMeasuredHeight());
         mMediaRecorder.startRecord(push_url);
     }

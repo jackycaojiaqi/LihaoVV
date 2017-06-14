@@ -36,6 +36,7 @@ import com.xlg.android.protocol.RoomMediaInfo;
 import com.xlg.android.protocol.RoomNotice;
 import com.xlg.android.protocol.RoomState;
 import com.xlg.android.protocol.RoomUserInfo;
+import com.xlg.android.protocol.RoomVideoInfo;
 import com.xlg.android.protocol.SendSeal;
 import com.xlg.android.protocol.SetUserProfileResp;
 import com.xlg.android.protocol.SetUserPwdResp;
@@ -417,6 +418,11 @@ public class RoomService extends Service implements RoomHandler {
 
     @Override
     public void onPreTradeGiftResponse(PreTradeGift obj) {
+
+    }
+
+    @Override
+    public void onRoomVideoNotify(RoomVideoInfo obj) {
 
     }
 

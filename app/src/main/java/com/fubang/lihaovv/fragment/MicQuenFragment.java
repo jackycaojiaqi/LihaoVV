@@ -160,6 +160,23 @@ public class MicQuenFragment extends BaseFragment {
         userList.setAdapter(maiAdapter);
     }
 
+    //表示自己是被抱上麦
+    @Subscriber(tag = "is_upmic")
+    public void is_upmic(String obj) {
+        if (obj.equals("is_upmic")) {
+            is_up_mic = true;
+            tvMicQueueControl.setText("下麦");
+        }
+    }
+
+    //表示自己是被抱上麦
+    @Subscriber(tag = "is_downmic")
+    public void is_downmic(String obj) {
+        if (obj.equals("is_downmic")) {
+            is_up_mic = false;
+            tvMicQueueControl.setText("排麦");
+        }
+    }
 
     @Override
     public void onDestroy() {

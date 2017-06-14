@@ -5,26 +5,25 @@ public class UserPayResponse {
 	private int	vcbid;				//房间ID
 	@StructOrder(1)
 	private int	userid;				//用户ID
-//	@StructOrder(2)
-//	private int	toid;				//对手ID
 	@StructOrder(2)
-	private long   	balance;			//余额
+	private int	toid;				//对手ID
 	@StructOrder(3)
-	private long   	giftbalance;		//礼物金额
+	private long   	balance;			//余额
 	@StructOrder(4)
-	private long		expend2;			//当月消费额
+	private long   	giftbalance;		//礼物金额
 	@StructOrder(5)
-	private int	type;				//奖励提示
+	private long		expend2;			//当月消费额
 	@StructOrder(6)
-	private long		money;				//变化金额
+	private int	type;				//奖励提示
 	@StructOrder(7)
-	private int	reserve1;			//保留1
+	private long		money;				//变化金额
 	@StructOrder(8)
-	private int	reserve2;			//保留2
+	private int	reserve1;			//保留1
 	@StructOrder(9)
+	private int	reserve2;			//保留2
+	@StructOrder(10)
 	private long	        time;				//发生时间
-	
-	
+
 	public int getVcbid() {
 		return vcbid;
 	}

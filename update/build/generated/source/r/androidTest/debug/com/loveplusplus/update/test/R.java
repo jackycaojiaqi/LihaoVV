@@ -16,6 +16,7 @@ public final class R {
         public static final int dialogPositiveButton=0x7f020002;
         public static final int download_progress=0x7f020003;
         public static final int download_success=0x7f020004;
-        public static final int newUpdateAvailable=0x7f020005;
+        public static final int net_error=0x7f020005;
+        public static final int newUpdateAvailable=0x7f020006;
     }
 }

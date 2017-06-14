@@ -28,6 +28,7 @@ import com.xlg.android.protocol.RoomMediaInfo;
 import com.xlg.android.protocol.RoomNotice;
 import com.xlg.android.protocol.RoomState;
 import com.xlg.android.protocol.RoomUserInfo;
+import com.xlg.android.protocol.RoomVideoInfo;
 import com.xlg.android.protocol.SendSeal;
 import com.xlg.android.protocol.SetUserProfileResp;
 import com.xlg.android.protocol.SetUserPwdResp;
@@ -169,7 +170,8 @@ public interface RoomHandler {
 	public void onGrabRedPagerResponse(GrabRedPagerRequest obj);
 	
 	public void onPreTradeGiftResponse(PreTradeGift obj);
-	
+	public void onRoomVideoNotify(RoomVideoInfo obj);
+
 	// 连接断开
 	public void onDisconnected();
 }

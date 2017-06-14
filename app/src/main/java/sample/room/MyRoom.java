@@ -3,6 +3,7 @@ package sample.room;
 
 import android.util.Log;
 
+import com.socks.library.KLog;
 import com.xlg.android.RoomChannel;
 import com.xlg.android.RoomHandler;
 import com.xlg.android.protocol.ActWaitMicUserInfo;
@@ -33,6 +34,7 @@ import com.xlg.android.protocol.RoomMediaInfo;
 import com.xlg.android.protocol.RoomNotice;
 import com.xlg.android.protocol.RoomState;
 import com.xlg.android.protocol.RoomUserInfo;
+import com.xlg.android.protocol.RoomVideoInfo;
 import com.xlg.android.protocol.SendSeal;
 import com.xlg.android.protocol.SetUserProfileResp;
 import com.xlg.android.protocol.SetUserPwdResp;
@@ -192,7 +194,6 @@ public class MyRoom implements RoomHandler {
 
     @Override
     public void onGetRoomMicListResponse(UseridList obj) {
-        // TODO Auto-generated method stub
         PrintUnknown("onGetRoomMicListResponse: ");
         EventBus.getDefault().post(obj, "UseridList");
         System.out.println("============" + obj.getList()[0]);
@@ -201,7 +202,6 @@ public class MyRoom implements RoomHandler {
 
     @Override
     public void onGetFlygiftListResponse(BigGiftRecord[] obj) {
-        // TODO Auto-generated method stub
         System.out.println("onGetFlygiftListResponse: ");
         for (int i = 0; i < obj.length; i++) {
             Tools.PrintObject(obj[i]);
@@ -210,22 +210,19 @@ public class MyRoom implements RoomHandler {
 
     @Override
     public void onAuthorityRejected(AuthorityRejected obj) {
-        // TODO Auto-generated method stub
-        PrintUnknown("onAuthorityRejected: ");
+        KLog.e("onAuthorityRejected: ");
         Tools.PrintObject(obj);
         EventBus.getDefault().post(obj, "AuthorityRejected");
     }
 
     @Override
     public void onSiegeInfoNotify(SiegeInfo obj) {
-        // TODO Auto-generated method stub
         System.out.println("onSiegeInfoNotify: ");
         Tools.PrintObject(obj);
     }
 
     @Override
     public void onKickoutRoomUserNotify(RoomKickoutUserInfo obj) {
-        // TODO Auto-generated method stub
         PrintUnknown("onKickoutRoomUserNotify: ");
         Tools.PrintObject(obj);
         EventBus.getDefault().post(obj, "RoomKickoutUserInfo");
@@ -523,6 +520,12 @@ public class MyRoom implements RoomHandler {
     public void onPreTradeGiftResponse(PreTradeGift obj) {
         // TODO Auto-generated method stub
         PrintUnknown("onPreTradeGiftResponse: ");
+    }
+
+    @Override
+    public void onRoomVideoNotify(RoomVideoInfo obj) {
+        PrintUnknown("RoomVideoInfo: ");
+        EventBus.getDefault().post(obj, "onRoomVideoNotify");
     }
 
     @Override

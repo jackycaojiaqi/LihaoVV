@@ -66,9 +66,9 @@ public class JoinRoomResponse {
 	@StructOrder(29)
 	private int           nmiclimit;                  //房间默认上麦几次
 	@StructOrder(30)
-	private int           nvideowndtype;
+	private int           nmiclimitall;       //管麦状态
 	@StructOrder(31)
-	private int           nmiclimitall;
+	private int           nvideowndtype;
 	@StructOrder(32)
 	private int 			nadminid;			//一级区长
 	@StructOrder(33)

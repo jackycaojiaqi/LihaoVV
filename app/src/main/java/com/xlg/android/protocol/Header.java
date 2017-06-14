@@ -105,7 +105,7 @@ public class Header {
 
     public static final byte MessageType_mxpSyncUserHeadPicNotify = (byte) (210 + 9); // 219
     public static final byte MessageType_mxpCollageRequest = (byte) (210 + 10);//220
-    public static final byte MessageType_mxpAuthorityRejected = (byte) (210 + 14); // 222
+    public static final byte MessageType_mxpAuthorityRejected = (byte) (210 + 14); // 224
     public static final byte MessageType_mxpDigTreasureResponse = (byte) (210 + 13);  // 226
 
 

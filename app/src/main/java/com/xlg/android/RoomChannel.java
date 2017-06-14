@@ -34,6 +34,7 @@ import com.xlg.android.protocol.RoomMediaInfo;
 import com.xlg.android.protocol.RoomNotice;
 import com.xlg.android.protocol.RoomState;
 import com.xlg.android.protocol.RoomUserInfo;
+import com.xlg.android.protocol.RoomVideoInfo;
 import com.xlg.android.protocol.SendSeal;
 import com.xlg.android.protocol.SetUserProfileResp;
 import com.xlg.android.protocol.SetUserPwdResp;
@@ -512,6 +513,11 @@ public class RoomChannel implements ClientSocketHandler {
                     mHandler.onDigTreasureResponse(obj);
                 }
                 break;
+                case Header.MessageType_mxpRoomVideoNotify:
+                    RoomVideoInfo object = new RoomVideoInfo();
+                    Message.DecodeObject(mBuffer, object);
+                    mHandler.onRoomVideoNotify(object);
+                    break;
 //			case Header.MessageType_mxpRedPagerResponse:
 //				{
 //					RedPagerRequest obj = new RedPagerRequest();
@@ -745,6 +751,7 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setMicstate(micstate);//抱上公麦0x00000001
         obj.setIsallowupmic(0);
         sendPack(header, obj);
+        KLog.e(mUserID + " " + toid + " " + micstate + " " + micindex);
     }
 
     //抱下麦
@@ -769,7 +776,7 @@ public class RoomChannel implements ClientSocketHandler {
 
     //抱上麦
     public void baoMicRequest(int micid, int userid) {
-        KLog.e("抱"+userid+"上"+micid+" 麦");
+        KLog.e("抱" + userid + "上" + micid + " 麦");
         Header header = new Header();
         MicState obj = new MicState();
         header.setCmd1(Header.MessageType_mxpSetMicStateRequest);
@@ -784,6 +791,18 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setMicindex((byte) micid);
         obj.setMicstate((short) 0x00000001);//抱上公麦0x00000001
         obj.setIsallowupmic(0);
+        sendPack(header, obj);
+    }
+
+    //管麦
+    public void guanMic(int mic_guan) {
+        Header header = new Header();
+        RoomVideoInfo obj = new RoomVideoInfo();
+        header.setCmd1(Header.MessageType_mxpRoomVideoRequest);
+        obj.setVcbid(mRoomID);
+        obj.setUserid(mUserID);
+        obj.setNvideowndtype(mic_guan);
+        KLog.e("guanMic"+mic_guan);
         sendPack(header, obj);
     }
 

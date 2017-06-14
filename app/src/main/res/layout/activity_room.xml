@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
+    android:id="@+id/ll_room_content"
     android:orientation="vertical"
     tools:context=".ui.RoomActivity">
 
@@ -245,6 +246,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:clickable="true"
+                android:visibility="gone"
                 android:src="@mipmap/room_face_icon" />
 
             <LinearLayout

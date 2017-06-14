@@ -9,7 +9,7 @@ public class RoomVideoInfo {
     @StructOrder(1)
     private int userid;//操作人id
     @StructOrder(2)
-    private int nvideowndtype;                //管麦    转换成16进制   0x0100  0x0111  左后3位表示   0 1 2 号是否管麦
+    private int nvideowndtype;                //管麦    转换成16进制   0x0100  0x0111  后3位表示   0 1 2 号是否管麦
 
     public int getVcbid() {
         return vcbid;
