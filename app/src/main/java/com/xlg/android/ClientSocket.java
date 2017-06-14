@@ -1,5 +1,7 @@
 package com.xlg.android;
 
+import com.socks.library.KLog;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

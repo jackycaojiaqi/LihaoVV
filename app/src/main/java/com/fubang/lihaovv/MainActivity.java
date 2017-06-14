@@ -41,7 +41,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        Media.Init();
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 100);

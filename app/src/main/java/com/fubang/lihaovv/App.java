@@ -2,6 +2,7 @@ package com.fubang.lihaovv;
 
 import android.app.Application;
 
+import com.duanqu.qupai.jni.ApplicationGlue;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.fubang.lihaovv.utils.DbUtil;
 import com.lzy.okgo.OkGo;
@@ -59,6 +60,12 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        System.loadLibrary("gnustl_shared");
+//        System.loadLibrary("ijkffmpeg");//目前使用微博的ijkffmpeg会出现1K再换wifi不重连的情况
+        System.loadLibrary("qupai-media-thirdparty");
+//        System.loadLibrary("alivc-media-jni");
+        System.loadLibrary("qupai-media-jni");
+        ApplicationGlue.initialize(this);
 //        setMgr(new AVModuleMgr());
 //        Log.d("123",mgr+"------mgr");
         //初始化Fresco

@@ -15,6 +15,7 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -47,6 +51,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alibaba.livecloud.live.AlivcMediaFormat;
+import com.alibaba.livecloud.live.AlivcMediaRecorder;
+import com.alibaba.livecloud.live.AlivcMediaRecorderFactory;
+import com.alibaba.livecloud.live.AlivcRecordReporter;
+import com.alibaba.livecloud.live.AlivcStatusCode;
+import com.alibaba.livecloud.live.OnLiveRecordErrorListener;
+import com.alibaba.livecloud.live.OnNetworkStatusListener;
+import com.alibaba.livecloud.live.OnRecordStatusListener;
+import com.facebook.drawee.gestures.GestureDetector;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.fubang.lihaovv.App;
 import com.fubang.lihaovv.AppConstant;
@@ -67,12 +80,18 @@ import com.fubang.lihaovv.fragment.MicQuenFragment_;
 import com.fubang.lihaovv.fragment.PersonFragment_;
 import com.fubang.lihaovv.utils.GiftUtil;
 import com.fubang.lihaovv.utils.GlobalOnItemClickManager;
+import com.fubang.lihaovv.utils.NetUtils;
 import com.fubang.lihaovv.utils.ScreenUtils;
+import com.fubang.lihaovv.utils.ToastUtil;
 import com.fubang.lihaovv.utils.Utils;
 import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
+import com.pili.pldroid.player.AVOptions;
+import com.pili.pldroid.player.PLMediaPlayer;
+import com.pili.pldroid.player.widget.PLVideoTextureView;
+import com.pili.pldroid.player.widget.PLVideoView;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.Header;
@@ -111,6 +130,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import master.flame.danmaku.danmaku.loader.ILoader;
 import master.flame.danmaku.danmaku.loader.IllegalDataException;
@@ -129,7 +149,7 @@ import master.flame.danmaku.ui.widget.DanmakuView;
 import sample.room.RoomMain;
 
 @EActivity(R.layout.activity_room)
-public class RoomActivity extends BaseActivity implements Camera.PreviewCallback, AudioCaptureCallback, SurfaceHolder.Callback {
+public class RoomActivity extends BaseActivity {
 
     @ViewById(R.id.linear_new_container)
     LinearLayout linearLayout;
@@ -153,8 +173,7 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
     TextView roomIdTv;
     @ViewById(R.id.follow_new_image)
     ImageView followImage;
-    @ViewById(R.id.room_back_image)
-    SimpleDraweeView textBackImage;
+
     @ViewById(R.id.chat_new_input_line)
     LinearLayout chatLine;
     @ViewById(R.id.text_new_relative)
@@ -179,10 +198,9 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
     ViewPager viewPager_content;
     @ViewById(R.id.room_new_tablayout)
     TabLayout tabLayout;
-    @ViewById(R.id.sv_upmic)
-    SurfaceView svUpmic;
-
-
+    PLVideoTextureView plVider1;
+    PLVideoTextureView plVider2;
+    PLVideoTextureView plVider3;
     private Button giftSendBtn;
     private GridView gridView;
     private ListView userList;
@@ -192,9 +210,7 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
 
     private RoomChatAdapter adapter;
 
-    private SurfaceView surfaceView;
-    private SurfaceView surfaceView2;
-    private SurfaceView surfaceView3;
+
     @ViewById(R.id.car_road)
     DanmakuView danmakuView;
     private DanmakuContext mContext;
@@ -256,10 +272,8 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
     private List<View> views = new ArrayList<>();
 
     private View view1, view2, view3;
-    private RecvRtmp rtmp, rtmp2, rtmp3;
-    private org.yj.media.AudioPlay pcmPlay = new org.yj.media.AudioPlay();
-    private org.yj.media.AudioPlay pcmPlay2 = new org.yj.media.AudioPlay();
-    private org.yj.media.AudioPlay pcmPlay3 = new org.yj.media.AudioPlay();
+    private View mLoadingView;
+    private ImageView iv_cover_1, iv_cover_2, iv_cover_3;
 
     //开始加入房间
     @Override
@@ -270,29 +284,13 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
         configuration = getResources().getConfiguration();
         switch (micFlag) {
             case 0:
-                if (rtmp != null) {
-                    rtmp.Start();
-                }
-                if (pcmPlay != null) {
-                    pcmPlay.start();
-                }
+                plVider1.start();
                 break;
             case 1:
-                if (rtmp2 != null) {
-                    rtmp2.Start();
-                }
-                if (pcmPlay2 != null) {
-                    pcmPlay2.start();
-                }
+                plVider2.start();
                 break;
             case 2:
-                if (rtmp3 != null) {
-
-                    rtmp3.Start();
-                }
-                if (pcmPlay3 != null) {
-                    pcmPlay3.start();
-                }
+                plVider3.start();
                 break;
         }
 
@@ -316,28 +314,13 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
         mStop = true;
         switch (micFlag) {
             case 0:
-                if (rtmp != null) {
-                    rtmp.Stop();
-                }
-                if (pcmPlay != null) {
-                    pcmPlay.stop();
-                }
+                plVider1.pause();
                 break;
             case 1:
-                if (rtmp2 != null) {
-                    rtmp2.Stop();
-                }
-                if (pcmPlay2 != null) {
-                    pcmPlay2.stop();
-                }
+                plVider2.pause();
                 break;
             case 2:
-                if (rtmp3 != null) {
-                    rtmp3.Stop();
-                }
-                if (pcmPlay3 != null) {
-                    pcmPlay3.stop();
-                }
+                plVider3.pause();
                 break;
         }
 
@@ -355,17 +338,13 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
             }
         }).start();
         isRunning = false;
-        rtmp.Release();
-        pcmPlay.stop();
-        pcmPlay = null;
-        EventBus.getDefault().unregister(this);
-        //关闭推流
-        if (h264 != null && audio != null && aac != null && rtmp_push != null) {
-            h264.Release();
-            audio.Stop();
-            aac.Release();
-            rtmp_push.Release();
+        plVider1.stopPlayback();
+        plVider2.stopPlayback();
+        plVider3.stopPlayback();
+        if (mMediaRecorder != null) {
+            mMediaRecorder.release();
         }
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 
@@ -396,16 +375,17 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
 
     @Override
     public void initView() {
-        initRevListener();
+
         LayoutInflater inflater = getLayoutInflater();
         view1 = inflater.inflate(R.layout.page_surface, null);
         view2 = inflater.inflate(R.layout.page_surface2, null);
         view3 = inflater.inflate(R.layout.page_surface3, null);
-        surfaceView = (SurfaceView) view1.findViewById(R.id.surface1);
-        surfaceView2 = (SurfaceView) view2.findViewById(R.id.surface2);
-        surfaceView3 = (SurfaceView) view3.findViewById(R.id.surface3);
-
-
+        plVider1 = (PLVideoTextureView) view1.findViewById(R.id.VideoView1);
+        plVider2 = (PLVideoTextureView) view2.findViewById(R.id.VideoView2);
+        plVider3 = (PLVideoTextureView) view3.findViewById(R.id.VideoView3);
+        iv_cover_1 = (ImageView) view1.findViewById(R.id.iv_cover_1);
+        iv_cover_2 = (ImageView) view2.findViewById(R.id.iv_cover_2);
+        iv_cover_3 = (ImageView) view3.findViewById(R.id.iv_cover_3);
         initDanmu();
         for (int i = 0; i < AppConstant.ROOM_TYPE_TITLE.length; i++) {
             titles.add(AppConstant.ROOM_TYPE_TITLE[i]);
@@ -416,9 +396,6 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
         fragments.add(MicQuenFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
         roomIdTv.setText(roomId + "");
         roomActivity = this;
-//        if (mDetector != null) {
-//            mDetector = null;
-//        }
         mDetector = EmotionInputDetector.with(this)
                 .setEmotionView(emotionLayout)
                 .bindToContent(chatLine)
@@ -427,39 +404,15 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
                 .build();
 
         setUpEmotionViewPager();
-
+        _CameraSurface = (SurfaceView) findViewById(R.id.sv_upmic);
     }
+
+    private boolean is_video1_play = false;
+    private boolean is_video2_play = false;
+    private boolean is_video3_play = false;
 
     @Override
     public void initListener() {
-
-        backImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        surfaceView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                testController.setVisibility(View.VISIBLE);
-                animaView(testController);
-            }
-        });
-        surfaceView3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                testController.setVisibility(View.VISIBLE);
-                animaView(testController);
-            }
-        });
-        surfaceView2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                testController.setVisibility(View.VISIBLE);
-                animaView(testController);
-            }
-        });
         views.add(view1);
         views.add(view2);
         views.add(view3);
@@ -487,6 +440,58 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
             }
         };
         viewPager.setAdapter(pagerAdapter);
+        backImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        mLoadingView = findViewById(R.id.LoadingView);
+        plVider1.setBufferingIndicator(mLoadingView);
+        plVider2.setBufferingIndicator(mLoadingView);
+        plVider3.setBufferingIndicator(mLoadingView);
+//        plVider1.setCoverView(findViewById(R.id.CoverView1));
+//        plVider1.setCoverView(findViewById(R.id.CoverView2));
+//        plVider1.setCoverView(findViewById(R.id.CoverView3));
+        // 1 -> hw codec enable, 0 -> disable [recommended]
+        int codec = AVOptions.MEDIA_CODEC_AUTO;
+        setOptions(codec);
+
+        plVider1.setOnErrorListener(mOnErrorListener);
+        plVider2.setOnErrorListener(mOnErrorListener);
+        plVider3.setOnErrorListener(mOnErrorListener);
+        plVider1.setOnInfoListener(new PLMediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(PLMediaPlayer plMediaPlayer, int i, int i1) {
+                if (i == 3) {
+                    is_video1_play = true;
+                    iv_cover_1.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
+        plVider2.setOnInfoListener(new PLMediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(PLMediaPlayer plMediaPlayer, int i, int i1) {
+                if (i == 3) {
+                    is_video2_play = true;
+                    iv_cover_2.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
+        plVider3.setOnInfoListener(new PLMediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(PLMediaPlayer plMediaPlayer, int i, int i1) {
+                if (i == 3) {
+                    is_video3_play = true;
+                    iv_cover_3.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -497,33 +502,19 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
                 micFlag = position;
                 switch (micFlag) {
                     case 0:
-                        if (pcmPlay2 != null) {
-                            pcmPlay2.stop();
-                        }
-                        if (pcmPlay3 != null) {
-                            pcmPlay3.stop();
-                        }
-                        pcmPlay.start();
+                        plVider1.start();
+                        plVider2.pause();
+                        plVider3.pause();
                         break;
                     case 1:
-                        if (pcmPlay != null) {
-                            pcmPlay.stop();
-                        }
-                        if (pcmPlay3 != null) {
-                            pcmPlay3.stop();
-                        }
-                        KLog.e(micFlag);
-                        pcmPlay2.start();
+                        plVider1.pause();
+                        plVider2.start();
+                        plVider3.pause();
                         break;
                     case 2:
-                        if (pcmPlay2 != null) {
-                            pcmPlay2.stop();
-                        }
-                        if (pcmPlay != null) {
-                            pcmPlay.stop();
-                        }
-                        KLog.e(micFlag);
-                        pcmPlay3.start();
+                        plVider1.pause();
+                        plVider2.pause();
+                        plVider3.start();
                         break;
                 }
                 if (micUsers != null) {
@@ -600,187 +591,6 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
         });
     }
 
-    private void initRevListener() {
-        initRevListener1();
-        initRevListener2();
-        initRevlistener3();
-
-    }
-
-    private void initRevlistener3() {
-        rtmp3 = Media.CreateRecvRtmp();
-        rtmp3.SetCallback(new RecvRtmpCallback() {
-            @Override
-            public void OnRecvRtmpStart() {
-
-            }
-
-            @Override
-            public void OnRecvRtmpPlayVideo(Bitmap bmp) {
-                if (micFlag == 2) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage.setVisibility(View.GONE);
-                        }
-                    });
-                    if (is_pushing) {//正在推流则返回
-                        return;
-                    }
-                    try {
-                        if (null != surfaceView3.getHolder()) {
-                            SurfaceHolder holder = surfaceView3.getHolder();
-                            if (null == holder) {
-                                return;
-                            }
-                            // 显示照片
-                            Canvas canvas = holder.lockCanvas();
-                            if (canvas != null) {
-                                Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
-                                Rect dst = new Rect(0, 0,
-                                        ScreenUtils.getScreenWidth(context),
-                                        ScreenUtils.dp2px(context, surfaceView.getHeight()));
-                                canvas.drawBitmap(bmp, src, dst, null);
-                                holder.unlockCanvasAndPost(canvas);
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    }
-                }
-            }
-
-            @Override
-            public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
-                if (micFlag == 2) {
-                    pcmPlay3.setConfig(sample, channel);
-                    pcmPlay3.play(pcm);
-                }
-            }
-
-            @Override
-            public void OnRecvRtmpStop() {
-
-            }
-        });
-    }
-
-    private void initRevListener2() {
-        rtmp2 = Media.CreateRecvRtmp();
-        rtmp2.SetCallback(new RecvRtmpCallback() {
-            @Override
-            public void OnRecvRtmpStart() {
-
-            }
-
-            @Override
-            public void OnRecvRtmpPlayVideo(Bitmap bmp) {
-                if (micFlag == 1) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage.setVisibility(View.GONE);
-                        }
-                    });
-                    if (is_pushing) {//正在推流则返回
-                        return;
-                    }
-                    try {
-                        if (null != surfaceView2.getHolder()) {
-                            SurfaceHolder holder = surfaceView2.getHolder();
-                            if (null == holder) {
-                                return;
-                            }
-                            // 显示照片
-                            Canvas canvas = holder.lockCanvas();
-                            if (canvas != null) {
-                                Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
-                                Rect dst = new Rect(0, 0,
-                                        ScreenUtils.getScreenWidth(context),
-                                        ScreenUtils.dp2px(context, surfaceView.getHeight()));
-                                canvas.drawBitmap(bmp, src, dst, null);
-                                holder.unlockCanvasAndPost(canvas);
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    }
-                }
-            }
-
-            @Override
-            public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
-                if (micFlag == 1) {
-                    pcmPlay2.setConfig(sample, channel);
-                    pcmPlay2.play(pcm);
-                }
-            }
-
-            @Override
-            public void OnRecvRtmpStop() {
-
-            }
-        });
-    }
-
-    private void initRevListener1() {
-        rtmp = Media.CreateRecvRtmp();
-        rtmp.SetCallback(new RecvRtmpCallback() {
-            @Override
-            public void OnRecvRtmpStart() {
-
-            }
-
-            @Override
-            public void OnRecvRtmpPlayVideo(Bitmap bmp) {
-                if (micFlag == 0) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            textBackImage.setVisibility(View.GONE);
-                        }
-                    });
-                    if (is_pushing) {//正在推流则返回
-                        return;
-                    }
-                    KLog.e(bmp.getWidth() + " ");
-                    try {
-                        if (null != surfaceView.getHolder()) {
-                            SurfaceHolder holder = surfaceView.getHolder();
-                            if (null == holder) {
-                                return;
-                            }
-                            // 显示照片
-                            Canvas canvas = holder.lockCanvas();
-                            if (canvas != null) {
-                                Rect src = new Rect(0, 0, bmp.getWidth(), bmp.getHeight());
-                                Rect dst = new Rect(0, 0,
-                                        ScreenUtils.getScreenWidth(context),
-                                        ScreenUtils.dp2px(context, surfaceView.getHeight()));
-                                canvas.drawBitmap(bmp, src, dst, null);
-                                holder.unlockCanvasAndPost(canvas);
-                            }
-                        }
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    }
-                }
-            }
-
-            @Override
-            public void OnRecvRtmpPlayAudio(byte[] pcm, int sample, int channel) {
-                if (micFlag == 0) {
-                    pcmPlay.setConfig(sample, channel);
-                    pcmPlay.play(pcm);
-                }
-            }
-
-            @Override
-            public void OnRecvRtmpStop() {
-
-            }
-        });
-    }
 
     public static final String GAME_URL = "http://120.26.108.184:98/game.htm?ip=120.26.108.184&port=9999&memberid=";
 
@@ -1070,7 +880,6 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
                 roomMain.getRoom().getChannel().upMicRequest(userid, Header.MIC_STATUS_APPLICATE_MIC, micFlag);
             }
         }).start();
-
     }
 
     //自己下麦
@@ -1304,6 +1113,7 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
     private AudioCapture audio;
     private EncodeAAC aac;
     private PushRtmp rtmp_push;
+    private String push_url;
 
     //上公麦提示   1
     @Subscriber(tag = "upMicState")
@@ -1328,42 +1138,40 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
                     @Override
                     public void onSuccess(Response<String> response) {
                         RtmpEntity rtmp = new Gson().fromJson(response.body(), RtmpEntity.class);
-                        switch (obj.getMicindex()) {
-                            case 0:
-                                map_trmp_play.put(0, rtmp.getRTMPPlayURL());
-                                handler.sendEmptyMessage(MSG_PLAY_MIC_1);
-                                break;
-                            case 1:
-                                map_trmp_play.put(1, rtmp.getRTMPPlayURL());
-                                handler.sendEmptyMessage(MSG_PLAY_MIC_2);
-                                break;
-                            case 2:
-                                map_trmp_play.put(2, rtmp.getRTMPPlayURL());
-                                handler.sendEmptyMessage(MSG_PLAY_MIC_3);
-                                break;
-                        }
-                        KLog.e(obj.getMicindex() + rtmp.getRTMPPlayURL());
                         //如果上公麦的id是自己，则执行上麦逻辑
                         if (Integer.parseInt(StartUtil.getUserId(context)) == obj.getUserid()) {
-                            textBackImage.setVisibility(View.GONE);
-                            svUpmic.setVisibility(View.VISIBLE);
-                            if (!is_sv_created) {
-                                svUpmic.getHolder().addCallback(RoomActivity.this);
+                            try {
+                                push_url = rtmp.getPublishUrl();
+                                _CameraSurface.setVisibility(View.VISIBLE);
+                                if (is_surface_creat) {
+                                    mMediaRecorder.startRecord(push_url);
+                                } else {
+                                    initCameraView();//初始化推流
+                                }
+                            } catch (Exception e) {
                             }
-                            // 开启视频采集
-                            h264 = Media.CreateEncodeH264();
-                            int ret = h264.Open(vHeight, vWidth);
-                            KLog.e("EncodeH264::Open()" + ret);
-                            // 开启声音采集
-                            audio = new AudioCapture(RoomActivity.this);
-                            audio.Start(44100, 2);
-                            aac = Media.CreateEncodeAAC();
-                            ret = aac.Open(44100, 2);
-                            KLog.e("EncodeAAC::Open()" + ret);
-                            KLog.e("===========:rtmp:" + rtmp.getPublishUrl());
-                            // 启动推送线程
-                            rtmp_push = Media.CreatePushRtmp();
-                            rtmp_push.Open(rtmp.getPublishUrl(), vHeight, vWidth, 44100, 2);
+                        } else {
+                            switch (obj.getMicindex()) {
+                                case 0:
+                                    KLog.e("0 mic");
+                                    map_trmp_play.put(0, rtmp.getRTMPPlayURL());
+                                    plVider1.setVideoPath(map_trmp_play.get(0));
+                                    plVider1.start();
+                                    break;
+                                case 1:
+                                    KLog.e("1 mic");
+                                    map_trmp_play.put(1, rtmp.getRTMPPlayURL());
+                                    plVider2.setVideoPath(map_trmp_play.get(1));
+                                    plVider2.start();
+                                    break;
+                                case 2:
+                                    KLog.e("2 mic");
+                                    map_trmp_play.put(2, rtmp.getRTMPPlayURL());
+                                    plVider3.setVideoPath(map_trmp_play.get(2));
+                                    plVider3.start();
+                                    break;
+                            }
+                            KLog.e(obj.getMicindex() + rtmp.getRTMPPlayURL());
                         }
                     }
                 });
@@ -1372,48 +1180,43 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
     //下麦提示
     @Subscriber(tag = "downMicState")
     public void downMicState(MicState obj) {
+        KLog.e("downMicState");
+
         for (int i = 0; i < micUsers.size(); i++) {
             if (micUsers.get(i).getUserid() == obj.getUserid()) {
+                //根据micindex关闭对应号的mic
+                KLog.e( micUsers.get(i).getMicindex());
+                switch (micUsers.get(i).getMicindex()) {
+                    case 0:
+                        map_trmp_play.put(0, "null");
+                        iv_cover_1.setVisibility(View.VISIBLE);
+                        plVider1.pause();
+                        break;
+                    case 1:
+                        map_trmp_play.put(1, "null");
+                        iv_cover_2.setVisibility(View.VISIBLE);
+                        plVider2.pause();
+                        break;
+                    case 2:
+                        map_trmp_play.put(2, "null");
+                        iv_cover_3.setVisibility(View.VISIBLE);
+                        plVider3.pause();
+                        break;
+                }
                 micUsers.remove(i);
             }
         }
-        switch (obj.getMicindex()) {
-            case 0:
 
-                map_trmp_play.put(0, "null");
-                rtmp.Stop();
-                pcmPlay.stop();
-                KLog.e("stop===mic0" + obj.getUserid());
-                break;
-            case 1:
-                map_trmp_play.put(1, "null");
-                rtmp2.Stop();
-                pcmPlay2.stop();
-                KLog.e("stop===mic1" + obj.getUserid());
-                break;
-            case 2:
-                map_trmp_play.put(2, "null");
-                rtmp3.Stop();
-                pcmPlay3.stop();
-                KLog.e("stop===mic2" + obj.getUserid());
-                break;
-        }
         //如果上公麦的id是自己，则隐藏svupmic  并且关闭推流
         if (Integer.parseInt(StartUtil.getUserId(context)) == obj.getUserid()) {
-            if (h264 != null && audio != null && aac != null && rtmp_push != null) {
-                h264.Release();
-                audio.Stop();
-                aac.Release();
-                rtmp_push.Release();
+            if (is_pushing) {
+                KLog.e("downMicState");
+                mMediaRecorder.stopRecord();
+                mMediaRecorder.reset();
+                _CameraSurface.setVisibility(View.GONE);
+                is_pushing = false;
             }
-            if (camera != null) {
-                camera.stopPreview();
-                camera.setPreviewCallback(null);
-                camera.release();
-                camera = null;
-            }
-            is_pushing = false;
-            svUpmic.setVisibility(View.GONE);
+
         }
     }
 
@@ -1423,7 +1226,6 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
     //麦上几个人就添加视频流
     @Subscriber(tag = "onMicUser")
     public void getonMicUser(final RoomUserInfo obj) {
-        textBackImage.setVisibility(View.GONE);
         micUsers.add(obj);
         String room_name = "lihao_" + obj.getUserid() + "_" + obj.getUserid();
         OkGo.<String>get(AppConstant.GET_RTMP_URL)
@@ -1435,16 +1237,22 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
                         RtmpEntity rtmpentity = new Gson().fromJson(response.body(), RtmpEntity.class);
                         switch (obj.getMicindex()) {
                             case 0:
+                                KLog.e("0 mic");
                                 map_trmp_play.put(0, rtmpentity.getRTMPPlayURL());
-                                handler.sendEmptyMessage(MSG_PLAY_MIC_1);
+                                plVider1.setVideoPath(map_trmp_play.get(0));
+                                plVider1.start();
                                 break;
                             case 1:
+                                KLog.e("1 mic");
                                 map_trmp_play.put(1, rtmpentity.getRTMPPlayURL());
-                                handler.sendEmptyMessage(MSG_PLAY_MIC_2);
+                                plVider2.setVideoPath(map_trmp_play.get(1));
+                                plVider2.start();
                                 break;
                             case 2:
+                                KLog.e("2 mic");
                                 map_trmp_play.put(2, rtmpentity.getRTMPPlayURL());
-                                handler.sendEmptyMessage(MSG_PLAY_MIC_3);
+                                plVider3.setVideoPath(map_trmp_play.get(2));
+                                plVider3.start();
                                 break;
                         }
                         KLog.e(obj.getMicindex() + rtmpentity.getRTMPPlayURL());
@@ -1488,175 +1296,377 @@ public class RoomActivity extends BaseActivity implements Camera.PreviewCallback
         }
     }
 
-    private boolean is_pushing = false;
 
-    //===================上麦推流的回调
-    @Override
-    public void onPreviewFrame(byte[] data, Camera camera) {
-        long curCapture = System.currentTimeMillis();
-        if ((curCapture - lastCapture) < 80) {
-            return;
-        }
+    private void setOptions(int codecType) {
+        AVOptions options = new AVOptions();
+        // the unit of timeout is ms
+        options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
+        options.setInteger(AVOptions.KEY_GET_AV_FRAME_TIMEOUT, 10 * 1000);
+        options.setInteger(AVOptions.KEY_PROBESIZE, 128 * 1024);
+        // Some optimization with buffering mechanism when be set to 1
+        options.setInteger(AVOptions.KEY_LIVE_STREAMING, 1);
+        options.setInteger(AVOptions.KEY_DELAY_OPTIMIZATION, 1);
+        // 1 -> hw codec enable, 0 -> disable [recommended]
+        options.setInteger(AVOptions.KEY_MEDIACODEC, codecType);
 
-        lastCapture = curCapture;
-        // 旋转90度
-        Media.NV21Rotate90(data, vWidth, vHeight, convertCache);
-        // 编码转换
-        Media.NV21toYUV420(data, vHeight, vWidth, convertCache);
-        // 执行编码功能
-        MediaData d = h264.Encode(data);
+        // whether start play automatically after prepared, default value is 1
+        options.setInteger(AVOptions.KEY_START_ON_PREPARED, 0);
 
-        if (null != d && d.getLength() > 0) {
-            // 测试时保存到文件
-//            if(null != fosH264) {
-//                try {
-//                    fosH264.write(d.H264, 0, d.Length);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            System.out.println("====================: " + data.length + ";" + (lastCapture / 1000) + ":" + d.Length);
-
-            // 发送出去
-            rtmp_push.SendH264(d.getData(), d.getLength(), d.getFlag());
-            is_pushing = true;
-        } else {
-            System.out.println("xxxxxxxxxxxxxxxxxxxx: " + data.length + ";" + (lastCapture / 1000) + ":" + data.length);
-        }
+        plVider1.setAVOptions(options);
+        plVider2.setAVOptions(options);
+        plVider3.setAVOptions(options);
     }
 
-    @Override
-    public void onAudioFrame(byte[] data) {
-        for (int i = 0; i < data.length; i += 4096) {
-            int end = i + 4096;
-            if (end > data.length) {
-                end = data.length;
+    private PLMediaPlayer.OnErrorListener mOnErrorListener = new PLMediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(PLMediaPlayer mp, int errorCode) {
+            KLog.e(errorCode + " ");
+            boolean isNeedReconnect = false;
+            switch (errorCode) {
+                case PLMediaPlayer.ERROR_CODE_INVALID_URI:
+                    KLog.e("Invalid URL !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_404_NOT_FOUND:
+                    KLog.e("404 resource not found !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_CONNECTION_REFUSED:
+                    KLog.e("Connection refused !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_CONNECTION_TIMEOUT:
+                    KLog.e("Connection timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_EMPTY_PLAYLIST:
+                    KLog.e("Empty playlist !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_STREAM_DISCONNECTED:
+                    KLog.e("Stream disconnected !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_IO_ERROR:
+                    switch (micFlag) {
+                        case 0:
+                            is_video1_play = false;
+                            break;
+                        case 1:
+                            is_video2_play = false;
+                            break;
+                        case 2:
+                            is_video3_play = false;
+                            break;
+                    }
+                    KLog.e("Network IO Error !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_UNAUTHORIZED:
+                    KLog.e("Unauthorized Error !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_PREPARE_TIMEOUT:
+                    KLog.e("Prepare timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_READ_FRAME_TIMEOUT:
+                    KLog.e("Read frame timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_HW_DECODE_FAILURE:
+                    setOptions(AVOptions.MEDIA_CODEC_AUTO);
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.MEDIA_ERROR_UNKNOWN:
+                    break;
+                default:
+                    KLog.e("unknown error !");
+                    break;
             }
-
-            byte[] buf = Arrays.copyOfRange(data, i, end);
-            System.out.println("=====:" + i + ":" + buf.length);
-
-            MediaData md = aac.Encode(Arrays.copyOfRange(data, i, end));
-
-            if (null == md) {
-                System.out.println(">>>:" + i + "," + end);
-                return;
+            if (isNeedReconnect) {
+                sendReconnectMessage();
+            } else {
+//                finish();
             }
-
-            // 发送出去
-            rtmp_push.SendAAC(md.getData(), md.getLength());
+            // Return true means the error has been handled
+            // If return false, then `onCompletion` will be called
+            return true;
         }
+    };
+    private static final int MESSAGE_ID_RECONNECTING = 0x01;
+
+    private void sendReconnectMessage() {
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_ID_RECONNECTING), 2000);
     }
 
-    private boolean is_sv_created = false;
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        is_sv_created = true;
-        try {
-            if (camera != null) {//为了解决切换到后台，再重新启动camera会崩溃的bug
-                camera.stopPreview();
-                camera.setPreviewCallback(null);
-                camera.release();
-                camera = null;
-            }
-            camera = Camera.open();
-            // 设置预览界面
-            camera.setPreviewDisplay(holder);
-            // 设置参数
-            Camera.Parameters param = camera.getParameters();
-
-            camera.setDisplayOrientation(90);
-            //param.setRotation(90);
-            param.setPreviewFormat(ImageFormat.NV21);
-            param.setPreviewSize(vWidth, vHeight);
-
-            camera.setParameters(param);
-            camera.startPreview();
-            camera.setPreviewCallback(this);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        is_sv_created = false;
-    }
-
-    private final int MSG_PLAY_MIC_1 = 0X0011;
-    private final int MSG_PLAY_MIC_2 = 0X0012;
-    private final int MSG_PLAY_MIC_3 = 0X0013;
-    public Handler handler = new Handler() {
+    protected Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {      //判断标志位
-                case MSG_PLAY_MIC_1:
-                    textBackImage.setVisibility(View.GONE);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (pcmPlay2 != null) {
-                                pcmPlay2.stop();
-                            }
-                            if (pcmPlay3 != null) {
-                                pcmPlay3.stop();
-                            }
-                            rtmp.Stop();
-                            rtmp.SetUrl(map_trmp_play.get(0));
-                            KLog.e(micFlag + " " + map_trmp_play.get(0));
-                            rtmp.Start();
-                            pcmPlay.start();
+            switch (msg.what) {
+                case MESSAGE_ID_RECONNECTING:
+                    if (NetUtils.isNetworkAvailable(context)) {
+                        switch (micFlag) {
+                            case 0:
+                                plVider1.setVideoPath(map_trmp_play.get(0));
+                                plVider1.start();
+                                if (!is_video1_play)
+                                    sendReconnectMessage();
+                                break;
+                            case 1:
+                                plVider2.setVideoPath(map_trmp_play.get(1));
+                                plVider2.start();
+                                if (!is_video2_play)
+                                    sendReconnectMessage();
+                                break;
+                            case 2:
+                                plVider3.setVideoPath(map_trmp_play.get(2));
+                                plVider3.start();
+                                if (!is_video3_play)
+                                    sendReconnectMessage();
+                                break;
                         }
-                    }).start();
-
-                    break;
-                case MSG_PLAY_MIC_2:
-                    textBackImage.setVisibility(View.GONE);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (pcmPlay != null) {
-                                pcmPlay.stop();
-                            }
-                            if (pcmPlay3 != null) {
-                                pcmPlay3.stop();
-                            }
-                            rtmp2.Stop();
-                            rtmp2.SetUrl(map_trmp_play.get(1));
-                            KLog.e(micFlag + " " + map_trmp_play.get(1));
-                            rtmp2.Start();
-                            pcmPlay2.start();
-                        }
-                    }).start();
-                    break;
-                case MSG_PLAY_MIC_3:
-                    textBackImage.setVisibility(View.GONE);
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (pcmPlay != null) {
-                                pcmPlay.stop();
-                            }
-                            if (pcmPlay2 != null) {
-                                pcmPlay2.stop();
-                            }
-                            rtmp3.Stop();
-                            rtmp3.SetUrl(map_trmp_play.get(2));
-                            KLog.e(micFlag + " " + map_trmp_play.get(2));
-                            rtmp3.Start();
-                            pcmPlay3.start();
-                        }
-                    }).start();
+                        return;
+                    } else {
+                        ToastUtil.show(context, R.string.net_error);
+                    }
                     break;
             }
         }
     };
+    private SurfaceView _CameraSurface;
+    private Surface mPreviewSurface;
+    private int resolution = AlivcMediaFormat.OUTPUT_RESOLUTION_360P;
+    private boolean screenOrientation = false;
+    private int cameraFrontFacing = 1;
+    private int bestBitrate = 500;
+    private int minBitrate = 400;
+    private int maxBitrate = 600;
+    private int initBitrate = 500;
+    private int frameRate = 25;
+    private AlivcMediaRecorder mMediaRecorder;
+    private AlivcRecordReporter mRecordReporter;
+    private int mPreviewWidth = 0;
+    private int mPreviewHeight = 0;
+    private Map<String, Object> mConfigure = new HashMap<>();
+
+    //=================推流初始化
+    private void initCameraView() {
+        //采集
+
+        _CameraSurface.getHolder().addCallback(_CameraSurfaceCallback);
+        _CameraSurface.setOnTouchListener(mOnTouchListener);
+        //对焦，缩放
+        mGesDetector = new android.view.GestureDetector(_CameraSurface.getContext(), mGestureDetector);
+        mScaleDetector = new ScaleGestureDetector(_CameraSurface.getContext(), mScaleGestureListener);
+        mMediaRecorder = AlivcMediaRecorderFactory.createMediaRecorder();
+        mMediaRecorder.init(context);
+        mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_BEAUTY_ON);
+        /**
+         * this method only can be called after mMediaRecorder.init(),
+         * else will return null;
+         */
+        mRecordReporter = mMediaRecorder.getRecordReporter();
+        mMediaRecorder.setOnRecordStatusListener(mRecordStatusListener);
+        mMediaRecorder.setOnNetworkStatusListener(mOnNetworkStatusListener);
+        mMediaRecorder.setOnRecordErrorListener(mOnPushErrorListener);
+        mConfigure.put(AlivcMediaFormat.KEY_CAMERA_FACING, cameraFrontFacing);
+        mConfigure.put(AlivcMediaFormat.KEY_MAX_ZOOM_LEVEL, 3);
+        mConfigure.put(AlivcMediaFormat.KEY_OUTPUT_RESOLUTION, resolution);
+        mConfigure.put(AlivcMediaFormat.KEY_MAX_VIDEO_BITRATE, maxBitrate * 1000);
+        mConfigure.put(AlivcMediaFormat.KEY_BEST_VIDEO_BITRATE, bestBitrate * 1000);
+        mConfigure.put(AlivcMediaFormat.KEY_MIN_VIDEO_BITRATE, minBitrate * 1000);
+        mConfigure.put(AlivcMediaFormat.KEY_INITIAL_VIDEO_BITRATE, initBitrate * 100);
+        mConfigure.put(AlivcMediaFormat.KEY_DISPLAY_ROTATION, screenOrientation ? AlivcMediaFormat.DISPLAY_ROTATION_90 : AlivcMediaFormat.DISPLAY_ROTATION_0);
+        mConfigure.put(AlivcMediaFormat.KEY_EXPOSURE_COMPENSATION, -1);//曝光度
+        mConfigure.put(AlivcMediaFormat.KEY_FRAME_RATE, frameRate);
+    }
+
+    private android.view.GestureDetector mGesDetector;
+    private ScaleGestureDetector mScaleDetector;
+    private android.view.GestureDetector.OnGestureListener mGestureDetector = new android.view.GestureDetector.OnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent motionEvent) {
+            if (mPreviewWidth > 0 && mPreviewHeight > 0) {
+                float x = motionEvent.getX() / mPreviewWidth;
+                float y = motionEvent.getY() / mPreviewHeight;
+                mMediaRecorder.focusing(x, y);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+            return false;
+        }
+    };
+
+    private View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            mGesDetector.onTouchEvent(motionEvent);
+            mScaleDetector.onTouchEvent(motionEvent);
+            return true;
+        }
+    };
+
+    private ScaleGestureDetector.OnScaleGestureListener mScaleGestureListener = new ScaleGestureDetector.OnScaleGestureListener() {
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+            mMediaRecorder.setZoom(scaleGestureDetector.getScaleFactor());
+            return true;
+        }
+
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+            return true;
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector scaleGestureDetector) {
+        }
+    };
+
+    private void startPreview(final SurfaceHolder holder) {
+        mMediaRecorder.prepare(mConfigure, mPreviewSurface);
+        mMediaRecorder.setPreviewSize(_CameraSurface.getMeasuredWidth(), _CameraSurface.getMeasuredHeight());
+        mMediaRecorder.startRecord(push_url);
+    }
+
+    private boolean is_surface_creat = false;
+    private final SurfaceHolder.Callback _CameraSurfaceCallback = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            is_surface_creat = true;
+            holder.setKeepScreenOn(true);
+            mPreviewSurface = holder.getSurface();
+            KLog.e("_CameraSurfaceCallback");
+            startPreview(holder);
+        }
+
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            mMediaRecorder.setPreviewSize(width, height);
+            mPreviewWidth = width;
+            mPreviewHeight = height;
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            is_surface_creat = false;
+            mPreviewSurface = null;
+            mMediaRecorder.stopRecord();
+            mMediaRecorder.reset();
+        }
+    };
+    private OnRecordStatusListener mRecordStatusListener = new OnRecordStatusListener() {
+        @Override
+        public void onDeviceAttach() {
+            mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_AUTO_FOCUS_ON);
+        }
+
+        @Override
+        public void onDeviceAttachFailed(int facing) {
+
+        }
+
+        @Override
+        public void onSessionAttach() {
+            mMediaRecorder.focusing(0.5f, 0.5f);
+//            if (is_connect_room) {//如果房间没有连接成功，则不显示控制页面
+
+//            }
+        }
+
+        @Override
+        public void onSessionDetach() {
+
+        }
+
+        @Override
+        public void onDeviceDetach() {
+
+        }
+
+        @Override
+        public void onIllegalOutputResolution() {
+            KLog.e("selected illegal output resolution");
+        }
+    };
+
+    private boolean is_pushing = false;
+    private OnNetworkStatusListener mOnNetworkStatusListener = new OnNetworkStatusListener() {
+        @Override
+        public void onNetworkBusy() {
+            KLog.e("==== on network busy ====");
+        }
+
+        @Override
+        public void onNetworkFree() {
+            KLog.e("network_status", "===== on network free ====");
+        }
+
+        @Override
+        public void onConnectionStatusChange(int status) {
+            KLog.e("ffmpeg Live stream connection status-->" + status);
+
+            switch (status) {
+                case AlivcStatusCode.STATUS_CONNECTION_START:
+                    KLog.e("Start live stream connection!");
+                    break;
+                case AlivcStatusCode.STATUS_CONNECTION_ESTABLISHED:
+                    is_pushing = true;
+                    KLog.e("Live stream connection is established!");
+                    break;
+                case AlivcStatusCode.STATUS_CONNECTION_CLOSED:
+                    KLog.e("Live stream connection is closed!");
+                    break;
+            }
+        }
+
+        @Override
+        public boolean onNetworkReconnectFailed() {
+            KLog.e("Reconnect timeout, not adapt to living");
+            mMediaRecorder.stopRecord();
+            return false;
+        }
+    };
+    private OnLiveRecordErrorListener mOnPushErrorListener = new OnLiveRecordErrorListener() {
+        @Override
+        public void onError(int errorCode) {
+            KLog.e("Live stream connection error-->" + errorCode);
+
+            switch (errorCode) {
+                case AlivcStatusCode.ERROR_ILLEGAL_ARGUMENT:
+                    KLog.e("Live stream connection error-->" + "-22错误产生");
+                case AlivcStatusCode.ERROR_SERVER_CLOSED_CONNECTION:
+                case AlivcStatusCode.ERORR_OUT_OF_MEMORY:
+                case AlivcStatusCode.ERROR_CONNECTION_TIMEOUT:
+                case AlivcStatusCode.ERROR_BROKEN_PIPE:
+                case AlivcStatusCode.ERROR_IO:
+                case AlivcStatusCode.ERROR_NETWORK_UNREACHABLE:
+                    KLog.e("Live stream connection error-->" + errorCode);
+                    break;
+
+                default:
+            }
+        }
+    };
+
 }

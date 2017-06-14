@@ -299,9 +299,9 @@ public class NewRoomActivity extends BaseActivity implements MicNotify, View.OnC
         view1 = inflater.inflate(R.layout.page_surface, null);
         view2 = inflater.inflate(R.layout.page_surface2,null);
         view3 = inflater.inflate(R.layout.page_surface3,null);
-        surfaceView  = (SurfaceView) view1.findViewById(R.id.surface1);
-        surfaceView2 = (SurfaceView) view2.findViewById(R.id.surface2);
-        surfaceView3 = (SurfaceView) view3.findViewById(R.id.surface3);
+//        surfaceView  = (SurfaceView) view1.findViewById(R.id.surface1);
+//        surfaceView2 = (SurfaceView) view2.findViewById(R.id.surface2);
+//        surfaceView3 = (SurfaceView) view3.findViewById(R.id.surface3);
 
         views.add(view1);
         views.add(view2);
@@ -934,8 +934,6 @@ public class NewRoomActivity extends BaseActivity implements MicNotify, View.OnC
                 break;
             case R.id.new_room_share:
                 ShareUtil.getInstance().share(this);
-                break;
-            case R.id.surface1:
                 break;
             case R.id.new_room_chat:
 //                if (chatFlag){

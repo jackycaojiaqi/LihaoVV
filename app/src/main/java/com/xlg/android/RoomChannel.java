@@ -769,7 +769,7 @@ public class RoomChannel implements ClientSocketHandler {
 
     //抱上麦
     public void baoMicRequest(int micid, int userid) {
-        KLog.e(micid+" ");
+        KLog.e("抱"+userid+"上"+micid+" 麦");
         Header header = new Header();
         MicState obj = new MicState();
         header.setCmd1(Header.MessageType_mxpSetMicStateRequest);

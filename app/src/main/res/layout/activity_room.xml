@@ -61,15 +61,8 @@
                     android:id="@+id/sv_upmic"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone" />
-
-                <com.facebook.drawee.view.SimpleDraweeView
-                    android:id="@+id/room_back_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:placeholderImage="@mipmap/roomspeen_photo"
-                    app:placeholderImageScaleType="fitXY" />
-
+                    android:visibility="gone"
+                   />
             </com.fubang.lihaovv.view.ScaleLayout>
 
             <com.fubang.lihaovv.view.ScaleLayout
@@ -109,6 +102,30 @@
                         android:layout_gravity="center_vertical"
                         android:layout_margin="10dp"
                         android:src="@mipmap/more_icon" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/LoadingView"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="@string/buffering"
+                        android:textColor="@android:color/white"
+                        android:textSize="20sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -204,8 +221,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
