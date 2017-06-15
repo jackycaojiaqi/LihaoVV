@@ -19,6 +19,8 @@ import org.simple.eventbus.EventBus;
 import org.simple.eventbus.Subscriber;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -32,7 +34,8 @@ public class LookFragment extends BaseFragment {
 
     private List<RoomUserInfo> userInfos = new ArrayList<>();
     private LookUserAdapter adapter;
-//    private int flag = 0;
+
+    //    private int flag = 0;
     @Override
     public void before() {
 
@@ -49,25 +52,25 @@ public class LookFragment extends BaseFragment {
 //            userInfos.add(roomUserInfo);
 //            flag = 1;
 //        }
-        adapter = new LookUserAdapter(userInfos,getContext());
+        adapter = new LookUserAdapter(userInfos, getContext());
 //        userList.setOnGroupClickListener(this);
         userList.setAdapter(adapter);
         userList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 if (childPosition == 0) {
-                    Toast.makeText(getActivity(), "点击了"+childPosition, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(userInfos.get(groupPosition),"SendToUser");
-                }else if (childPosition == 1){
-                    Toast.makeText(getActivity(), "点击了"+childPosition, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(userInfos.get(groupPosition),"KickOut");
-                }else if (childPosition == 2){
-                    Toast.makeText(getActivity(), "点击了"+childPosition, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(userInfos.get(groupPosition),"ForbidChat");
-                }else if (childPosition == 3){
-                    Toast.makeText(getActivity(), "点击了"+childPosition, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(userInfos.get(groupPosition),"CancelForbidChat");
-                }else {
+                    Toast.makeText(getActivity(), "点击了" + childPosition, Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(userInfos.get(groupPosition), "SendToUser");
+                } else if (childPosition == 1) {
+                    Toast.makeText(getActivity(), "点击了" + childPosition, Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(userInfos.get(groupPosition), "KickOut");
+                } else if (childPosition == 2) {
+                    Toast.makeText(getActivity(), "点击了" + childPosition, Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(userInfos.get(groupPosition), "ForbidChat");
+                } else if (childPosition == 3) {
+                    Toast.makeText(getActivity(), "点击了" + childPosition, Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(userInfos.get(groupPosition), "CancelForbidChat");
+                } else {
                     Toast.makeText(getActivity(), "点击了-----------" + childPosition, Toast.LENGTH_SHORT).show();
                 }
                 return true;
@@ -82,10 +85,10 @@ public class LookFragment extends BaseFragment {
 
     //用户离开房间
     @Subscriber(tag = "RoomKickoutUserInfo")
-    public void getUserOut(RoomKickoutUserInfo obj){
+    public void getUserOut(RoomKickoutUserInfo obj) {
         int leaveId = obj.getToid();
         for (int i = 0; i < userInfos.size(); i++) {
-            if (userInfos.get(i).getUserid() == leaveId){
+            if (userInfos.get(i).getUserid() == leaveId) {
                 userInfos.remove(i);
             }
         }
@@ -97,13 +100,23 @@ public class LookFragment extends BaseFragment {
 
     //获取用户列表
     @Subscriber(tag = "userList")
-    public void getUserList(RoomUserInfo userInfo){
+    public void getUserList(RoomUserInfo userInfo) {
         userInfos.add(userInfo);
+        Collections.sort(userInfos, new Comparator<RoomUserInfo>() {
+            @Override
+            public int compare(RoomUserInfo o1, RoomUserInfo o2) {
+                if (o1.getLevel1() == o2.getLevel1()) {
+                    return o1.getUserid() > o2.getUserid() ? -1 : 1;
+                } else {
+                    return o1.getLevel1() > o2.getLevel1() ? -1 : 1;
+                }
+            }
+        });
 //        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
         adapter.notifyDataSetChanged();
 //            userList.setAdapter(new UserAdapter(userInfos, this));
 //        }
-        Log.d("123",userInfo.getUserid()+"-----------<<");
+        Log.d("123", userInfo.getUserid() + "-----------<<");
     }
 
     @Override

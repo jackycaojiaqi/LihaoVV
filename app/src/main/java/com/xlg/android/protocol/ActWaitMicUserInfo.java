@@ -11,6 +11,8 @@ public class ActWaitMicUserInfo {
 	private int          act;      // 1为置顶 0为取消
 	@StructOrder(4)
 	private int          sortid;   // 当前麦序里的排序位 供一人排多麦时候使用
+	@StructOrder(5)
+	private int          nextid;   // 当前麦序里的排序位 供一人排多麦时候使用
 	public int getVcbid() {
 		return vcbid;
 	}
@@ -42,4 +44,11 @@ public class ActWaitMicUserInfo {
 		this.sortid = sortid;
 	}
 
+	public int getNextid() {
+		return nextid;
+	}
+
+	public void setNextid(int nextid) {
+		this.nextid = nextid;
+	}
 }

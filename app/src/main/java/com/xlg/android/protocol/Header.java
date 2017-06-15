@@ -85,6 +85,8 @@ public class Header {
     public static final byte MessageType_mxpBankDepositResponse = (byte) (6 + 119); // 125
     public static final byte MessageType_mxpBankDepositError = (byte) (6 + 120); // 126
     public static final byte MessageType_mxpAddMicTimeNotify = (byte) (6 + 122); // 128
+
+    public static final byte MessageType_mxpActWaitMicUserRequest = (byte) (129); // 129
     public static final byte MessageType_mxpActWaitMicUserNotify = (byte) (6 + 124); // 130
     public static final byte MessageType_mxpRedPagerRequest = (byte) (6 + 125); // 131
     public static final byte MessageType_mxpRedPagerResponse = (byte) (6 + 126); // 132

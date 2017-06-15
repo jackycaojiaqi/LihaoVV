@@ -1320,18 +1320,18 @@ public class NewRoomActivity extends BaseActivity implements MicNotify, View.OnC
 
     private List<RoomUserInfo>  paiUserList = new ArrayList<>();
     //获取麦序列表
-    @Subscriber(tag = "UseridList")
-    public void getUseridList(UseridList obj){
-        for (int i = 0; i < obj.getList().length; i++) {
-            for (int j = 0; j < userInfos.size(); j++) {
-                if (obj.getList()[i] == userInfos.get(j).getUserid()){
-                    paiUserList.add(userInfos.get(j));
-                    maiAdapter.notifyDataSetChanged();
-                }
-            }
-//            if (obj.getList()[i] == userInfos)
-        }
-    }
+//    @Subscriber(tag = "UseridList")
+//    public void getUseridList(UseridList obj){
+//        for (int i = 0; i < obj.getList().length; i++) {
+//            for (int j = 0; j < userInfos.size(); j++) {
+//                if (obj.getList()[i] == userInfos.get(j).getUserid()){
+//                    paiUserList.add(userInfos.get(j));
+//                    maiAdapter.notifyDataSetChanged();
+//                }
+//            }
+////            if (obj.getList()[i] == userInfos)
+//        }
+//    }
 
     //开始加入房间
     @Override

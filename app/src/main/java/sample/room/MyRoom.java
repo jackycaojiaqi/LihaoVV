@@ -196,7 +196,7 @@ public class MyRoom implements RoomHandler {
     public void onGetRoomMicListResponse(UseridList obj) {
         PrintUnknown("onGetRoomMicListResponse: ");
         EventBus.getDefault().post(obj, "UseridList");
-        System.out.println("============" + obj.getList()[0]);
+//        System.out.println("============" + obj.getList()[0]);
         Tools.PrintObject(obj);
     }
 
@@ -466,6 +466,8 @@ public class MyRoom implements RoomHandler {
     public void onActWaitMicUserNotify(ActWaitMicUserInfo obj) {
         // TODO Auto-generated method stub
         PrintUnknown("onActWaitMicUserNotify: ");
+        EventBus.getDefault().post(obj, "onActWaitMicUserNotify");
+
     }
 
     @Override

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.fubang.lihaovv.MainActivity_;
 import com.fubang.lihaovv.R;
 import com.fubang.lihaovv.entities.UserEntity;
+import com.socks.library.KLog;
 import com.xlg.android.protocol.LogonResponse;
 import com.xlg.android.utils.Tools;
 import com.zhuyunjian.library.StartUtil;
@@ -217,8 +218,8 @@ ImageView wechatImage;
                     StartUtil.editInfo(this, res.getCalias(), res.getUserid() + "", "head" + res.getHeadpic(), res.getCuserpwd());
                 }
             }
-
             StartUtil.putVersion(this,res.getNverison()+"");
+            KLog.e(res.getNverison()+"");
             StartUtil.editUserInfo(this,res.getNlevel()+"",res.getNdeposit()+"",res.getNk()+"",res.getNb()+"",res.getCidiograph());
             startActivity(MainActivity_.intent(LoginActivity.this).extra("flag",flag).get());
         }

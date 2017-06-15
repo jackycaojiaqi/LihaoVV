@@ -802,7 +802,7 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setVcbid(mRoomID);
         obj.setUserid(mUserID);
         obj.setNvideowndtype(mic_guan);
-        KLog.e("guanMic"+mic_guan);
+        KLog.e("guanMic" + mic_guan);
         sendPack(header, obj);
     }
 
@@ -840,6 +840,20 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setSrcid(mUserID);
         obj.setAction(action);
         obj.setReserve((short) 0);
+        sendPack(header, obj);
+    }
+
+    //取消某人的麦序
+    public void cancleMicQueue(int toid) {
+        Header header = new Header();
+        ActWaitMicUserInfo obj = new ActWaitMicUserInfo();
+        header.setCmd1(Header.MessageType_mxpActWaitMicUserRequest);
+        obj.setVcbid(mRoomID);
+        obj.setUserid(mUserID);
+        obj.setToid(toid);
+        obj.setAct(0);
+        obj.setSortid(0);
+        obj.setNextid(0);
         sendPack(header, obj);
     }
 }

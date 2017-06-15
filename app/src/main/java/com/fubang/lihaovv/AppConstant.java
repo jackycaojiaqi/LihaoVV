@@ -22,7 +22,7 @@ public class AppConstant {
     public static final String STAR_URL= "http://www.bbbktv.com:9418/top/";
     public static final String HEAD_URL = "http://boke.nnnktv.com/dskj_admin/roompic/";
 //    public static final String HEAD_URL = "http://"+StartUtil.getIpPort(App.getInstance())+"/home_dhhs/upload/user/";
-    public static final String DOWNLOAD_URL = "http://61.153.104.118:9418/download/disankongjian.apk";
+    public static final String DOWNLOAD_URL = "http://61.153.104.118:9418/download/nhkh.apk";
     public static final String VER = "ver";
     public static final String OS = "os";
     public static final String TIME = "time";

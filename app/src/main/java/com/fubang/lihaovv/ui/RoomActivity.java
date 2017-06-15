@@ -95,6 +95,7 @@ import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.pili.pldroid.player.widget.PLVideoView;
 import com.socks.library.KLog;
+import com.xlg.android.protocol.ActWaitMicUserInfo;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.Header;
 import com.xlg.android.protocol.JoinRoomResponse;
@@ -131,6 +132,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -631,7 +634,8 @@ public class RoomActivity extends BaseActivity {
     }
 
 
-    private EditText giftToUser;
+    private TextView giftToUser;
+    private boolean is_mic_have = false;
 
     //礼物的悬浮框
     private void showWindow() {
@@ -642,9 +646,10 @@ public class RoomActivity extends BaseActivity {
         final TextView giftName = (TextView) view.findViewById(R.id.gift_name_txt);
         final EditText giftCount = (EditText) view.findViewById(R.id.gift_count);
 //        final EditText
-        giftToUser = (EditText) view.findViewById(R.id.gift_to_user);
+        giftToUser = (TextView) view.findViewById(R.id.gift_to_user);
         popupWindow = new PopupWindow(view);
         popupWindow.setFocusable(true);
+        gifts.clear();
         gifts.addAll(GiftUtil.getGifts());
         GiftAdapter giftAdapter = new GiftAdapter(gifts, this);
         gridView.setAdapter(giftAdapter);
@@ -663,7 +668,7 @@ public class RoomActivity extends BaseActivity {
             for (int i = 0; i < micUsers.size(); i++) {
                 if (micUsers.get(i).getMicindex() == micFlag) {
                     giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
-//                            Log.d("123","toid---"+toid+"toName"+toName);
+                    is_mic_have = true;
                 }
             }
         }
@@ -671,6 +676,14 @@ public class RoomActivity extends BaseActivity {
         giftSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!is_mic_have) {
+                    ToastUtil.show(context, "当前麦没有主播");
+                    return;
+                }
+                if (giftId == -1) {
+                    ToastUtil.show(context, "请先选择礼物");
+                    return;
+                }
                 toid = -1;
                 toName = "";
 //                if (giftToUser.getText().toString().equals("1")){
@@ -690,6 +703,8 @@ public class RoomActivity extends BaseActivity {
                 }).start();
 
                 giftName.setText("送给");
+                is_mic_have = false;
+                giftId = -1;
                 popupWindow.dismiss();
             }
         });
@@ -1108,10 +1123,20 @@ public class RoomActivity extends BaseActivity {
         }
     }
 
-    //获取用户列表
+    //用户加入房间
     @Subscriber(tag = "userList")
     public void getUserList(RoomUserInfo userInfo) {
         userInfos.add(userInfo);
+        Collections.sort(userInfos, new Comparator<RoomUserInfo>() {
+            @Override
+            public int compare(RoomUserInfo o1, RoomUserInfo o2) {
+                if (o1.getLevel1() == o2.getLevel1()) {
+                    return o1.getUserid() > o2.getUserid() ? -1 : 1;
+                }else {
+                    return o1.getLevel1() > o2.getLevel1() ? -1 : 1;
+                }
+            }
+        });
         KLog.e(userInfo.getUserid() + "加入房间");
     }
 
@@ -1127,6 +1152,28 @@ public class RoomActivity extends BaseActivity {
     private EncodeAAC aac;
     private PushRtmp rtmp_push;
     private String push_url;
+
+    //取消麦序上的麦
+    @Subscriber(tag = "CancleMicQuen")
+    public void CancleMicQuen(final RoomUserInfo obj) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.getRoom().getChannel().cancleMicQueue(obj.getUserid());
+            }
+        }).start();
+    }
+
+    //取消麦序的回调，重新获取麦序
+    @Subscriber(tag = "onActWaitMicUserNotify")
+    public void onActWaitMicUserNotify(final ActWaitMicUserInfo obj) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.getRoom().getChannel().getMicList();
+            }
+        }).start();
+    }
 
     //上公麦提示   1
     @Subscriber(tag = "upMicState")
@@ -1310,6 +1357,7 @@ public class RoomActivity extends BaseActivity {
                             for (int i = 0; i < micUsers.size(); i++) {
                                 if (micUsers.get(i).getMicindex() == micFlag) {
                                     giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
+                                    is_mic_have = true;
                                 }
                             }
                         }
@@ -1611,6 +1659,7 @@ public class RoomActivity extends BaseActivity {
         mConfigure.put(AlivcMediaFormat.KEY_DISPLAY_ROTATION, screenOrientation ? AlivcMediaFormat.DISPLAY_ROTATION_90 : AlivcMediaFormat.DISPLAY_ROTATION_0);
         mConfigure.put(AlivcMediaFormat.KEY_EXPOSURE_COMPENSATION, -1);//曝光度
         mConfigure.put(AlivcMediaFormat.KEY_FRAME_RATE, frameRate);
+
     }
 
     private android.view.GestureDetector mGesDetector;
@@ -1681,7 +1730,7 @@ public class RoomActivity extends BaseActivity {
     private void startPreview(final SurfaceHolder holder) {
         mMediaRecorder.prepare(mConfigure, mPreviewSurface);
         mMediaRecorder.setZoom(0.5f);
-        mMediaRecorder.setPreviewSize(_CameraSurface.getMeasuredWidth(), _CameraSurface.getMeasuredHeight());
+        mMediaRecorder.setPreviewSize(_CameraSurface.getMeasuredWidth()/2, _CameraSurface.getMeasuredHeight()/2);
         mMediaRecorder.startRecord(push_url);
     }
 

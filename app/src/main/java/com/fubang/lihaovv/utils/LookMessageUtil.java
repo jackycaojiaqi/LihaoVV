@@ -41,10 +41,19 @@ import java.util.List;
 public class LookMessageUtil {
     public static List<LookMessageEntity> getMessageEntity() {
         List<LookMessageEntity> list = new ArrayList<>();
-        list.add(new LookMessageEntity(R.mipmap.mai1,"抱上1麦"));
-        list.add(new LookMessageEntity(R.mipmap.mai2,"抱上2麦"));
-        list.add(new LookMessageEntity(R.mipmap.mai3,"抱上3麦"));
-        list.add(new LookMessageEntity(R.mipmap.tellqiaoqiao,"私聊"));
+        list.add(new LookMessageEntity(R.mipmap.mai1, "抱上1麦"));
+        list.add(new LookMessageEntity(R.mipmap.mai2, "抱上2麦"));
+        list.add(new LookMessageEntity(R.mipmap.mai3, "抱上3麦"));
+        list.add(new LookMessageEntity(R.mipmap.tellqiaoqiao, "私聊"));
+        return list;
+    }
+
+    public static List<LookMessageEntity> getMicQuenEntity() {
+        List<LookMessageEntity> list = new ArrayList<>();
+        list.add(new LookMessageEntity(R.mipmap.mai1, "抱上1麦"));
+        list.add(new LookMessageEntity(R.mipmap.mai2, "抱上2麦"));
+        list.add(new LookMessageEntity(R.mipmap.mai3, "抱上3麦"));
+        list.add(new LookMessageEntity(R.mipmap.del, "取消麦序"));
         return list;
     }
 }

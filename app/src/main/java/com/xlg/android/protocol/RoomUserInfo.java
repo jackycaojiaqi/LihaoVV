@@ -2,7 +2,9 @@ package com.xlg.android.protocol;
 
 import com.xlg.android.utils.Tools;
 
-public class RoomUserInfo {
+import java.util.Comparator;
+
+public class RoomUserInfo  {
 	@StructOrder(0)
 	private int	userid;
 	@StructOrder(1)
@@ -61,6 +63,15 @@ public class RoomUserInfo {
 	private byte[]				clastloginmac = new byte[32];					//头像id
 
 	private String rtmp_paly_url;
+	private int jinmic;
+
+	public int getJinmic() {
+		return jinmic;
+	}
+
+	public void setJinmic(int jinmic) {
+		this.jinmic = jinmic;
+	}
 
 	public String getRtmp_paly_url() {
 		return rtmp_paly_url;
@@ -224,5 +235,6 @@ public class RoomUserInfo {
 	public void setHeadid(int headid) {
 		this.headid = headid;
 	}
-	
+
+
 }

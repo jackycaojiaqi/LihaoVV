@@ -134,6 +134,7 @@ public class MicQuenFragment extends BaseFragment {
     //下麦提示  0
     @Subscriber(tag = "downMicState")
     public void downMicState(MicState obj) {
+        KLog.e(paiUserList.size());
         for (int i = 0; i < paiUserList.size(); i++) {
             if (paiUserList.get(i).getUserid() == obj.getUserid()) {
                 paiUserList.remove(i);
@@ -143,15 +144,33 @@ public class MicQuenFragment extends BaseFragment {
         }
     }
 
+    private boolean is_list_have = false;
     //获取麦序列表
     @Subscriber(tag = "UseridList")
     public void getUseridList(UseridList obj) {
         paiUserList.clear();
-        KLog.e(obj.getList().length + " ");
+
         for (int i = 0; i < obj.getList().length; i++) {
             for (int j = 0; j < RoomActivity.userInfos.size(); j++) {
                 if (obj.getList()[i] == RoomActivity.userInfos.get(j).getUserid()) {
-                    paiUserList.add(RoomActivity.userInfos.get(j));
+                    for (RoomUserInfo roomUserInfo : paiUserList) {
+                        if (roomUserInfo.getUserid() == obj.getList()[i]) {
+                            is_list_have = true;
+                        }
+                    }
+                    int x = 0;
+                    try {
+                        x = obj.getList()[i + 1];
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        x = 0;
+                    }
+
+                    RoomActivity.userInfos.get(j).setJinmic(x);
+                    if (!is_list_have) {
+                        paiUserList.add(RoomActivity.userInfos.get(j));
+                    }
+                    is_list_have = false;
                 }
             }
         }
