@@ -83,19 +83,12 @@ public class LookFragment extends BaseFragment {
 
     }
 
-    //用户离开房间
-    @Subscriber(tag = "RoomKickoutUserInfo")
-    public void getUserOut(RoomKickoutUserInfo obj) {
-        int leaveId = obj.getToid();
-        for (int i = 0; i < userInfos.size(); i++) {
-            if (userInfos.get(i).getUserid() == leaveId) {
-                userInfos.remove(i);
-            }
-        }
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            adapter.notifyDataSetChanged();
-//            userList.setAdapter(new LookUserAdapter(userInfos, getContext()));
-        }
+
+
+    //获取用户列表
+    @Subscriber(tag = "lookfragment_notify")
+    public void lookfragment_notify(List<RoomUserInfo>  obj) {
+        adapter.NotifyList(obj);
     }
 
     //获取用户列表

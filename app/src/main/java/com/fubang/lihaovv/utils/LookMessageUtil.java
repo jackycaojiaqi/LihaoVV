@@ -53,7 +53,7 @@ public class LookMessageUtil {
         list.add(new LookMessageEntity(R.mipmap.mai1, "抱上1麦"));
         list.add(new LookMessageEntity(R.mipmap.mai2, "抱上2麦"));
         list.add(new LookMessageEntity(R.mipmap.mai3, "抱上3麦"));
-        list.add(new LookMessageEntity(R.mipmap.del, "取消麦序"));
+        list.add(new LookMessageEntity(R.mipmap.clear_icon, "取消麦序"));
         return list;
     }
 }

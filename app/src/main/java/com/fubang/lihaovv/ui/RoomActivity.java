@@ -109,6 +109,7 @@ import com.zhuyunjian.library.StartUtil;
 
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.EView;
 import org.androidannotations.annotations.ViewById;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -1121,6 +1122,7 @@ public class RoomActivity extends BaseActivity {
                 userInfos.remove(i);
             }
         }
+        EventBus.getDefault().post(userInfos,"lookfragment_notify");
     }
 
     //用户加入房间
@@ -1137,6 +1139,7 @@ public class RoomActivity extends BaseActivity {
                 }
             }
         });
+        EventBus.getDefault().post(userInfos,"lookfragment_notify");
         KLog.e(userInfo.getUserid() + "加入房间");
     }
 

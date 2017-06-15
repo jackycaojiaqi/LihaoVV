@@ -40,6 +40,7 @@
         android:id="@+id/home_room_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:singleLine="true"
         android:text="12122222222222"
         android:textColor="@color/home_room_text"

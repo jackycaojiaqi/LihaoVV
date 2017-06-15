@@ -61,6 +61,12 @@ public class LookUserAdapter extends BaseExpandableListAdapter {
         this.context = context;
     }
 
+    public void NotifyList(List<RoomUserInfo> list) {
+        this.list = list;
+        notifyDataSetChanged();
+    }
+
+
     @Override
     public int getGroupCount() {
         return list.size();
@@ -98,84 +104,89 @@ public class LookUserAdapter extends BaseExpandableListAdapter {
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        GroupViewHolder holder ;
-        if (convertView == null){
-            convertView = LayoutInflater.from(context).inflate(R.layout.look_user_list,parent,false);
+        GroupViewHolder holder;
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.look_user_list, parent, false);
             holder = new GroupViewHolder(convertView);
             convertView.setTag(holder);
         }
         holder = (GroupViewHolder) convertView.getTag();
 
         holder.nameTv.setText(list.get(groupPosition).getUseralias());
-        holder.idTv.setText(list.get(groupPosition).getUserid()+"");
+        holder.idTv.setText(list.get(groupPosition).getUserid() + "");
 
-        String pichead = "head"+list.get(groupPosition).getHeadid() + "";
+        String pichead = "head" + list.get(groupPosition).getHeadid() + "";
         holder.headImage.setImageResource(getResourceByReflect(pichead));
         return convertView;
     }
 
     /**
      * 获取图片名称获取图片的资源id的方法
+     *
      * @param imageName
      * @return
      */
-    public int getResourceByReflect(String imageName){
-        Class drawable  =  R.drawable.class;
+    public int getResourceByReflect(String imageName) {
+        Class drawable = R.drawable.class;
         Field field = null;
-        int r_id ;
+        int r_id;
         try {
             field = drawable.getField(imageName);
             r_id = field.getInt(field.getName());
         } catch (Exception e) {
-            r_id= R.drawable.head0;
+            r_id = R.drawable.head0;
 //            Log.e("ERROR", "PICTURE NOT　FOUND！");
         }
         return r_id;
     }
-    static class GroupViewHolder{
-        TextView nameTv,idTv;
+
+    static class GroupViewHolder {
+        TextView nameTv, idTv;
         SimpleDraweeView headImage;
-        GroupViewHolder(View item){
+
+        GroupViewHolder(View item) {
             nameTv = (TextView) item.findViewById(R.id.look_user_name);
             idTv = (TextView) item.findViewById(R.id.look_user_id);
             headImage = (SimpleDraweeView) item.findViewById(R.id.look_user_headicon);
         }
     }
+
     @Override
     public View getChildView(final int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         ChildViewHolder holder;
-        if (convertView == null){
-            convertView = LayoutInflater.from(context).inflate(R.layout.look_user_message,parent,false);
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.look_user_message, parent, false);
             holder = new ChildViewHolder();
             convertView.setTag(holder);
         }
         holder = (ChildViewHolder) convertView.getTag();
         holder.childGrid = (GridView) convertView.findViewById(R.id.adapter_look_explv_gridview);
-        LookGridAdapter adapter = new LookGridAdapter(LookMessageUtil.getMessageEntity(),context);
+        LookGridAdapter adapter = new LookGridAdapter(LookMessageUtil.getMessageEntity(), context);
         holder.childGrid.setAdapter(adapter);
         holder.childGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    Toast.makeText(context, "抱上1麦"+position, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(list.get(groupPosition),"FirstMic");
-                }else if (position == 1){
-                    Toast.makeText(context, "抱上2麦"+position, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(list.get(groupPosition),"SecondMic");
-                }else if (position == 2){
-                    Toast.makeText(context, "抱上3麦"+position, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(list.get(groupPosition),"ThirdMic");
-                }else if (position == 3){
-                    Toast.makeText(context, "私聊"+position, Toast.LENGTH_SHORT).show();
-                    EventBus.getDefault().post(list.get(groupPosition),"PersonChat");
-                }else {
+                    Toast.makeText(context, "抱上1麦" + position, Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(list.get(groupPosition), "FirstMic");
+                } else if (position == 1) {
+                    Toast.makeText(context, "抱上2麦" + position, Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(list.get(groupPosition), "SecondMic");
+                } else if (position == 2) {
+                    Toast.makeText(context, "抱上3麦" + position, Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(list.get(groupPosition), "ThirdMic");
+                } else if (position == 3) {
+                    Toast.makeText(context, "私聊" + position, Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(list.get(groupPosition), "PersonChat");
+                } else {
                     Toast.makeText(context, "点击了-----------" + childPosition, Toast.LENGTH_SHORT).show();
                 }
             }
         });
         return convertView;
     }
-     static class ChildViewHolder{
+
+    static class ChildViewHolder {
         private GridView childGrid;
     }
 
