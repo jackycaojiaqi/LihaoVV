@@ -283,6 +283,7 @@ public class RoomActivity extends BaseActivity {
     private View view1, view2, view3;
     private View mLoadingView;
     private ImageView iv_cover_1, iv_cover_2, iv_cover_3;
+    private RelativeLayout rll_video1, rll_video2, rll_video3;
 
     //开始加入房间
     @Override
@@ -302,7 +303,6 @@ public class RoomActivity extends BaseActivity {
                 plVider3.start();
                 break;
         }
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -374,6 +374,7 @@ public class RoomActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
             }
         }).start();
@@ -395,6 +396,9 @@ public class RoomActivity extends BaseActivity {
         iv_cover_1 = (ImageView) view1.findViewById(R.id.iv_cover_1);
         iv_cover_2 = (ImageView) view2.findViewById(R.id.iv_cover_2);
         iv_cover_3 = (ImageView) view3.findViewById(R.id.iv_cover_3);
+        rll_video1 = (RelativeLayout) view1.findViewById(R.id.rll_video_view1);
+        rll_video2 = (RelativeLayout) view2.findViewById(R.id.rll_video_view2);
+        rll_video3 = (RelativeLayout) view3.findViewById(R.id.rll_video_view3);
         initDanmu();
         for (int i = 0; i < AppConstant.ROOM_TYPE_TITLE.length; i++) {
             titles.add(AppConstant.ROOM_TYPE_TITLE[i]);
@@ -466,9 +470,10 @@ public class RoomActivity extends BaseActivity {
         // 1 -> hw codec enable, 0 -> disable [recommended]
         int codec = AVOptions.MEDIA_CODEC_AUTO;
         setOptions(codec);
-        plVider1.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
-        plVider2.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
-        plVider3.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
+        plVider1.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_ORIGIN);
+        plVider2.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_ORIGIN);
+        plVider3.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_ORIGIN);
+
         plVider1.setOnErrorListener(mOnErrorListener);
         plVider2.setOnErrorListener(mOnErrorListener);
         plVider3.setOnErrorListener(mOnErrorListener);
@@ -502,12 +507,53 @@ public class RoomActivity extends BaseActivity {
                 return false;
             }
         });
-
+        //====================在 SDK 解析出视频的尺寸信息后，会触发该回调，开发者可以在该回调中调整 UI 的视图尺寸。
+        plVider1.setOnVideoSizeChangedListener(new PLMediaPlayer.OnVideoSizeChangedListener() {
+            @Override
+            public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
+                if (width < height) {//竖屏 处理UI也为竖屏
+                    ViewGroup.LayoutParams params = rll_video1.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context) / 2;
+                    rll_video1.setLayoutParams(params);
+                } else {
+                    ViewGroup.LayoutParams params = rll_video1.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context);
+                    rll_video1.setLayoutParams(params);
+                }
+            }
+        });
+        plVider2.setOnVideoSizeChangedListener(new PLMediaPlayer.OnVideoSizeChangedListener() {
+            @Override
+            public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
+                if (width < height) {//竖屏 处理UI也为竖屏
+                    ViewGroup.LayoutParams params = rll_video2.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context) / 2;
+                    rll_video2.setLayoutParams(params);
+                } else {
+                    ViewGroup.LayoutParams params = rll_video2.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context);
+                    rll_video2.setLayoutParams(params);
+                }
+            }
+        });
+        plVider3.setOnVideoSizeChangedListener(new PLMediaPlayer.OnVideoSizeChangedListener() {
+            @Override
+            public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
+                if (width < height) {//竖屏 处理UI也为竖屏
+                    ViewGroup.LayoutParams params = rll_video3.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context) / 2;
+                    rll_video3.setLayoutParams(params);
+                } else {
+                    ViewGroup.LayoutParams params = rll_video3.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context);
+                    rll_video3.setLayoutParams(params);
+                }
+            }
+        });
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
-
             @Override
             public void onPageSelected(int position) {
                 micFlag = position;
@@ -562,6 +608,15 @@ public class RoomActivity extends BaseActivity {
         fullImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (roomMain.getRoom() != null) {
+                            roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));
+                            roomMain.getRoom().getChannel().Close();
+                        }
+                    }
+                }).start();
                 startActivity(RoomLandActivity_.intent(RoomActivity.this).extra("roomIp", roomIp).extra("roomId", roomId + "").extra("roomPwd", roomPwd + "").get());
             }
         });
@@ -903,6 +958,7 @@ public class RoomActivity extends BaseActivity {
                 roomMain.getRoom().getChannel().upMicRequest(userid, Header.MIC_STATUS_APPLICATE_MIC, micFlag);
             }
         }).start();
+        testController.setVisibility(View.GONE);
     }
 
     //自己下麦
@@ -914,6 +970,7 @@ public class RoomActivity extends BaseActivity {
                 roomMain.getRoom().getChannel().upMicRequest(userid, Header.MIC_STATUS_DOWN_MIC, micFlag);
             }
         }).start();
+        testController.setVisibility(View.VISIBLE);
     }
 
     //抱上1麦
@@ -1122,24 +1179,31 @@ public class RoomActivity extends BaseActivity {
                 userInfos.remove(i);
             }
         }
-        EventBus.getDefault().post(userInfos,"lookfragment_notify");
+        EventBus.getDefault().post(userInfos, "lookfragment_notify");
     }
+
+    private boolean is_list_hava_people = false;
 
     //用户加入房间
     @Subscriber(tag = "userList")
     public void getUserList(RoomUserInfo userInfo) {
+        for (RoomUserInfo roomUserInfo : userInfos) {
+            if (roomUserInfo.getUserid() == userInfo.getUserid()) {
+                return;
+            }
+        }
         userInfos.add(userInfo);
         Collections.sort(userInfos, new Comparator<RoomUserInfo>() {
             @Override
             public int compare(RoomUserInfo o1, RoomUserInfo o2) {
                 if (o1.getLevel1() == o2.getLevel1()) {
                     return o1.getUserid() > o2.getUserid() ? -1 : 1;
-                }else {
+                } else {
                     return o1.getLevel1() > o2.getLevel1() ? -1 : 1;
                 }
             }
         });
-        EventBus.getDefault().post(userInfos,"lookfragment_notify");
+        EventBus.getDefault().post(userInfos, "lookfragment_notify");
         KLog.e(userInfo.getUserid() + "加入房间");
     }
 
@@ -1208,6 +1272,7 @@ public class RoomActivity extends BaseActivity {
                                 _CameraSurface.setVisibility(View.VISIBLE);
                                 //通知麦序fragment  已经上麦了
                                 EventBus.getDefault().post("is_upmic", "is_upmic");
+                                testController.setVisibility(View.GONE);
                                 if (is_surface_creat) {
                                     mMediaRecorder.startRecord(push_url);
                                 } else {
@@ -1282,6 +1347,7 @@ public class RoomActivity extends BaseActivity {
                 mMediaRecorder.reset();
                 _CameraSurface.setVisibility(View.GONE);
                 is_pushing = false;
+                testController.setVisibility(View.VISIBLE);
             }
 
         }
@@ -1511,6 +1577,7 @@ public class RoomActivity extends BaseActivity {
             switch (errorCode) {
                 case PLMediaPlayer.ERROR_CODE_INVALID_URI:
                     KLog.e("Invalid URL !");
+                    isNeedReconnect = true;
                     break;
                 case PLMediaPlayer.ERROR_CODE_404_NOT_FOUND:
                     KLog.e("404 resource not found !");
@@ -1635,7 +1702,6 @@ public class RoomActivity extends BaseActivity {
     //=================推流初始化
     private void initCameraView() {
         //采集
-
         _CameraSurface.getHolder().addCallback(_CameraSurfaceCallback);
         _CameraSurface.setOnTouchListener(mOnTouchListener);
         //对焦，缩放
@@ -1653,7 +1719,7 @@ public class RoomActivity extends BaseActivity {
         mMediaRecorder.setOnNetworkStatusListener(mOnNetworkStatusListener);
         mMediaRecorder.setOnRecordErrorListener(mOnPushErrorListener);
         mConfigure.put(AlivcMediaFormat.KEY_CAMERA_FACING, cameraFrontFacing);
-        mConfigure.put(AlivcMediaFormat.KEY_MAX_ZOOM_LEVEL, 3);
+        mConfigure.put(AlivcMediaFormat.KEY_MAX_ZOOM_LEVEL, 1);
         mConfigure.put(AlivcMediaFormat.KEY_OUTPUT_RESOLUTION, resolution);
         mConfigure.put(AlivcMediaFormat.KEY_MAX_VIDEO_BITRATE, maxBitrate * 1000);
         mConfigure.put(AlivcMediaFormat.KEY_BEST_VIDEO_BITRATE, bestBitrate * 1000);
@@ -1733,8 +1799,9 @@ public class RoomActivity extends BaseActivity {
     private void startPreview(final SurfaceHolder holder) {
         mMediaRecorder.prepare(mConfigure, mPreviewSurface);
         mMediaRecorder.setZoom(0.5f);
-        mMediaRecorder.setPreviewSize(_CameraSurface.getMeasuredWidth()/2, _CameraSurface.getMeasuredHeight()/2);
+        mMediaRecorder.setPreviewSize(_CameraSurface.getMeasuredWidth(), _CameraSurface.getMeasuredHeight() / 2);
         mMediaRecorder.startRecord(push_url);
+        testController.setVisibility(View.GONE);
     }
 
     private boolean is_surface_creat = false;

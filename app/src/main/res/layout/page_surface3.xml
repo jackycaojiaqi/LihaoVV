@@ -2,21 +2,30 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:background="@color/cc_black">
 
-    <com.pili.pldroid.player.widget.PLVideoTextureView
-        android:id="@+id/VideoView3"
+    <RelativeLayout
+        android:id="@+id/rll_video_view3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:background="@color/cc_black">
+
+        <com.pili.pldroid.player.widget.PLVideoTextureView
+            android:id="@+id/VideoView3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+
     <ImageView
         android:id="@+id/iv_cover_3"
         android:layout_width="match_parent"
-        android:src="@mipmap/roomspeen_photo"
+        android:layout_height="match_parent"
         android:scaleType="fitXY"
-        android:layout_height="match_parent" />
+        android:src="@mipmap/roomspeen_photo" />
 </RelativeLayout>

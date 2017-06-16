@@ -11,3 +11,4 @@ oneKeyShare/build/intermediates/bundles/debug
 oneKeyShare/build
 *.class
 shareSDKmainLibs/build
+*.apk

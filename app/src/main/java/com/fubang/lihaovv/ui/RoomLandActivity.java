@@ -7,6 +7,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
@@ -33,6 +36,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.fubang.lihaovv.AppConstant;
+import com.fubang.lihaovv.entities.RtmpEntity;
 import com.fubang.lihaovv.ui.BaseActivity;
 import com.fubang.lihaovv.App;
 import com.fubang.lihaovv.SlidingTab.EmotionInputDetector;
@@ -49,6 +54,17 @@ import com.fubang.lihaovv.utils.FaceUtil;
 import com.fubang.lihaovv.utils.GiftUtil;
 import com.fubang.lihaovv.utils.GlobalOnItemClickManager;
 import com.fubang.lihaovv.R;
+import com.fubang.lihaovv.utils.NetUtils;
+import com.fubang.lihaovv.utils.ScreenUtils;
+import com.fubang.lihaovv.utils.ToastUtil;
+import com.google.gson.Gson;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Response;
+import com.pili.pldroid.player.AVOptions;
+import com.pili.pldroid.player.PLMediaPlayer;
+import com.pili.pldroid.player.widget.PLVideoTextureView;
+import com.pili.pldroid.player.widget.PLVideoView;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.JoinRoomResponse;
@@ -93,21 +109,8 @@ import sample.room.RoomMain;
  * 全屏播放页面
  */
 @EActivity(R.layout.activity_test)
-public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotify, View.OnClickListener, View.OnTouchListener {
-    @ViewById(R.id.linear_container)
-    LinearLayout linearLayout;
-    @ViewById(R.id.edit_text)
-    EditText editText;
-    @ViewById(R.id.room_chat_send)
-    Button sendBtn;
-    @ViewById(R.id.room_message_list)
-    ListView listView;
-    @ViewById(R.id.room_gift)
-    ImageView giftImage;
-    @ViewById(R.id.chat_image_btn)
-    ImageButton faceButton;
-    @ViewById(R.id.room_send_user)
-    Button userSendBtn;
+public class RoomLandActivity extends BaseActivity implements View.OnClickListener {
+
     @ViewById(R.id.test_back_btn)
     ImageView backImage;
     @ViewById(R.id.test_controll)
@@ -126,18 +129,25 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
     DanmakuView danmakuView;
     @ViewById(R.id.test_danmu_btn)
     ImageView danmuImage;
-    @ViewById(R.id.text_back_image)
-    SimpleDraweeView textBackImage;
-    @ViewById(R.id.text_back_image2)
-    SimpleDraweeView textBackImage2;
-    @ViewById(R.id.text_back_image3)
+
+
     SimpleDraweeView textBackImage3;
     @ViewById(R.id.text_relative)
     LinearLayout textRelative;
     @ViewById(R.id.room_change)
     TextView textChange;
-
-
+    @ViewById(R.id.pl_video_1)
+    PLVideoTextureView plVideo1;
+    @ViewById(R.id.pl_video_2)
+    PLVideoTextureView plVideo2;
+    @ViewById(R.id.pl_video_3)
+    PLVideoTextureView plVideo3;
+    @ViewById(R.id.rll_video_land_view1)
+    RelativeLayout rllVideoLandView1;
+    @ViewById(R.id.rll_video_land_view2)
+    RelativeLayout rllVideoLandView2;
+    @ViewById(R.id.rll_video_land_view3)
+    RelativeLayout rllVideoLandView3;
     private Button giftSendBtn;
     private GridView gridView;
     private ListView userList;
@@ -148,12 +158,7 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
     private RoomChatAdapter adapter;
 
     private AVModuleMgr mgr;
-    @ViewById(R.id.text_surface)
-    SurfaceView surfaceView;
-    @ViewById(R.id.text_surface2)
-    SurfaceView surfaceView2;
-    @ViewById(R.id.text_surface3)
-    SurfaceView surfaceView3;
+
     private Bitmap bmp;
     private Bitmap bmp1;
     private Bitmap bmp2;
@@ -187,10 +192,73 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
     private String roomPwd;
     private String roomIp;
     private App app;
-    private Configuration configuration;
     private DanmakuContext mContext;
     private BaseDanmakuParser mParser;
     private boolean isplaying;
+    private Context context;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isRunning = true;
+        if (danmakuView != null && danmakuView.isPrepared() && danmakuView.isPaused()) {
+            danmakuView.resume();
+        }
+        if (is_video1_play = false && !map_trmp_play.get(0).equals("null")) {
+            plVideo1.start();
+        }
+        if (is_video2_play = false && !map_trmp_play.get(1).equals("null")) {
+            plVideo2.start();
+        }
+        if (is_video3_play = false && !map_trmp_play.get(2).equals("null")) {
+            plVideo3.start();
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mStop = false;
+                if (roomMain.getRoom() != null) {
+                    if (!roomMain.getRoom().isOK()) {
+                        roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomLandActivity.this)), StartUtil.getUserPwd(RoomLandActivity.this), ip, port, roomPwd);
+                    }
+                }
+            }
+        }).start();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isRunning = false;
+        plVideo1.pause();
+        plVideo2.pause();
+        plVideo3.pause();
+        is_video1_play = false;
+        is_video2_play = false;
+        is_video3_play = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        isRunning = false;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (roomMain.getRoom() != null) {
+                    roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));
+                    roomMain.getRoom().getChannel().Close();
+                }
+            }
+        }).start();
+        isRunning = false;
+        plVideo1.stopPlayback();
+        plVideo2.stopPlayback();
+        plVideo3.stopPlayback();
+
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
 
     @Override
     public void before() {
@@ -198,6 +266,7 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         app = (App) getApplication();
+        context = this;
         roomPwd = getIntent().getStringExtra("roomPwd");
         roomIp = getIntent().getStringExtra("roomIp");
         String[] Ips = roomIp.split(";");
@@ -206,12 +275,118 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
         port = Integer.parseInt(ports[1]);
         roomId = Integer.parseInt(getIntent().getStringExtra("roomId"));
 //        Log.d("123", roomId + "roomId");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomLandActivity.this)), StartUtil.getUserPwd(RoomLandActivity.this), ip, port, roomPwd);
+            }
+        }).start();
         EventBus.getDefault().register(this);
     }
 
+    private boolean is_video1_play = false;
+    private boolean is_video2_play = false;
+    private boolean is_video3_play = false;
+    private ImageView iv_cover_1, iv_cover_2, iv_cover_3;
+
+    @Override
+    public void initListener() {
+
+        // 1 -> hw codec enable, 0 -> disable [recommended]
+        int codec = AVOptions.MEDIA_CODEC_AUTO;
+        setOptions(codec);
+        plVideo1.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
+        plVideo2.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
+        plVideo3.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_FIT_PARENT);
+        plVideo1.setOnErrorListener(mOnErrorListener1);
+        plVideo2.setOnErrorListener(mOnErrorListener2);
+        plVideo3.setOnErrorListener(mOnErrorListener3);
+        plVideo1.setOnInfoListener(new PLMediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(PLMediaPlayer plMediaPlayer, int i, int i1) {
+                if (i == 3) {
+                    is_video1_play = true;
+                    iv_cover_1.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
+        plVideo2.setOnInfoListener(new PLMediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(PLMediaPlayer plMediaPlayer, int i, int i1) {
+                if (i == 3) {
+                    is_video2_play = true;
+                    iv_cover_2.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
+        plVideo3.setOnInfoListener(new PLMediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(PLMediaPlayer plMediaPlayer, int i, int i1) {
+                if (i == 3) {
+                    is_video3_play = true;
+                    iv_cover_3.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
+        //====================在 SDK 解析出视频的尺寸信息后，会触发该回调，开发者可以在该回调中调整 UI 的视图尺寸。
+        plVideo1.setOnVideoSizeChangedListener(new PLMediaPlayer.OnVideoSizeChangedListener() {
+            @Override
+            public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
+                if (width < height) {//竖屏 处理UI也为竖屏
+                    ViewGroup.LayoutParams params = rllVideoLandView1.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context) /5*2;
+                    rllVideoLandView1.setLayoutParams(params);
+                } else {
+                    ViewGroup.LayoutParams params = rllVideoLandView1.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context)/3*2;
+                    rllVideoLandView1.setLayoutParams(params);
+                }
+            }
+        });
+        plVideo2.setOnVideoSizeChangedListener(new PLMediaPlayer.OnVideoSizeChangedListener() {
+            @Override
+            public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
+                if (width < height) {//竖屏 处理UI也为竖屏
+                    ViewGroup.LayoutParams params = rllVideoLandView2.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context) / 5;
+                    rllVideoLandView2.setLayoutParams(params);
+                } else {
+                    ViewGroup.LayoutParams params = rllVideoLandView2.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context)/3;
+                    rllVideoLandView2.setLayoutParams(params);
+                }
+            }
+        });
+        plVideo3.setOnVideoSizeChangedListener(new PLMediaPlayer.OnVideoSizeChangedListener() {
+            @Override
+            public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
+                if (width < height) {//竖屏 处理UI也为竖屏
+                    ViewGroup.LayoutParams params = rllVideoLandView3.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context) /5;
+                    rllVideoLandView3.setLayoutParams(params);
+                } else {
+                    ViewGroup.LayoutParams params = rllVideoLandView3.getLayoutParams();
+                    params.width = ScreenUtils.getScreenWidth(context)/3;
+                    rllVideoLandView3.setLayoutParams(params);
+                }
+            }
+        });
+    }
 
     @Override
     public void initView() {
+        map_trmp_play.put(0, "null");
+        map_trmp_play.put(1, "null");
+        map_trmp_play.put(2, "null");
+        map_trmp_play_temp.put(0, "null");
+        map_trmp_play_temp.put(1, "null");
+        map_trmp_play_temp.put(2, "null");
+        iv_cover_1 = (ImageView) findViewById(R.id.iv_back_image1);
+        iv_cover_2 = (ImageView) findViewById(R.id.iv_back_image2);
+        iv_cover_3 = (ImageView) findViewById(R.id.iv_back_image3);
 //        RoomActivity.roomActivity.finish();
         mDetector = EmotionInputDetector.with(this)
                 .setEmotionView(findViewById(R.id.emotion_layout))
@@ -221,41 +396,37 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                 .build();
         setUpEmotionViewPager();
         initDanmu();
-        textBackImage.setVisibility(View.VISIBLE);
-        surfaceView.setVisibility(View.GONE);
         danmakuView.setVisibility(View.VISIBLE);
         danmakuView.show();
         backImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (roomMain.getRoom() != null) {
+                            roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));
+                            roomMain.getRoom().getChannel().Close();
+                        }
+                    }
+                }).start();
                 finish();
             }
         });
         roomIdTv.setText(roomId + "");
-
         ControllerUtil.showAndHide(testController, roomControl);
-//        Log.d("123", "oncreate---");
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        RoomUserInfo roomUser = new RoomUserInfo();
-        roomUser.setUseralias("大厅");
-        userInfos.add(roomUser);
-        RoomChatMsg joinMsg = new RoomChatMsg();
-        joinMsg.setSrcid(Integer.parseInt(StartUtil.getUserId(this)));
-        joinMsg.setContent("加入了房间");
-        data.add(joinMsg);
-        adapter = new RoomChatAdapter(data, this);
-        configuration = getResources().getConfiguration();
-        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            listView.setAdapter(adapter);
-//            showWindow();
-//            showFace();
-            showUser();
-        }
-//        showWindow();
-//        showFace();
         fullImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (roomMain.getRoom() != null) {
+                            roomMain.getRoom().getChannel().kickOutRoom(Integer.parseInt(StartUtil.getUserId(context)));
+                            roomMain.getRoom().getChannel().Close();
+                        }
+                    }
+                }).start();
                 finish();
             }
         });
@@ -273,53 +444,48 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                 }
             }
         });
-//        textChange.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                finish();
-////                startActivity(RoomLandActivity_.intent(RoomActivity.this).extra("roomIp",roomIp).extra("roomId",roomId+"").get());
-//                if (micUsers.size() != 1) {
-//                    mgr.DelAudioStream(ssrc);
-//                    mgr.DelVideoStream(ssrc);
-//                    if (toid == micUsers.get(0).getUserid()) {
-//                        buddyid = micUsers.get(1).getUserid();
-//                        toName = micUsers.get(1).getUseralias();
-//                        StartAV(mediaIp, mediaPort, mediaRand, micUsers.get(micUsers.size() - 1).getUserid());
-//                    }else {
-//                        buddyid = micUsers.get(0).getUserid();
-//                        toName = micUsers.get(0).getUseralias();
-//                        StartAV(mediaIp, mediaPort, mediaRand, micUsers.get(0).getUserid());
-//                    }
-//                }
-//            }
-//        });
-//        testController.setOnTouchListener(this);
         roomControl2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (micUsers.size()>1) {
-                textBackImage.setVisibility(View.VISIBLE);
-                surfaceView.setVisibility(View.GONE);
-                textBackImage2.setVisibility(View.VISIBLE);
-                surfaceView2.setVisibility(View.GONE);
-                int a = mic0;
-                mic0 = mic1;
-                mic1 = a;
-//                }
+                String temp = map_trmp_play.get(0);
+                map_trmp_play.put(0, map_trmp_play.get(1));
+                map_trmp_play.put(1, temp);
+                if (!map_trmp_play.get(0).equals("null")) {
+                    plVideo1.setVideoPath(map_trmp_play.get(0));
+                    plVideo1.start();
+                    iv_cover_1.setVisibility(View.GONE);
+                } else {
+                    iv_cover_1.setVisibility(View.VISIBLE);
+                }
+                if (!map_trmp_play.get(1).equals("null")) {
+                    plVideo2.setVideoPath(map_trmp_play.get(1));
+                    plVideo2.start();
+                    iv_cover_2.setVisibility(View.GONE);
+                } else {
+                    iv_cover_2.setVisibility(View.VISIBLE);
+                }
             }
         });
         roomControl3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (micUsers.size()>2) {
-                textBackImage.setVisibility(View.VISIBLE);
-                surfaceView.setVisibility(View.GONE);
-                textBackImage3.setVisibility(View.VISIBLE);
-                surfaceView3.setVisibility(View.GONE);
-                int a = mic0;
-                mic0 = mic2;
-                mic2 = a;
-//                }
+                String temp = map_trmp_play.get(0);
+                map_trmp_play.put(0, map_trmp_play.get(2));
+                map_trmp_play.put(2, temp);
+                if (!map_trmp_play.get(0).equals("null")) {
+                    plVideo1.setVideoPath(map_trmp_play.get(0));
+                    plVideo1.start();
+                    iv_cover_1.setVisibility(View.GONE);
+                } else {
+                    iv_cover_1.setVisibility(View.VISIBLE);
+                }
+                if (!map_trmp_play.get(2).equals("null")) {
+                    plVideo3.setVideoPath(map_trmp_play.get(2));
+                    plVideo3.start();
+                    iv_cover_3.setVisibility(View.GONE);
+                } else {
+                    iv_cover_3.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
@@ -349,107 +515,6 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
 
     }
 
-    private void showUser() {
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.pop_user_list, null);
-        userList = (ListView) view.findViewById(R.id.room_user_list);
-
-        userWindow = new PopupWindow(view);
-        userWindow.setFocusable(true);
-        userAdapter = new UserAdapter(userInfos, this);
-        userList.setAdapter(userAdapter);
-
-        userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Log.d("123", gifts.get(position) + "------------>");
-                sendToUser = userInfos.get(position);
-                userSendBtn.setText(sendToUser.getUseralias());
-                userWindow.dismiss();
-            }
-        });
-        userWindow.setWidth(200);
-        ColorDrawable dw = new ColorDrawable(0xb0ffffff);
-        userWindow.setBackgroundDrawable(dw);
-        userWindow.setHeight(500);
-        userWindow.setOutsideTouchable(true);
-    }
-
-    private void showFace() {
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.pop_face_grid, null);
-        gridView = (GridView) view.findViewById(R.id.room_face_list);
-
-        faceWindow = new PopupWindow(view);
-        faceWindow.setFocusable(true);
-        faces.addAll(FaceUtil.getFaces());
-        FaceAdapter faceAdapter = new FaceAdapter(faces, this);
-        gridView.setAdapter(faceAdapter);
-
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Log.d("123", faces.get(position) + "------------>");
-                if (position < 9) {
-                    int faceNumber = position + 1;
-                    editText.setText(editText.getText() + "/mr70" + faceNumber);
-                }
-                if (position >= 9) {
-                    int faceNumber = position + 1;
-                    editText.setText(editText.getText() + "/mr7" + faceNumber);
-                }
-                faceWindow.dismiss();
-            }
-        });
-        faceWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        ColorDrawable dw = new ColorDrawable(0xb0ffffff);
-        faceWindow.setBackgroundDrawable(dw);
-        faceWindow.setHeight(300);
-        faceWindow.setOutsideTouchable(true);
-    }
-
-    private void showWindow() {
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.pop_gift_grid, null);
-        gridView = (GridView) view.findViewById(R.id.room_gift_list);
-        giftSendBtn = (Button) view.findViewById(R.id.gift_send_btn);
-        final TextView giftName = (TextView) view.findViewById(R.id.gift_name_txt);
-        final EditText giftCount = (EditText) view.findViewById(R.id.gift_count);
-
-        popupWindow = new PopupWindow(view);
-        popupWindow.setFocusable(true);
-        gifts.addAll(GiftUtil.getGifts());
-        GiftAdapter giftAdapter = new GiftAdapter(gifts, this);
-        gridView.setAdapter(giftAdapter);
-
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Log.d("123", gifts.get(position) + "------------>");
-                giftId = gifts.get(position).getGiftId();
-                giftName.setText(giftId + "");
-//                popupWindow.dismiss();
-            }
-        });
-        giftSendBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final int count = Integer.parseInt(giftCount.getText().toString());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        roomMain.getRoom().getChannel().sendGiftRecord(toid, giftId, count, toName, StartUtil.getUserName(RoomLandActivity.this));
-                    }
-                }).start();
-                popupWindow.dismiss();
-            }
-        });
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        ColorDrawable dw = new ColorDrawable(0xb0ffffff);
-        popupWindow.setBackgroundDrawable(dw);
-        popupWindow.setHeight(400);
-        popupWindow.setOutsideTouchable(true);
-    }
 
     @Override
     public void onClick(View v) {
@@ -458,60 +523,9 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 break;
-            case R.id.chat_image_btn:
-                popupWindow.dismiss();
-                if (faceWindow.isShowing()) {
-                    faceWindow.dismiss();
-                } else {
-//                    Log.d("123", "showPop------------------");
-                    faceWindow.showAsDropDown(faceButton);
-                }
-                break;
-            case R.id.room_gift:
-                faceWindow.dismiss();
-                if (popupWindow.isShowing()) {
-                    popupWindow.dismiss();
-                } else {
-//                    Log.d("123", "showPop------------------");
-                    popupWindow.showAsDropDown(giftImage);
-                }
-                break;
-            case R.id.room_send_user:
-                if (userWindow.isShowing()) {
-                    userWindow.dismiss();
-                } else {
-                    userWindow.showAsDropDown(userSendBtn);
-                }
-                break;
         }
     }
 
-    @Override
-    public void initData() {
-//        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-//            sendBtn.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-////                    if (!TextUtils.isEmpty(editText.getText())) {
-////                        if (userSendBtn.getText().toString().contains("大厅")) {
-////                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0, (byte) 0, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + editText.getText() + "</FONT>",StartUtil.getUserName(RoomLandActivity.this));
-////                            editText.setText("");
-////                        } else if (!TextUtils.isEmpty(sendToUser.getUseralias())) {
-////                            roomMain.getRoom().getChannel().sendChatMsg(sendToUser.getUserid(), (byte) 0, (byte) 1, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + editText.getText() + "</FONT>",StartUtil.getUserName(RoomLandActivity.this));
-////                            editText.setText("");
-////                        } else {
-//                            roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0, (byte) 0, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + editText.getText() + "</FONT>", StartUtil.getUserName(RoomLandActivity.this),Integer.parseInt(StartUtil.getUserLevel(RoomLandActivity.this)));
-//                            editText.setText("");
-////                        }
-//                    }
-////                }
-//            });
-//            giftImage.setOnClickListener(this);
-//            faceButton.setOnClickListener(this);
-//            linearLayout.setOnClickListener(this);
-//            userSendBtn.setOnClickListener(this);
-//        }
-    }
 
     //接收礼物消息更新
     @Subscriber(tag = "BigGiftRecord")
@@ -531,8 +545,6 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                 msg.setContent("<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + giftTxt + "</FONT>");
                 msg.setSrcid(obj.getSrcid());
                 data.add(msg);
-                adapter.notifyDataSetChanged();
-                listView.setSelection(listView.getCount() - 1);
             }
         }
 
@@ -546,19 +558,9 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
     //接收服务器发送的消息更新列表
     @Subscriber(tag = "RoomChatMsg")
     public void getRoomChatMsg(RoomChatMsg msg) {
-//        roomText.setText(Html.fromHtml(msg.getContent()));
-//        Log.d("123", msg.getContent());
 //        data.add(msg);
         if (msg.getToid() == 0 || msg.getToid() == Integer.parseInt(StartUtil.getUserId(this))) {
             Spanned spanned = Html.fromHtml(msg.getContent());
-//        TextView tv = new TextView(this);
-//        tv.setText(spanned);
-//        tv.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-//        tv.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-//        tv.setVisibility(View.GONE);
-//        danmakuView.addItem(new DanmakuItem(this, spanned, tv.getWidth()));
-//        userAdapter.notifyDataSetChanged();
-//        listView.setSelection(listView.getCount() - 1);
             addDanmaku(false, spanned);
         }
     }
@@ -589,93 +591,62 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                 userInfos.remove(i);
             }
         }
-        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            userAdapter.notifyDataSetChanged();
-            userList.setAdapter(new UserAdapter(userInfos, this));
-        }
     }
 
     //获取用户列表
     @Subscriber(tag = "userList")
     public void getUserList(RoomUserInfo userInfo) {
         userInfos.add(userInfo);
-        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            userAdapter.notifyDataSetChanged();
-            userList.setAdapter(new UserAdapter(userInfos, this));
-        }
-//        Log.d("123", userInfo.getUserid() + "-----------<<");
+        KLog.e(userInfo.getUserid() + "加入");
     }
 
-    private int buddyid;
+    private HashMap<Integer, String> map_trmp_play = new HashMap<>();
+    private HashMap<Integer, String> map_trmp_play_temp = new HashMap<>();
 
     //麦上几个人就添加视频流
     @Subscriber(tag = "onMicUser")
-    public void getonMicUser(RoomUserInfo obj) {
-        KLog.e("==================" + obj.getUserid());
-        if (obj.getMicindex() == 0) {
-            sendToUser = obj;
-        }
+    public void getonMicUser(final RoomUserInfo obj) {
         micUsers.add(obj);
-//        actorid = obj.getActorid();
-//        buddyid = obj.getUserid();
-//        toName = obj.getUseralias();
-        if (obj.getMicindex() != 0) {
-            micid = obj.getUserid();
-            Log.d("123", "micid=====" + micid);
-            ssrc = ~micid + 0x1314;
-
-            mgr.AddRTPRecver(0, ssrc, 99, 1000);
-            mgr.SetRTPRecverARQMode(ssrc, 99, 1);
-
-            mgr.AddRTPRecver(0, ssrc, 97, 1000);
-            mgr.SetRTPRecverARQMode(ssrc, 97, 1);
-            Log.d("123", "ssrc=====" + ssrc);
-            mgr.AddVideoStream(ssrc, 0, 1, this);
-            if (!isplaying) {
-                mgr.AddAudioStream(ssrc, 1, this);
-            }
-        }
+        KLog.e(obj.getUserid());
+        String room_name = "lihao_" + obj.getUserid() + "_" + obj.getUserid();
+        OkGo.<String>get(AppConstant.GET_RTMP_URL)
+                .params("streamKey", room_name)
+                .tag(this)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        RtmpEntity rtmpentity = new Gson().fromJson(response.body(), RtmpEntity.class);
+                        switch (obj.getMicindex()) {
+                            case 0:
+                                KLog.e("0 mic");
+                                map_trmp_play.put(0, rtmpentity.getRTMPPlayURL());
+                                plVideo1.setVideoPath(map_trmp_play.get(0));
+                                plVideo1.start();
+                                iv_cover_1.setVisibility(View.GONE);
+                                break;
+                            case 1:
+                                KLog.e("1 mic");
+                                map_trmp_play.put(1, rtmpentity.getRTMPPlayURL());
+                                plVideo2.setVideoPath(map_trmp_play.get(1));
+                                iv_cover_2.setVisibility(View.GONE);
+                                plVideo2.start();
+                                break;
+                            case 2:
+                                KLog.e("2 mic");
+                                map_trmp_play.put(2, rtmpentity.getRTMPPlayURL());
+                                plVideo3.setVideoPath(map_trmp_play.get(2));
+                                iv_cover_3.setVisibility(View.GONE);
+                                plVideo3.start();
+                                break;
+                        }
+                        KLog.e(obj.getMicindex() + rtmpentity.getRTMPPlayURL());
+                    }
+                });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        isRunning = true;
-        micUsers = new ArrayList<>();
-        configuration = getResources().getConfiguration();
-//        Log.d("123","onResume---");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                play.start();
-                roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomLandActivity.this)), StartUtil.getUserPwd(RoomLandActivity.this), ip, port, roomPwd);
-            }
-        }).start();
-        if (danmakuView != null && danmakuView.isPrepared() && danmakuView.isPaused()) {
-            danmakuView.resume();
-        }
-    }
-
-    //    @Override
-//    public void onConfigurationChanged(Configuration config) {
-//        try {
-//            super.onConfigurationChanged(config);
-//            if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-//                //横屏时要处理的代码，
-//                //这里的代码是当屏幕横屏时当成竖屏显示
-//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//            } else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-//                //竖屏时要处理的代码
-//                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//
-//            }
-//        } catch (Exception ex) {
-//        }
-//    }
-
-
+    //上公麦提示   1
     @Subscriber(tag = "upMicState")
-    public void upMicState(MicState obj) {
+    public void upMicState(final MicState obj) {
         KLog.e("==================" + obj.getUserid());
         for (int i = 0; i < userInfos.size(); i++) {
             if (obj.getUserid() == userInfos.get(i).getUserid()) {
@@ -683,460 +654,78 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
                 micUsers.add(userInfos.get(i));
             }
         }
+        String room_name = "lihao_" + obj.getUserid() + "_" + obj.getUserid();
+        OkGo.<String>get(AppConstant.GET_RTMP_URL)
+                .params("streamKey", room_name)
+                .tag(this)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        RtmpEntity rtmp = new Gson().fromJson(response.body(), RtmpEntity.class);
+                        switch (obj.getMicindex()) {
+                            case 0:
+                                KLog.e("0 mic");
+                                map_trmp_play.put(0, rtmp.getRTMPPlayURL());
+                                plVideo1.setVideoPath(map_trmp_play.get(0));
+                                plVideo1.start();
+                                iv_cover_1.setVisibility(View.GONE);
+                                break;
+                            case 1:
+                                KLog.e("1 mic");
+                                map_trmp_play.put(1, rtmp.getRTMPPlayURL());
+                                plVideo2.setVideoPath(map_trmp_play.get(1));
+                                plVideo2.start();
+                                iv_cover_2.setVisibility(View.GONE);
+                                break;
+                            case 2:
+                                KLog.e("2 mic");
+                                map_trmp_play.put(2, rtmp.getRTMPPlayURL());
+                                plVideo3.setVideoPath(map_trmp_play.get(2));
+                                plVideo3.start();
+                                iv_cover_3.setVisibility(View.GONE);
+                                break;
+                        }
+                        KLog.e(obj.getMicindex() + rtmp.getRTMPPlayURL());
+                    }
+                });
 
-        micid = obj.getUserid();
-        ssrc = ~micid + 0x1314;
-//        ssrc = obj.getUserid();
-
-        //创建视频接收流
-        // TODO Auto-generated method stub
-        if (null == mgr) {
-            mgr = new AVModuleMgr();
-            Log.d("123", "mgr-----new--" + mgr);
-            mgr.Init();
-            Log.d("123", "===uid" + micid);
-            mgr.CreateRTPSession(0);
-            mgr.SetServerAddr2(mediaIp, mediaPort, 0);
-            mgr.StartRTPSession();
-        }
-//        mgr.AddRTPRecver(0, ssrc, 99, 1000);
-//        mgr.SetRTPRecverARQMode(ssrc, 99, 1);
-//
-//        mgr.AddRTPRecver(0, ssrc, 97, 1000);
-//        mgr.SetRTPRecverARQMode(ssrc, 97, 1);
-//        Log.d("123","ssrc====="+ssrc);
-        mgr.AddVideoStream(ssrc, 0, 1, this);
-        if (!isplaying)
-            mgr.AddAudioStream(ssrc, 1, this);
     }
 
+    //下麦提示
     @Subscriber(tag = "downMicState")
     public void downMicState(MicState obj) {
         for (int i = 0; i < micUsers.size(); i++) {
             if (micUsers.get(i).getUserid() == obj.getUserid()) {
+                //根据micindex关闭对应号的mic
+                KLog.e(micUsers.get(i).getMicindex());
+                switch (micUsers.get(i).getMicindex()) {
+                    case 0:
+                        map_trmp_play.put(0, "null");
+                        iv_cover_1.setVisibility(View.VISIBLE);
+                        plVideo1.pause();
+                        break;
+                    case 1:
+                        map_trmp_play.put(1, "null");
+                        iv_cover_2.setVisibility(View.VISIBLE);
+                        plVideo2.pause();
+                        break;
+                    case 2:
+                        map_trmp_play.put(2, "null");
+                        iv_cover_3.setVisibility(View.VISIBLE);
+                        plVideo3.pause();
+                        break;
+                }
                 micUsers.remove(i);
             }
         }
-        textBackImage.setVisibility(View.VISIBLE);
-        surfaceView.setVisibility(View.GONE);
-        textBackImage2.setVisibility(View.VISIBLE);
-        surfaceView2.setVisibility(View.GONE);
-        textBackImage3.setVisibility(View.VISIBLE);
-        surfaceView3.setVisibility(View.GONE);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        isRunning = false;
-        if (mgr != null) {
-            final AVModuleMgr tmp = mgr;
-            mgr = null;
-            play.stop();
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    tmp.StopRTPSession();
-                    tmp.Uninit();
-                    if (roomMain.getRoom() != null) {
-                        roomMain.getRoom().getChannel().sendLeaveRoom(Integer.parseInt(StartUtil.getUserId(RoomLandActivity.this)));
-                        roomMain.getRoom().onDisconnected();
-                    }
-                }
-            }).start();
-        }
-    }
-
-
-    public void StartAV(String ip, int port, int rand, int uid) {
-        KLog.e("==================" + "StartAV");
-        ssrc = uid;
-//        ssrc = rand - uid;
-//        if (rand < 1800000000)
-//            rand = 1800000000;
-//        ssrc = rand - uid;
-        ssrc = ~uid + 0x1314;
-
-//        mgr.AddRTPRecver(0, ssrc, 99, 1000);
-//        mgr.SetRTPRecverARQMode(ssrc, 99, 1);
-//
-//        mgr.AddRTPRecver(0, ssrc, 97, 1000);
-//        mgr.SetRTPRecverARQMode(ssrc, 97, 1);
-        Log.e("123", "ssrc=====" + ssrc);
-//        isplaying = true;
-        mgr.AddAudioStream(ssrc, 1, this);
-        mgr.AddVideoStream(ssrc, 0, 1, this);
-    }
-
-    @Override
-    public void onVideo(int ssrc, int width, int height, byte[] img) {
-        KLog.e("onVideo:" + img.length);
-        if (!isRunning) {
-            return;
-        }
-        KLog.e("123123");
-        if (micUsers.size() == 1) {
-            //一麦显示一麦,二麦显示二麦,三麦显示三麦
-            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (~micUsers.get(0).getUserid() + 0x1314))) {
-                textBackImage.setVisibility(View.GONE);
-                // 删除旧的
-                if (null != bmp) {
-                    if (width != bmp.getWidth() || height != bmp.getHeight()) {
-                        bmp = null;
-                    }
-                }
-                // 创建新的
-                if (null == bmp) {
-                    bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView.getHolder()) {
-                    Canvas canvas = surfaceView.getHolder().lockCanvas();
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView.getWidth(), surfaceView.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (~micUsers.get(0).getUserid() + 0x1314))) {
-                textBackImage2.setVisibility(View.GONE);
-                // 删除旧的
-                if (null != bmp1) {
-                    if (width != bmp1.getWidth() || height != bmp1.getHeight()) {
-                        bmp1 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp1) {
-                    bmp1 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp1.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView2.getHolder()) {
-                    Canvas canvas = surfaceView2.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView2.getWidth(), surfaceView2.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp1, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView2.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (~micUsers.get(0).getUserid() + 0x1314))) {
-                textBackImage3.setVisibility(View.GONE);
-                // 删除旧的
-                if (null != bmp2) {
-                    if (width != bmp2.getWidth() || height != bmp2.getHeight()) {
-                        bmp2 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp2) {
-                    bmp2 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp2.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView3.getHolder()) {
-                    Canvas canvas = surfaceView3.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView3.getWidth(), surfaceView3.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp2, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView3.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            }
-        }
-        if (micUsers.size() == 2) {
-
-            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic0 && ssrc == (~micUsers.get(1).getUserid() + 0x1314))) {
-                textBackImage.setVisibility(View.GONE);
-                // 删除旧的
-                if (null != bmp) {
-                    if (width != bmp.getWidth() || height != bmp.getHeight()) {
-                        bmp = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp) {
-                    bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView.getHolder()) {
-                    Canvas canvas = surfaceView.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView.getWidth(), surfaceView.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic1 && ssrc == (~micUsers.get(1).getUserid() + 0x1314))) {
-                textBackImage2.setVisibility(View.GONE);
-                // 删除旧的
-                if (null != bmp1) {
-                    if (width != bmp1.getWidth() || height != bmp1.getHeight()) {
-                        bmp1 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp1) {
-                    bmp1 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp1.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView2.getHolder()) {
-                    Canvas canvas = surfaceView2.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView2.getWidth(), surfaceView2.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp1, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView2.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic2 && ssrc == (~micUsers.get(1).getUserid() + 0x1314))) {
-                textBackImage3.setVisibility(View.GONE);
-                // 删除旧的
-                if (null != bmp2) {
-                    if (width != bmp2.getWidth() || height != bmp2.getHeight()) {
-                        bmp2 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp2) {
-                    bmp2 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp2.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView3.getHolder()) {
-                    Canvas canvas = surfaceView3.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView3.getWidth(), surfaceView3.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp2, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView3.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            }
-        }
-        if (micUsers.size() == 3) {
-            if ((micUsers.get(0).getMicindex() == mic0 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic0 && ssrc == (~micUsers.get(1).getUserid() + 0x1314)) ||
-                    (micUsers.get(2).getMicindex() == mic0 && ssrc == (~micUsers.get(2).getUserid() + 0x1314))) {
-                textBackImage.setVisibility(View.GONE);
-
-                // 删除旧的
-                if (null != bmp) {
-                    if (width != bmp.getWidth() || height != bmp.getHeight()) {
-                        bmp = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp) {
-                    bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView.getHolder()) {
-                    Canvas canvas = surfaceView.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView.getWidth(), surfaceView.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic1 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic1 && ssrc == (~micUsers.get(1).getUserid() + 0x1314)) ||
-                    (micUsers.get(2).getMicindex() == mic1 && ssrc == (~micUsers.get(2).getUserid() + 0x1314))) {
-                textBackImage2.setVisibility(View.GONE);
-                // 删除旧的
-                if (null != bmp1) {
-                    if (width != bmp1.getWidth() || height != bmp1.getHeight()) {
-                        bmp1 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp1) {
-                    bmp1 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp1.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView2.getHolder()) {
-                    Canvas canvas = surfaceView2.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView2.getWidth(), surfaceView2.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp1, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView2.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            } else if ((micUsers.get(0).getMicindex() == mic2 && ssrc == (~micUsers.get(0).getUserid() + 0x1314)) ||
-                    (micUsers.get(1).getMicindex() == mic2 && ssrc == (~micUsers.get(1).getUserid() + 0x1314)) ||
-                    (micUsers.get(2).getMicindex() == mic2 && ssrc == (~micUsers.get(2).getUserid() + 0x1314))) {
-                textBackImage3.setVisibility(View.GONE);
-                // 删除旧的
-                if (null != bmp2) {
-                    if (width != bmp2.getWidth() || height != bmp2.getHeight()) {
-                        bmp2 = null;
-                    }
-                }
-
-                // 创建新的
-                if (null == bmp2) {
-                    bmp2 = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                }
-
-                ByteBuffer buf = ByteBuffer.wrap(img);
-                bmp2.copyPixelsFromBuffer(buf);
-                // 这是在线程里操作的，千万不要直接在画布上绘制
-                // 在surfaceView中显示
-                if (null != surfaceView3.getHolder()) {
-                    Canvas canvas = surfaceView3.getHolder().lockCanvas();
-
-                    if (null != canvas) {
-                        try {
-                            Rect rt1 = new Rect(0, 0, surfaceView3.getWidth(), surfaceView3.getHeight());
-                            Rect rt2 = new Rect(0, 0, width, height);
-                            canvas.drawBitmap(bmp2, rt2, rt1, null);
-                        } finally {
-                            // 必须要释放，不然下次不会再绘制
-                            surfaceView3.getHolder().unlockCanvasAndPost(canvas);
-                        }
-                    }
-                }
-            }
-        }
-
-
-    }
-
-
-    @Override
-    public void onAudio(int ssrc, int sample, int channel, byte[] pcm) {
-        KLog.e("onAudio");
-        if (!isRunning) {
-            return;
-        }
-        KLog.e("========== onAudio: " + sample + ":" + channel + "(" + pcm.length + ")");
-        if (play != null) {
-            isplaying = true;
-            play.setConfig(sample, channel);
-            play.play(pcm);
-        }
-    }
 
     private List<RoomUserInfo> micUsers = new ArrayList<>();
     private String mediaIp;
     private int mediaPort;
     private int mediaRand;
 
-    @Override
-    public void onMic(String ip, int port, int rand, int uid) {
-        KLog.e("onMic");
-        mediaIp = ip;
-        mediaPort = port;
-        mediaRand = rand;
-        if (null == mgr) {
-            mgr = new AVModuleMgr();
-//            Log.d("123","mgr-----new--"+mgr);
-            mgr.Init();
-//            Log.d("123", "===uid" + uid);
-            mgr.CreateRTPSession(0);
-            mgr.SetServerAddr2(ip, port, 0);
-            mgr.StartRTPSession();
-            StartAV("", 0, 0, uid);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        isRunning = false;
-        super.onDestroy();
-        if (mgr == null) {
-
-        } else {
-            mgr.StopRTPSession();
-//            mgr.DelRTMPRecver(ssrc);
-            mgr.Uninit();
-            play.stop();
-        }
-        EventBus.getDefault().unregister(this);
-    }
 
     //弹幕初始化
     public void initDanmu() {
@@ -1218,51 +807,246 @@ public class RoomLandActivity extends BaseActivity implements AVNotify, MicNotif
 
     }
 
-    //手指按下的点为(x1, y1)手指离开屏幕的点为(x2, y2)
-    float x1 = 0;
-    float x2 = 0;
-    float y1 = 0;
-    float y2 = 0;
+    private void setOptions(int codecType) {
+        AVOptions options = new AVOptions();
+        // the unit of timeout is ms
+        options.setInteger(AVOptions.KEY_PREPARE_TIMEOUT, 10 * 1000);
+        options.setInteger(AVOptions.KEY_GET_AV_FRAME_TIMEOUT, 10 * 1000);
+        options.setInteger(AVOptions.KEY_PROBESIZE, 128 * 1024);
+        // Some optimization with buffering mechanism when be set to 1
+        options.setInteger(AVOptions.KEY_LIVE_STREAMING, 1);
+        options.setInteger(AVOptions.KEY_DELAY_OPTIMIZATION, 1);
+        // 1 -> hw codec enable, 0 -> disable [recommended]
+        options.setInteger(AVOptions.KEY_MEDIACODEC, codecType);
 
-    @Override
-    public boolean onTouch(View view, MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            //当手指按下的时候
-            x1 = event.getX();
-            y1 = event.getY();
+        // whether start play automatically after prepared, default value is 1
+        options.setInteger(AVOptions.KEY_START_ON_PREPARED, 0);
+
+        plVideo1.setAVOptions(options);
+        plVideo2.setAVOptions(options);
+        plVideo3.setAVOptions(options);
+    }
+
+    private PLMediaPlayer.OnErrorListener mOnErrorListener1 = new PLMediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(PLMediaPlayer mp, int errorCode) {
+            KLog.e(errorCode + " ");
+            boolean isNeedReconnect = false;
+            switch (errorCode) {
+                case PLMediaPlayer.ERROR_CODE_INVALID_URI:
+                    KLog.e("Invalid URL !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_404_NOT_FOUND:
+                    KLog.e("404 resource not found !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_CONNECTION_REFUSED:
+                    KLog.e("Connection refused !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_CONNECTION_TIMEOUT:
+                    KLog.e("Connection timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_EMPTY_PLAYLIST:
+                    KLog.e("Empty playlist !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_STREAM_DISCONNECTED:
+                    KLog.e("Stream disconnected !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_IO_ERROR:
+                    is_video1_play = false;
+                    iv_cover_1.setVisibility(View.VISIBLE);
+                    KLog.e("Network IO Error !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_UNAUTHORIZED:
+                    KLog.e("Unauthorized Error !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_PREPARE_TIMEOUT:
+                    KLog.e("Prepare timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_READ_FRAME_TIMEOUT:
+                    KLog.e("Read frame timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_HW_DECODE_FAILURE:
+                    setOptions(AVOptions.MEDIA_CODEC_AUTO);
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.MEDIA_ERROR_UNKNOWN:
+                    break;
+                default:
+                    KLog.e("unknown error !");
+                    break;
+            }
+            if (isNeedReconnect) {
+                sendReconnectMessage(0);
+            }
+            return true;
         }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            //当手指离开的时候
-            x2 = event.getX();
-            y2 = event.getY();
-            if (y1 - y2 > 50) {
-//                Toast.makeText(RoomActivity.this, "向上滑", Toast.LENGTH_SHORT).show();
-            } else if (y2 - y1 > 50) {
-//                Toast.makeText(RoomActivity.this, "向下滑", Toast.LENGTH_SHORT).show();
-            } else if (x1 - x2 > 50) {
-                if (micUsers.size() != 1) {
-                    mgr.DelAudioStream(ssrc);
-                    mgr.DelVideoStream(ssrc);
-                    if (toid == micUsers.get(0).getUserid()) {
-                        buddyid = micUsers.get(1).getUserid();
-                        toName = micUsers.get(1).getUseralias();
-                        StartAV(mediaIp, mediaPort, mediaRand, micUsers.get(micUsers.size() - 1).getUserid());
+    };
+    private PLMediaPlayer.OnErrorListener mOnErrorListener2 = new PLMediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(PLMediaPlayer mp, int errorCode) {
+            KLog.e(errorCode + " ");
+            boolean isNeedReconnect = false;
+            switch (errorCode) {
+                case PLMediaPlayer.ERROR_CODE_INVALID_URI:
+                    KLog.e("Invalid URL !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_404_NOT_FOUND:
+                    KLog.e("404 resource not found !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_CONNECTION_REFUSED:
+                    KLog.e("Connection refused !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_CONNECTION_TIMEOUT:
+                    KLog.e("Connection timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_EMPTY_PLAYLIST:
+                    KLog.e("Empty playlist !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_STREAM_DISCONNECTED:
+                    KLog.e("Stream disconnected !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_IO_ERROR:
+                    is_video2_play = false;
+                    iv_cover_2.setVisibility(View.VISIBLE);
+                    KLog.e("Network IO Error !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_UNAUTHORIZED:
+                    KLog.e("Unauthorized Error !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_PREPARE_TIMEOUT:
+                    KLog.e("Prepare timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_READ_FRAME_TIMEOUT:
+                    KLog.e("Read frame timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_HW_DECODE_FAILURE:
+                    setOptions(AVOptions.MEDIA_CODEC_AUTO);
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.MEDIA_ERROR_UNKNOWN:
+                    break;
+                default:
+                    KLog.e("unknown error !");
+                    break;
+            }
+            if (isNeedReconnect) {
+                sendReconnectMessage(1);
+            }
+            return true;
+        }
+    };
+    private PLMediaPlayer.OnErrorListener mOnErrorListener3 = new PLMediaPlayer.OnErrorListener() {
+        @Override
+        public boolean onError(PLMediaPlayer mp, int errorCode) {
+            KLog.e(errorCode + " ");
+            boolean isNeedReconnect = false;
+            switch (errorCode) {
+                case PLMediaPlayer.ERROR_CODE_INVALID_URI:
+                    KLog.e("Invalid URL !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_404_NOT_FOUND:
+                    KLog.e("404 resource not found !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_CONNECTION_REFUSED:
+                    KLog.e("Connection refused !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_CONNECTION_TIMEOUT:
+                    KLog.e("Connection timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_EMPTY_PLAYLIST:
+                    KLog.e("Empty playlist !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_STREAM_DISCONNECTED:
+                    KLog.e("Stream disconnected !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_IO_ERROR:
+                    is_video3_play = false;
+                    iv_cover_3.setVisibility(View.VISIBLE);
+                    KLog.e("Network IO Error !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_UNAUTHORIZED:
+                    KLog.e("Unauthorized Error !");
+                    break;
+                case PLMediaPlayer.ERROR_CODE_PREPARE_TIMEOUT:
+                    KLog.e("Prepare timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_READ_FRAME_TIMEOUT:
+                    KLog.e("Read frame timeout !");
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.ERROR_CODE_HW_DECODE_FAILURE:
+                    setOptions(AVOptions.MEDIA_CODEC_AUTO);
+                    isNeedReconnect = true;
+                    break;
+                case PLMediaPlayer.MEDIA_ERROR_UNKNOWN:
+                    break;
+                default:
+                    KLog.e("unknown error !");
+                    break;
+            }
+            if (isNeedReconnect) {
+                sendReconnectMessage(2);
+            }
+            return true;
+        }
+    };
+
+    private void sendReconnectMessage(int flag) {
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_ID_RECONNECTING, flag), 2000);
+    }
+
+    private static final int MESSAGE_ID_RECONNECTING = 0x01;
+    protected Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_ID_RECONNECTING:
+                    if (NetUtils.isNetworkAvailable(context)) {
+                        int micFlag = (int) msg.obj;
+                        switch (micFlag) {
+                            case 0:
+                                plVideo1.setVideoPath(map_trmp_play.get(0));
+                                plVideo1.start();
+                                iv_cover_1.setVisibility(View.GONE);
+                                if (!is_video1_play)
+                                    sendReconnectMessage(0);
+                                break;
+                            case 1:
+                                plVideo2.setVideoPath(map_trmp_play.get(1));
+                                plVideo2.start();
+                                iv_cover_2.setVisibility(View.GONE);
+                                if (!is_video2_play)
+                                    sendReconnectMessage(1);
+                                break;
+                            case 2:
+                                plVideo3.setVideoPath(map_trmp_play.get(2));
+                                plVideo3.start();
+                                iv_cover_3.setVisibility(View.GONE);
+                                if (!is_video3_play)
+                                    sendReconnectMessage(2);
+                                break;
+                        }
+                        return;
+                    } else {
+                        ToastUtil.show(context, R.string.net_error);
                     }
-                }
-//                Toast.makeText(RoomActivity.this, "向左滑", Toast.LENGTH_SHORT).show();
-            } else if (x2 - x1 > 50) {
-                if (micUsers.size() != 1) {
-                    mgr.DelAudioStream(ssrc);
-                    mgr.DelVideoStream(ssrc);
-                    if (toid == micUsers.get(1).getUserid()) {
-                        buddyid = micUsers.get(0).getUserid();
-                        toName = micUsers.get(0).getUseralias();
-                        StartAV(mediaIp, mediaPort, mediaRand, micUsers.get(0).getUserid());
-                    }
-                }
-//                Toast.makeText(RoomActivity.this, "向右滑", Toast.LENGTH_SHORT).show();
+                    break;
             }
         }
-        return true;
-    }
+    };
 }

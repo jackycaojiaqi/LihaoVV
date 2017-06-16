@@ -52,6 +52,8 @@ import com.xlg.android.protocol.UseridList;
 import com.xlg.android.utils.ByteBuffer;
 import com.xlg.android.utils.Tools;
 
+import sample.room.MyRoom;
+
 public class RoomChannel implements ClientSocketHandler {
     private int mRoomID; // 房间id
     private int mUserID; // 用户ID
@@ -99,7 +101,9 @@ public class RoomChannel implements ClientSocketHandler {
 
     // 关闭
     public void Close() {
+        MyRoom.isConnected = false;
         mSocket.Close();
+
     }
 
     @Override
@@ -197,7 +201,6 @@ public class RoomChannel implements ClientSocketHandler {
                 case Header.MessageType_mxpGetRoomUserListResponse: {
                     RoomUserInfo[] obj = new RoomUserInfo[head.getCmd3()];
                     int index = Header.SIZE_HEADER;
-
                     // 解析出其中的几项
                     for (int i = 0; i < head.getCmd3(); i++) {
                         obj[i] = new RoomUserInfo();
@@ -206,7 +209,6 @@ public class RoomChannel implements ClientSocketHandler {
                             index += Message.SizeOfObject(obj[i]); // 一个包长度
                         }
                     }
-
                     mHandler.onGetRoomUserListResponse(head.getCmd2(), obj);
                 }
                 break;

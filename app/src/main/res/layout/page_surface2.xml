@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cc_black"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rll_video_view2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"  android:background="@color/cc_black"
+        android:layout_centerInParent="true">
 
         <com.pili.pldroid.player.widget.PLVideoTextureView
             android:id="@+id/VideoView2"
@@ -12,10 +20,12 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
             android:layout_centerInParent="true" />
-        <ImageView
-            android:id="@+id/iv_cover_2"
-            android:layout_width="match_parent"
-            android:src="@mipmap/roomspeen_photo"
-            android:scaleType="fitXY"
-            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/iv_cover_2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:src="@mipmap/roomspeen_photo" />
 </RelativeLayout>

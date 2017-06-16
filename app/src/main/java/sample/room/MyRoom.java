@@ -56,7 +56,7 @@ import org.simple.eventbus.EventBus;
 
 public class MyRoom implements RoomHandler {
     private RoomChannel channel = new RoomChannel(this);
-    private boolean isConnected = false;
+    public static boolean isConnected = false;
 
     public String videoIP;
     public int videoPort;
