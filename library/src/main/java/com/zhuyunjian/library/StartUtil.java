@@ -106,6 +106,10 @@ public class StartUtil {
         SharedPreferences preferences = context.getSharedPreferences(USER_INFO,Context.MODE_PRIVATE);
         preferences.edit().putString(USER_NAME,userName).putString(USER_ICON,userIcon).putString(USER_ID,userId).putString(USER_PWD,userPwd).commit();
     }
+    public static void editInfo(Context context,String userName,String userId,String userPwd){
+        SharedPreferences preferences = context.getSharedPreferences(USER_INFO,Context.MODE_PRIVATE);
+        preferences.edit().putString(USER_NAME,userName).putString(USER_ID,userId).putString(USER_PWD,userPwd).commit();
+    }
     public static String getUserIcon(Context context){
         SharedPreferences preferences = context.getSharedPreferences(USER_INFO,Context.MODE_PRIVATE);
         String userIcon = preferences.getString(USER_ICON,"");
@@ -132,7 +136,7 @@ public class StartUtil {
         SharedPreferences preferences1 = context.getSharedPreferences(USER_INFO_OTHER,Context.MODE_PRIVATE);
         preferences1.edit().clear().commit();
         SharedPreferences preferences2 = context.getSharedPreferences(QQ,Context.MODE_PRIVATE);
-        preferences.edit().clear().commit();
+        preferences2.edit().clear().commit();
     }
     public static void editUserInfo(Context context, String userLevel, String userDeposit, String userKbi, String userScore, String userCidiograph){
         SharedPreferences perferences = context.getSharedPreferences(USER_INFO_OTHER,Context.MODE_PRIVATE);

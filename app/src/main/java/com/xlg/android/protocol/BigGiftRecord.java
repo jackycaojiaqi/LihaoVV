@@ -40,7 +40,7 @@ public class BigGiftRecord {
 	@StructOrder(17)
 	private byte[]			toalias = new byte[32];	//接收者昵称
 	@StructOrder(18)
-	private byte[]			sztext = new byte[48];//定义48,实际使用最多18个汉字或英文（最多占36个长度)
+	private byte[]			sztext = new byte[48];//定义48,实际使用最多18个汉字或英文（最多占48个长度)
 	
 	
 	public int getVcbid() {

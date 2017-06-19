@@ -693,11 +693,10 @@ public class RoomChannel implements ClientSocketHandler {
         obj.setOldcount(0);
         obj.setFlyid((short) -1);
         obj.setSrcalias(userName);
-//		obj.setToalias(toid+"");
         obj.setToalias(toName);
         obj.setSztext("");
-        Log.d("123", obj.toString());
         sendPack(header, obj);
+        KLog.e(mUserID + " " + toid + giftId);
     }
 
     //退出房间请求

@@ -6,6 +6,7 @@ import android.widget.ListView;
 
 import com.fubang.lihaovv.R;
 import com.fubang.lihaovv.adapters.RoomChatAdapter;
+import com.socks.library.KLog;
 import com.xlg.android.protocol.RoomChatMsg;
 
 import org.androidannotations.annotations.EFragment;
@@ -27,6 +28,7 @@ public class PersonFragment extends BaseFragment {
     private List<RoomChatMsg> data = new ArrayList<>();
 
     private RoomChatAdapter adapter;
+
     @Override
     public void before() {
         EventBus.getDefault().register(this);
@@ -34,25 +36,19 @@ public class PersonFragment extends BaseFragment {
 
     @Override
     public void initView() {
-        adapter = new RoomChatAdapter(data,getContext());
+        adapter = new RoomChatAdapter(data, getContext());
         listView.setAdapter(adapter);
     }
+
     //接收服务器发送的消息更新列表
-    @Subscriber(tag="PersonMsg")
-    public void getRoomChatMsg(RoomChatMsg msg){
-//        Log.d("123",msg.getContent());
-//        if(msg.getMsgtype() == 0) {
-//            if (msg.getIsprivate() == 1) {
-//                if (msg.getToid() == 0 || msg.getToid() == Integer.parseInt(StartUtil.getUserId(getContext()))) {
-//                    //("<b><FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:17px; COLOR:#FF0000\">/mr599</FONT></b>")) {
-//                    //<b><FONT style="FONT-FAMILY:宋体;FONT-SIZE:17px; COLOR:#FF0000">/mr599</FONT></b>
-                    data.add(msg);
-                    adapter.notifyDataSetChanged();
-                    listView.setSelection(listView.getCount() - 1);
-//                }
-//            }
-//        }
+    @Subscriber(tag = "PersonMsg")
+    public void getRoomChatMsg(RoomChatMsg msg) {
+        KLog.e(msg.getSrcalias() + "  " + msg.getContent());
+        data.add(msg);
+        adapter.notifyDataSetChanged();
+        listView.setSelection(listView.getCount() - 1);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();

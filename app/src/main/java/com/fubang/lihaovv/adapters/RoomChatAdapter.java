@@ -59,39 +59,39 @@ public class RoomChatAdapter extends ListBaseAdapter<RoomChatMsg> {
         this.list = list;
     }
 
-    public void addData(RoomChatMsg msg){
-        if (list.size()>=100){
+    public void addData(RoomChatMsg msg) {
+        if (list.size() >= 100) {
             list.remove(0);
         }
         list.add(msg);
         notifyDataSetChanged();
 
     }
+
     @Override
     public View getItemView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        if (convertView == null){
-            convertView = inflater.inflate(R.layout.item_room_message,parent,false);
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.item_room_message, parent, false);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         }
         holder = (ViewHolder) convertView.getTag();
-        if (list.get(position).getIsprivate()==1){
-            holder.userTv.setText(list.get(position).getSrcalias()+":悄悄的说");
-        }else
-            holder.userTv.setText(list.get(position).getSrcalias()+":");
+        if (list.get(position).getIsprivate() == 1) {
+            holder.userTv.setText(list.get(position).getSrcalias() + ":悄悄说");
+        } else
+            holder.userTv.setText(list.get(position).getSrcalias() + ":");
 //        holder.messageTv.setText(Html.fromHtml(list.get(position).getContent()));
-        if (list.get(position).getToid() == -1){
+        if (list.get(position).getToid() == -1) {
             holder.simpleDraweeView.setVisibility(View.VISIBLE);
-            Uri uri = Uri.parse("res://"+context.getPackageName()+"/" + getResourceId(list.get(position).getContent()));
+            Uri uri = Uri.parse("res://" + context.getPackageName() + "/" + getResourceId(list.get(position).getContent()));
             DraweeController controller = Fresco.newDraweeControllerBuilder()
                     .setUri(uri)
                     .setAutoPlayAnimations(true)
                     .build();
-            Log.d("123", list.get(position).getContent());
             holder.simpleDraweeView.setController(controller);
-            holder.messageTv.setText("   X"+list.get(position).getDstvcbid());
-        }else {
+            holder.messageTv.setText("   X" + list.get(position).getDstvcbid());
+        } else {
             holder.simpleDraweeView.setVisibility(View.GONE);
             String spanned = String.valueOf(Html.fromHtml(list.get(position).getContent()));
             StringBuilder stringBuilder = new StringBuilder();
@@ -146,18 +146,20 @@ public class RoomChatAdapter extends ListBaseAdapter<RoomChatMsg> {
         return convertView;
     }
 
-    static class ViewHolder{
+    static class ViewHolder {
         TextView userTv;
         TextView messageTv;
         SimpleDraweeView simpleDraweeView;
-        public ViewHolder(View itemView){
+
+        public ViewHolder(View itemView) {
             //显示聊天室消息发送人和消息
             userTv = (TextView) itemView.findViewById(R.id.item_chat_user);
             messageTv = (TextView) itemView.findViewById(R.id.item_chat_message);
             simpleDraweeView = (SimpleDraweeView) itemView.findViewById(R.id.item_chat_gift);
         }
     }
-    public int getResourceId(String name){
+
+    public int getResourceId(String name) {
         try {
             Field field = R.drawable.class.getField(name);
             return Integer.parseInt(field.get(null).toString());

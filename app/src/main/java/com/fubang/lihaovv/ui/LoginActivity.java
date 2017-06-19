@@ -51,10 +51,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
     Button nameClearBtn;
     @ViewById(R.id.bt_pwd_clear)
     Button pwdClearBtn;
-//    @ViewById(R.id.login_youke_btn)
+    //    @ViewById(R.id.login_youke_btn)
 //    Button youkeBtn;
     @ViewById(R.id.login_wechat_image)
-ImageView wechatImage;
+    ImageView wechatImage;
     @ViewById(R.id.user_help_tv)
     TextView helpTv;
 //    @ViewById(R.id.register_user_tv)
@@ -90,19 +90,19 @@ ImageView wechatImage;
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            username = Integer.parseInt(userNameEdit.getText().toString());
-            pwd = userPswEdit.getText().toString();
+                username = Integer.parseInt(userNameEdit.getText().toString());
+                pwd = userPswEdit.getText().toString();
 //            StartUtil.putCount(LoginActivity.this,flag);
-            if (!TextUtils.isEmpty(userNameEdit.getText())&&!TextUtils.isEmpty(pwd)) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new LoginMain(username, pwd,"", 0, 0,LoginActivity.this).start(username, pwd, 0, "",0,LoginActivity.this);
-                    }
-                }).start();
-            }else {
-                Toast.makeText(LoginActivity.this, "账号密码不能为空", Toast.LENGTH_SHORT).show();
-            }
+                if (!TextUtils.isEmpty(userNameEdit.getText()) && !TextUtils.isEmpty(pwd)) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            new LoginMain(username, pwd, "", 0, 0, LoginActivity.this).start(username, pwd, 0, "", 0, LoginActivity.this);
+                        }
+                    }).start();
+                } else {
+                    Toast.makeText(LoginActivity.this, "账号密码不能为空", Toast.LENGTH_SHORT).show();
+                }
 //                Log.d("123",username+pwd);
             }
         });
@@ -126,24 +126,22 @@ ImageView wechatImage;
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.login_qq_image:
                 flag = 2;
 //                StartUtil.putCount(LoginActivity.this,flag);
                 Platform qq = ShareSDK.getPlatform(QQ.NAME);
-                qq.SSOSetting(false);
                 qq.setPlatformActionListener(this);
-                qq.authorize();
                 qq.showUser(null);
+                qq.removeAccount(true);
                 break;
             case R.id.login_wechat_image:
                 flag = 3;
 //                StartUtil.putCount(LoginActivity.this,flag);
                 Platform wechat = ShareSDK.getPlatform(Wechat.NAME);
-                wechat.SSOSetting(false);
                 wechat.setPlatformActionListener(this);
-                wechat.authorize();
                 wechat.showUser(null);
+                wechat.removeAccount(true);
                 break;
             case R.id.user_help_tv:
                 startActivity(UserHelpActivity_.intent(this).get());
@@ -168,14 +166,14 @@ ImageView wechatImage;
             userIcon = platDB.getUserIcon();
             userId = platDB.getUserId();
             userName = platDB.getUserName();
-            EventBus.getDefault().post(new UserEntity(userIcon,userId,userName),"UserInfo");
+            EventBus.getDefault().post(new UserEntity(userIcon, userId, userName), "UserInfo");
 //            StartUtil.editInfo(this,userName,userId,userIcon,"1");
             StartUtil.putQQid(this, userId);
-            Log.d("123",token+"  "+userId+"===="+userGender+"====="+userIcon+"======"+userName);
+            Log.d("123", token + "  " + userId + "====" + userGender + "=====" + userIcon + "======" + userName);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    new LoginMain(0, "",userId , flag, flag,LoginActivity.this).start(0, "", flag, userId,flag,LoginActivity.this);
+                    new LoginMain(0, "", userId, flag, flag, LoginActivity.this).start(0, "", flag, userId, flag, LoginActivity.this);
                 }
             }).start();
 //                    startActivity(MainActivity_.intent(LoginActivity.this).extra("flag",flag).get());
@@ -200,33 +198,35 @@ ImageView wechatImage;
 
 
     @Subscriber(tag = "login_success")
-    public void loginSuccess(LogonResponse res){
+    public void loginSuccess(LogonResponse res) {
 //        flag = 0;
         Tools.PrintObject(res);
-        StartUtil.putCount(LoginActivity.this,flag);
-        Log.d("123",flag+"flag");
-        if (res != null){
+        StartUtil.putCount(LoginActivity.this, flag);
+        Log.d("123", flag + "flag");
+        if (res != null) {
             if (flag == 2 || flag == 3) {
-                Log.d("123",userName+userIcon);
-                StartUtil.editInfo(this, userName, res.getUserid()+"", userIcon, res.getCuserpwd());
-            }else {
-                Log.d("123",res.getHeadpic()+"lenth");
-                if (res.getHeadpic()>15){
-                    StartUtil.editInfo(this, res.getCalias(), res.getUserid() + "", res.getHeadpic()+"", res.getCuserpwd());
-                }else {
-                    Log.d("123","不是吧这走?");
+                Log.d("123", userName + userIcon);
+                StartUtil.editInfo(this, userName, res.getUserid() + "", userIcon, res.getCuserpwd());
+            } else {
+                Log.d("123", res.getHeadpic() + "lenth");
+                if (res.getHeadpic() > 15) {
+                    StartUtil.editInfo(this, res.getCalias(), res.getUserid() + "", res.getHeadpic() + "", res.getCuserpwd());
+                } else {
+                    Log.d("123", "不是吧这走?");
                     StartUtil.editInfo(this, res.getCalias(), res.getUserid() + "", "head" + res.getHeadpic(), res.getCuserpwd());
                 }
             }
-            StartUtil.putVersion(this,res.getNverison()+"");
-            KLog.e(res.getNverison()+"");
-            StartUtil.editUserInfo(this,res.getNlevel()+"",res.getNdeposit()+"",res.getNk()+"",res.getNb()+"",res.getCidiograph());
-            startActivity(MainActivity_.intent(LoginActivity.this).extra("flag",flag).get());
+            StartUtil.putVersion(this, res.getNverison() + "");
+            KLog.e(res.getNverison() + "");
+            KLog.e(res.getUserid() + " " + res.getCalias()+" "+res.getCuserpwd());
+            StartUtil.editUserInfo(this, res.getNlevel() + "", res.getNdeposit() + "", res.getNk() + "", res.getNb() + "", res.getCidiograph());
+            startActivity(MainActivity_.intent(LoginActivity.this).extra("flag", flag).get());
         }
     }
+
     @Subscriber(tag = "splash_fail")
-    public void loginFail(String loginflag){
-        if (loginflag == "0"){
+    public void loginFail(String loginflag) {
+        if (loginflag == "0") {
             Toast.makeText(this, "账号密码错误", Toast.LENGTH_SHORT).show();
         }
     }

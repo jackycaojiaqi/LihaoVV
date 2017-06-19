@@ -176,10 +176,9 @@ public class LookUserAdapter extends BaseExpandableListAdapter {
                     Toast.makeText(context, "抱上3麦" + position, Toast.LENGTH_SHORT).show();
                     EventBus.getDefault().post(list.get(groupPosition), "ThirdMic");
                 } else if (position == 3) {
-                    Toast.makeText(context, "私聊" + position, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "发送私聊信息给" + list.get(groupPosition).getUseralias(), Toast.LENGTH_SHORT).show();
                     EventBus.getDefault().post(list.get(groupPosition), "PersonChat");
                 } else {
-                    Toast.makeText(context, "点击了-----------" + childPosition, Toast.LENGTH_SHORT).show();
                 }
             }
         });

@@ -1,9 +1,11 @@
 package sample.login;
 
 import android.content.Context;
+import android.content.pm.ProviderInfo;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.socks.library.KLog;
 import com.xlg.android.LoginChannel;
 import com.xlg.android.LoginHandler;
 import com.xlg.android.protocol.LogonError;
@@ -56,7 +58,7 @@ public class LoginMain implements LoginHandler {
     private Context context;
     private int loginFlag;
     private LoginMain login;
-
+    public static boolean is_login_success = false;
 
     public LoginMain(int id, String pwd, String cldcode, int flag, int visitor, Context context) {
         this.id = id;
@@ -77,6 +79,7 @@ public class LoginMain implements LoginHandler {
         context = mContext;
         login = new LoginMain(userId, userPwd, cldcode, userFlag, userVisitor, context);
         loginFlag = 1;
+        KLog.e(id + " " + pwd);
         // 121.43.155.221:15518
         // 121.43.63.101:18517
 
@@ -96,9 +99,10 @@ public class LoginMain implements LoginHandler {
 
     @Override
     public void onConnectSuccessed() {
+        is_login_success = true;
         loginFlag++;
         // TODO Auto-generated method stub
-        System.out.println("连接服务器成功");
+        KLog.e("连接服务器成功");
         Log.d("123", id + pwd);
         channel.SendHello();
         if (flag == 9) {
@@ -115,12 +119,13 @@ public class LoginMain implements LoginHandler {
 
     @Override
     public void onConnectFailed() {
+        is_login_success = false;
         if (loginFlag == 1) {
             login.channel.Connect(";120.26.54.182", 19518);
             loginFlag++;
         } else {
             // TODO Auto-generated method stub
-            System.out.println("连接服务器失败");
+            KLog.e("连接服务器失败");
             Toast.makeText(context, "连接服务器失败", Toast.LENGTH_SHORT).show();
         }
     }
@@ -128,26 +133,26 @@ public class LoginMain implements LoginHandler {
     @Override
     public void onLogonResponse(LogonResponse res) {
         // TODO Auto-generated method stub
-        System.out.println("登录回应");
+        KLog.e("登录回应");
 //        Toast.makeText(context, "登录成功", Toast.LENGTH_SHORT).show();
-        System.out.println("Calias: " + res.getCalias());
-        System.out.println("Cidiograph: " + res.getCidiograph());
-        System.out.println("Cidiograph: " + res.getCidiograph());
-        System.out.println("Decocolor: " + res.getDecocolor());
-        System.out.println("Nb: " + res.getNb());
-        System.out.println("Ndeposit: " + res.getNdeposit());
-        System.out.println("Nk: " + res.getNk());
-        System.out.println("Nlevel: " + res.getNlevel());
-        System.out.println("Nverison: " + res.getNverison());
-        System.out.println("Userid: " + res.getUserid());
-        System.out.println("Gender: " + res.getGender());
-        System.out.println("Headpic: " + res.getHeadpic());
-        System.out.println("Online_stat: " + res.getOnline_stat());
-        StartUtil.putVersion(context,res.getNverison()+"");
-        System.out.println("Reserve: " + res.getReserve());
-//        if (StartUtil.isFirst(context)) {
+        KLog.e("Calias: " + res.getCalias());
+        KLog.e("Cidiograph: " + res.getCidiograph());
+        KLog.e("Cidiograph: " + res.getCidiograph());
+        KLog.e("Decocolor: " + res.getDecocolor());
+        KLog.e("Nb: " + res.getNb());
+        KLog.e("Ndeposit: " + res.getNdeposit());
+        KLog.e("Nk: " + res.getNk());
+        KLog.e("Nlevel: " + res.getNlevel());
+        KLog.e("Nverison: " + res.getNverison());
+        KLog.e("Userid: " + res.getUserid());
+        KLog.e("Gender: " + res.getGender());
+        KLog.e("Headpic: " + res.getHeadpic());
+        KLog.e("Online_stat: " + res.getOnline_stat());
+        KLog.e("PWD: " + res.getCuserpwd());
+        StartUtil.putVersion(context, res.getNverison() + "");
+        StartUtil.editInfo(context, res.getCalias(), res.getUserid() + "", res.getCuserpwd());
+        KLog.e("Reserve: " + res.getReserve());
         EventBus.getDefault().post(res, "login_success");
-//        }else {
         EventBus.getDefault().post(res, "splash_success");
         EventBus.getDefault().post(res, "relogin_success");
 //        }
@@ -156,21 +161,23 @@ public class LoginMain implements LoginHandler {
 
     @Override
     public void onLogonError(LogonError err) {
+        is_login_success = false;
         // TODO Auto-generated method stub
-        System.out.println("登录失败");
+        KLog.e("登录失败 " + err.getErrorid() + " " + err.getErrmsg());
         EventBus.getDefault().post("0", "splash_fail");
     }
 
     @Override
     public void onDisconnected() {
+        is_login_success = false;
         // TODO Auto-generated method stub
-        System.out.println("与服务器断开");
+        KLog.e("与服务器断开");
     }
 
     @Override
     public void onRegisterResponse(RegisterResponse res) {
         EventBus.getDefault().post(res, "registerSuccess");
-        System.out.println("注册成功-----" + res.getUserid());
-        System.out.println("错误id-----" + res.getErrid());
+        KLog.e("注册成功-----" + res.getUserid());
+        KLog.e("错误id-----" + res.getErrid());
     }
 }

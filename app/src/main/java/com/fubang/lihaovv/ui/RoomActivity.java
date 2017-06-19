@@ -284,8 +284,8 @@ public class RoomActivity extends BaseActivity {
     private View mLoadingView;
     private ImageView iv_cover_1, iv_cover_2, iv_cover_3;
     private RelativeLayout rll_video1, rll_video2, rll_video3;
+    private boolean is_personal_chat = false;
 
-    //开始加入房间
     @Override
     protected void onResume() {
         super.onResume();
@@ -294,13 +294,16 @@ public class RoomActivity extends BaseActivity {
         configuration = getResources().getConfiguration();
         switch (micFlag) {
             case 0:
-                plVider1.start();
+                if (!map_trmp_play.get(0).equals("null"))
+                    plVider1.start();
                 break;
             case 1:
-                plVider2.start();
+                if (!map_trmp_play.get(1).equals("null"))
+                    plVider2.start();
                 break;
             case 2:
-                plVider3.start();
+                if (!map_trmp_play.get(2).equals("null"))
+                    plVider3.start();
                 break;
         }
         new Thread(new Runnable() {
@@ -353,6 +356,7 @@ public class RoomActivity extends BaseActivity {
         if (mMediaRecorder != null) {
             mMediaRecorder.release();
         }
+        mHandler.removeCallbacksAndMessages(null);
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
@@ -374,12 +378,10 @@ public class RoomActivity extends BaseActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-
+                KLog.e(StartUtil.getUserId(RoomActivity.this) + " " + StartUtil.getUserPwd(RoomActivity.this));
                 roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
             }
         }).start();
-
-
     }
 
 
@@ -415,7 +417,6 @@ public class RoomActivity extends BaseActivity {
                 .bindToEditText(roomMessageEdit)
                 .bindToEmotionButton(emotionBtn)
                 .build();
-
         setUpEmotionViewPager();
         _CameraSurface = (SurfaceView) findViewById(R.id.sv_upmic);
     }
@@ -554,24 +555,28 @@ public class RoomActivity extends BaseActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
+
             @Override
             public void onPageSelected(int position) {
                 micFlag = position;
                 switch (micFlag) {
                     case 0:
-                        plVider1.start();
+                        if (!map_trmp_play.get(0).equals("null"))
+                            plVider1.start();
                         plVider2.pause();
                         plVider3.pause();
                         break;
                     case 1:
                         plVider1.pause();
-                        plVider2.start();
+                        if (!map_trmp_play.get(1).equals("null"))
+                            plVider2.start();
                         plVider3.pause();
                         break;
                     case 2:
                         plVider1.pause();
                         plVider2.pause();
-                        plVider3.start();
+                        if (!map_trmp_play.get(2).equals("null"))
+                            plVider3.start();
                         break;
                 }
                 if (micUsers != null) {
@@ -648,6 +653,11 @@ public class RoomActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 chatToFlag = position;
+                if (chatToFlag == 0) {//切换到公聊，则取消私聊
+                    is_personal_chat = false;
+                } else if (chatToFlag == 1) {//切换到私聊
+                    is_personal_chat = true;
+                }
             }
 
             @Override
@@ -750,17 +760,17 @@ public class RoomActivity extends BaseActivity {
                     }
                 }
                 final int count = Integer.parseInt(giftCount.getText().toString());
-                Log.d("123", "toid--" + toid + "---giftId---" + giftId + "---count---" + count + "---toName---" + toName);
+                KLog.e("toid--" + toid + "---giftId---" + giftId + "---count---" + count + "---toName---" + toName);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         roomMain.getRoom().getChannel().sendGiftRecord(toid, giftId, count, toName, StartUtil.getUserName(RoomActivity.this));
+                        giftId = -1;
                     }
                 }).start();
-
                 giftName.setText("送给");
                 is_mic_have = false;
-                giftId = -1;
+
                 popupWindow.dismiss();
             }
         });
@@ -781,7 +791,7 @@ public class RoomActivity extends BaseActivity {
         map_trmp_play.put(2, "null");
         HomeTitleAdapter adapter = new HomeTitleAdapter(getSupportFragmentManager(), fragments, titles);
         viewPager_content.setAdapter(adapter);
-        viewPager_content.setOffscreenPageLimit(2);
+        viewPager_content.setOffscreenPageLimit(3);
         tabLayout.setupWithViewPager(viewPager_content);
         tabLayout.setTabMode(TabLayout.MODE_FIXED);
 
@@ -791,29 +801,26 @@ public class RoomActivity extends BaseActivity {
             public void onClick(View v) {
                 if (!TextUtils.isEmpty(editText.getText())) {
                     final String msgText = editText.getText().toString();
-                    if (chatToFlag == 0) {
+                    if (!is_personal_chat) {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0, (byte) 0, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + msgText + "</FONT>", StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
+                                roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0, (byte) 0, msgText, StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
                             }
                         }).start();
-
-                    } else if (sendToUser != null) {
+                        viewPager_content.setCurrentItem(0);
+                    } else if (is_personal_chat) {
+                        if (sendToUser == null) {
+                            ToastUtil.show(context, "私聊必须先选择一个发送对象");
+                            return;
+                        }
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                roomMain.getRoom().getChannel().sendChatMsg(sendToUser.getUserid(), (byte) 0, (byte) 1, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + msgText + "</FONT>", StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
-                                editText.setText("");
+                                roomMain.getRoom().getChannel().sendChatMsg(sendToUser.getUserid(), (byte) 0, (byte) 1, msgText, StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
                             }
                         }).start();
-                    } else {
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                roomMain.getRoom().getChannel().sendChatMsg(0, (byte) 0, (byte) 0, "<FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:14px; COLOR:#000000\">" + msgText + "</FONT>", StartUtil.getUserName(RoomActivity.this), Integer.parseInt(StartUtil.getUserLevel(RoomActivity.this)));
-                            }
-                        }).start();
+                        viewPager_content.setCurrentItem(1);
                     }
                     editText.setText("");
                     ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(RoomActivity.this.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -823,7 +830,7 @@ public class RoomActivity extends BaseActivity {
     }
 
     //添加弹幕
-    private void addDanmaku(boolean islive, Spanned chatmsg) {
+    private void addDanmaku(boolean islive, String chatmsg) {
         BaseDanmaku danmaku = mContext.mDanmakuFactory.createDanmaku(BaseDanmaku.TYPE_SCROLL_RL);
         if (danmaku == null || danmakuView == null) {
             return;
@@ -1009,8 +1016,9 @@ public class RoomActivity extends BaseActivity {
 
 
     //私聊发送
-    @Subscriber(tag = "SendToUser")
-    public void getSendToUser(RoomUserInfo obj) {
+    @Subscriber(tag = "PersonChat")
+    public void PersonChat(RoomUserInfo obj) {
+        is_personal_chat = true;
         sendToUser = obj;
         viewPager_content.setCurrentItem(1, true);
     }
@@ -1103,6 +1111,8 @@ public class RoomActivity extends BaseActivity {
             finish();
         } else if (err == 417) {
             Toast.makeText(RoomActivity.this, "该房间限制等级进入", Toast.LENGTH_SHORT).show();
+        } else if (err == 405) {
+            ToastUtil.show(context, "帐号密码错误");
         }
     }
 
@@ -1127,9 +1137,14 @@ public class RoomActivity extends BaseActivity {
                 }
             }).start();
             connectNumbaer++;
-        } else {
-            Toast.makeText(RoomActivity.this, "加入房间失败", Toast.LENGTH_SHORT).show();
-            finish();
+        }
+    }
+
+    //网络异常，断开房间
+    @Subscriber(tag = "onDisconnected")
+    public void onDisconnected(String msg) {
+        if (!roomMain.getRoom().isOK()) {
+            sendRoomReconnectMessage();
         }
     }
 
@@ -1154,11 +1169,8 @@ public class RoomActivity extends BaseActivity {
                 }
             }
         }
-        if (msg.getMsgtype() == 12 && msg.getSrcid() == 2) {
-
-            Spanned spanned = Html.fromHtml(msg.getContent());
-            Log.d("123", spanned + "");
-            addDanmaku(false, spanned);
+        if (msg.getMsgtype() == 12 || msg.getSrcid() == 2) {
+            addDanmaku(false, msg.getContent());
         }
     }
 
@@ -1461,13 +1473,13 @@ public class RoomActivity extends BaseActivity {
         TextView tv_cancle = (TextView) contentView.findViewById(R.id.tv_room_control_cancle);
         tv_duomic.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {//夺麦
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         for (int i = 0; i < micUsers.size(); i++) {
                             if (micUsers.get(i).getMicindex() == micFlag) {//当前micindex  和主播列表中的micindex一致 则夺该主播的mic
-                                roomMain.getRoom().getChannel().upMicRequest(String.valueOf(micUsers.get(i).getUserid()), Header.MIC_STATUS_PUBLIC_MIC, micFlag);
+                                roomMain.getRoom().getChannel().upMicRequest(StartUtil.getUserId(context), Header.MIC_STATUS_PUBLIC_MIC, micFlag);
                             }
                         }
                     }
@@ -1643,41 +1655,69 @@ public class RoomActivity extends BaseActivity {
         }
     };
     private static final int MESSAGE_ID_RECONNECTING = 0x01;
+    private static final int ROOM_RECONNECT = 0x02;
 
     private void sendReconnectMessage() {
-        mHandler.removeCallbacksAndMessages(null);
         mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_ID_RECONNECTING), 2000);
     }
 
-    protected Handler mHandler = new Handler(Looper.getMainLooper()) {
+    private void sendRoomReconnectMessage() {
+        mHandler.sendMessageDelayed(mHandler.obtainMessage(ROOM_RECONNECT), 2000);
+    }
+
+    protected Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MESSAGE_ID_RECONNECTING:
-                    if (NetUtils.isNetworkAvailable(context)) {
-                        switch (micFlag) {
-                            case 0:
-                                plVider1.setVideoPath(map_trmp_play.get(0));
-                                plVider1.start();
-                                if (!is_video1_play)
-                                    sendReconnectMessage();
-                                break;
-                            case 1:
-                                plVider2.setVideoPath(map_trmp_play.get(1));
-                                plVider2.start();
-                                if (!is_video2_play)
-                                    sendReconnectMessage();
-                                break;
-                            case 2:
-                                plVider3.setVideoPath(map_trmp_play.get(2));
-                                plVider3.start();
-                                if (!is_video3_play)
-                                    sendReconnectMessage();
-                                break;
+                    try {
+                        if (NetUtils.isNetworkAvailable(context)) {
+                            switch (micFlag) {
+                                case 0:
+                                    if (map_trmp_play.get(0).equals("null")) {
+                                        return;
+                                    }
+                                    plVider1.setVideoPath(map_trmp_play.get(0));
+                                    plVider1.start();
+                                    if (!is_video1_play)
+                                        sendReconnectMessage();
+                                    break;
+                                case 1:
+                                    if (map_trmp_play.get(0).equals("null")) {
+                                        return;
+                                    }
+                                    plVider2.setVideoPath(map_trmp_play.get(1));
+                                    plVider2.start();
+                                    if (!is_video2_play)
+                                        sendReconnectMessage();
+                                    break;
+                                case 2:
+                                    if (map_trmp_play.get(0).equals("null")) {
+                                        return;
+                                    }
+                                    plVider3.setVideoPath(map_trmp_play.get(2));
+                                    plVider3.start();
+                                    if (!is_video3_play)
+                                        sendReconnectMessage();
+                                    break;
+                            }
+                            return;
+                        } else {
+                            ToastUtil.show(context, R.string.net_error);
                         }
-                        return;
-                    } else {
-                        ToastUtil.show(context, R.string.net_error);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case ROOM_RECONNECT:
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
+                        }
+                    }).start();
+                    if (!roomMain.getRoom().isOK()) {
+                        sendRoomReconnectMessage();
                     }
                     break;
             }

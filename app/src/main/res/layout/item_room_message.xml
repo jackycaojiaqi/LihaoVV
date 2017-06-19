@@ -11,6 +11,7 @@
         android:id="@+id/item_chat_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
     <com.facebook.drawee.view.SimpleDraweeView
         android:layout_width="80dp"
         android:visibility="gone"

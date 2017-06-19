@@ -90,8 +90,7 @@ public class MyRoom implements RoomHandler {
     @Override
     public void onConnectFailed() {
         EventBus.getDefault().post(false, "ConnectFailed");
-        // TODO Auto-generated method stub
-        System.out.println("onConnectFailed: 连接失败");
+        KLog.e("socket链接失败");
     }
 
     @Override
@@ -150,8 +149,7 @@ public class MyRoom implements RoomHandler {
     //加入房间错误提示
     @Override
     public void onJoinRoomError(int err) {
-        // TODO Auto-generated method stub
-        PrintUnknown("onJoinRoomError: ");
+        KLog.e(err);
         EventBus.getDefault().post(err, "joinRoomError");
     }
 
@@ -250,7 +248,7 @@ public class MyRoom implements RoomHandler {
     @Override
     public void onUserPayResponse(UserPayResponse obj) {
         // TODO Auto-generated method stub
-        PrintUnknown("onUserPayResponse: ");
+        KLog.e("onUserPayResponse: ");
         Tools.PrintObject(obj);
     }
 
@@ -409,19 +407,19 @@ public class MyRoom implements RoomHandler {
     @Override
     public void onTradeGiftResponse() {
         // TODO Auto-generated method stub
-        PrintUnknown("onTradeGiftResponse: ");
+       KLog.e("onTradeGiftResponse: ");
     }
 
     @Override
     public void onTradeGiftError(int i) {
         // TODO Auto-generated method stub
-        PrintUnknown("onTradeGiftError: ");
+        KLog.e("onTradeGiftError: ");
     }
 
     @Override
     public void onTradeGiftNotify(BigGiftRecord obj) {
         // TODO Auto-generated method stub
-        PrintUnknown("onTradeGiftNotify: ");
+        KLog.e("onTradeGiftNotify: ");
         Tools.PrintObject(obj);
         EventBus.getDefault().post(obj, "BigGiftRecord");
     }
@@ -533,6 +531,8 @@ public class MyRoom implements RoomHandler {
     @Override
     public void onDisconnected() {
         // TODO Auto-generated method stub
+        KLog.e("onDisconnected");
+        EventBus.getDefault().post("onDisconnected", "onDisconnected");
         isConnected = false;
     }
 

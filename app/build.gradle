@@ -48,7 +48,7 @@ android {
         }
     }
     productFlavors {
-        nihao {
+        lihao {
         }
 
     }

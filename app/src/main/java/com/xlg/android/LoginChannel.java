@@ -14,7 +14,7 @@ public class LoginChannel  implements ClientSocketHandler {
 	// 客户端回调
 	private LoginHandler mHandler;
 	// 新的socket对像
-	private ClientSocket mSocket = new ClientSocket(this);
+	private LoginClientSocket mSocket = new LoginClientSocket(this);
 	// 接收缓冲区
 	private ByteBuffer mBuffer = new ByteBuffer();
 	

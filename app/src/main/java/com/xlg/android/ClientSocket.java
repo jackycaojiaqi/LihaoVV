@@ -1,5 +1,6 @@
 package com.xlg.android;
 
+import com.fubang.lihaovv.filter.IFilter;
 import com.socks.library.KLog;
 
 import java.io.IOException;
@@ -27,7 +28,6 @@ public class ClientSocket {
 		if(null != mThread && mThread.isAlive()) {
 			return -1;
 		}
-
 		mSvrPort = port;
 		mSvrIP = ip;
 //		mSvrPort = 14293;
@@ -76,7 +76,6 @@ public class ClientSocket {
 			try {
 				while(true) {
 					int ret = input.read(data);
-					
 					mHandler.onRecv(data, ret);
 				}
 			}catch(SocketException e) {

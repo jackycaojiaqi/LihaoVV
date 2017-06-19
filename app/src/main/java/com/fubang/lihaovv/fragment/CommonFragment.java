@@ -8,8 +8,10 @@ import com.fubang.lihaovv.R;
 import com.fubang.lihaovv.adapters.RoomChatAdapter;
 import com.fubang.lihaovv.entities.GiftEntity;
 import com.fubang.lihaovv.utils.GiftUtil;
+import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.RoomChatMsg;
+import com.xlg.android.protocol.RoomUserInfo;
 import com.zhuyunjian.library.StartUtil;
 
 import org.androidannotations.annotations.EFragment;
@@ -31,6 +33,7 @@ public class CommonFragment extends BaseFragment {
 
     private RoomChatAdapter adapter;
     private List<GiftEntity> gifts = new ArrayList<>();
+
     @Override
     public void before() {
         RoomChatMsg joinMsg = new RoomChatMsg();
@@ -45,12 +48,13 @@ public class CommonFragment extends BaseFragment {
     public void initView() {
         gifts.addAll(GiftUtil.getGifts());
 
-        adapter = new RoomChatAdapter(data,getContext());
+        adapter = new RoomChatAdapter(data, getContext());
         listView.setAdapter(adapter);
     }
+
     //接收礼物消息更新
-    @Subscriber(tag="BigGiftRecord")
-    public void getGiftRecord(BigGiftRecord obj){
+    @Subscriber(tag = "BigGiftRecord")
+    public void getGiftRecord(BigGiftRecord obj) {
         int getGiftId = obj.getGiftid();
         int count = obj.getCount();
         String giftTxt = "";
@@ -63,7 +67,7 @@ public class CommonFragment extends BaseFragment {
                         giftTxt = "/g10" + getGiftId + "   x " + count;
                     if (getGiftId >= 100)
                         giftTxt = "/g1" + getGiftId + "    x" + count;
-                    if (getGiftId>31 && getGiftId<64) {
+                    if (getGiftId > 31 && getGiftId < 64) {
                         RoomChatMsg msg = new RoomChatMsg();
                         msg.setToid(-1);
                         msg.setContent("g" + getGiftId + "");
@@ -78,21 +82,19 @@ public class CommonFragment extends BaseFragment {
             }
         }
     }
+
     //接收服务器发送的消息更新列表
-    @Subscriber(tag="CommonMsg")
-    public void getRoomChatMsg(RoomChatMsg msg){
-//        Log.d("123",msg.getContent());
-//        if(msg.getMsgtype() == 0) {
-//            if (msg.getToid()==0||msg.getToid()==Integer.parseInt(StartUtil.getUserId(getContext()))){
-                //("<b><FONT style=\"FONT-FAMILY:宋体;FONT-SIZE:17px; COLOR:#FF0000\">/mr599</FONT></b>")) {
-                //<b><FONT style="FONT-FAMILY:宋体;FONT-SIZE:17px; COLOR:#FF0000">/mr599</FONT></b>
-                data.add(msg);
-                adapter.notifyDataSetChanged();
-                listView.setSelection(listView.getCount() - 1);
-//            }
-//        }
+    @Subscriber(tag = "CommonMsg")
+    public void getRoomChatMsg(RoomChatMsg msg) {
+        KLog.e(msg.getSrcalias() + "  " + msg.getContent());
+        data.add(msg);
+        adapter.notifyDataSetChanged();
+        listView.setSelection(listView.getCount() - 1);
     }
+
+
     @Override
+
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);

@@ -12,17 +12,19 @@ public class UserPayResponse {
 	@StructOrder(4)
 	private long   	giftbalance;		//礼物金额
 	@StructOrder(5)
-	private long		expend2;			//当月消费额
-	@StructOrder(6)
-	private int	type;				//奖励提示
-	@StructOrder(7)
-	private long		money;				//变化金额
-	@StructOrder(8)
 	private int	reserve1;			//保留1
-	@StructOrder(9)
+	@StructOrder(6)
 	private int	reserve2;			//保留2
-	@StructOrder(10)
+	@StructOrder(7)
 	private long	        time;				//发生时间
+
+	public int getToid() {
+		return toid;
+	}
+
+	public void setToid(int toid) {
+		this.toid = toid;
+	}
 
 	public int getVcbid() {
 		return vcbid;
@@ -53,24 +55,6 @@ public class UserPayResponse {
 	}
 	public void setGiftbalance(long giftbalance) {
 		this.giftbalance = giftbalance;
-	}
-	public long getExpend2() {
-	return expend2;
-}
-	public void setExpend2(long expend2) {
-		this.expend2 = expend2;
-	}
-	public int getType() {
-		return type;
-	}
-	public void setType(int type) {
-		this.type = type;
-	}
-	public long getMoney() {
-		return money;
-	}
-	public void setMoney(long money) {
-		this.money = money;
 	}
 	public int getReserve1() {
 		return reserve1;

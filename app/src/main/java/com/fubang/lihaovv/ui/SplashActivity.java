@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.fubang.lihaovv.MainActivity_;
 import com.fubang.lihaovv.R;
+import com.socks.library.KLog;
 import com.xlg.android.protocol.LogonResponse;
 import com.zhuyunjian.library.DeviceUtil;
 import com.zhuyunjian.library.StartUtil;
@@ -35,14 +36,16 @@ public class SplashActivity extends BaseActivity {
     @ViewById(R.id.splash_image)
     ImageView imageView;
     private int flag;
+
     @Override
     public void before() {
         EventBus.getDefault().register(this);
     }
+
     @PermissionSuccess(requestCode = 100)
-    public void doSomething(){
-        Log.d("123","deviceId"+ DeviceUtil.getDeviceId(this));
-        StartUtil.editDeviceId(this,DeviceUtil.getDeviceId(this));
+    public void doSomething() {
+        Log.d("123", "deviceId" + DeviceUtil.getDeviceId(this));
+        StartUtil.editDeviceId(this, DeviceUtil.getDeviceId(this));
         Toast.makeText(this, "Contact permission is granted", Toast.LENGTH_SHORT).show();
     }
 
@@ -67,7 +70,7 @@ public class SplashActivity extends BaseActivity {
                 .request();
         super.initView();
         //创建启动夜间动画效果
-        AlphaAnimation animation = new AlphaAnimation(1.0f,1.0f);
+        AlphaAnimation animation = new AlphaAnimation(1.0f, 1.0f);
         animation.setDuration(15 * 100);
         animation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -95,61 +98,56 @@ public class SplashActivity extends BaseActivity {
         });
         StartUtil.deleteIp(this);
     }
+
     private void startIntent() {
-        if (StartUtil.isFirst(this)){
+        if (StartUtil.isFirst(this)) {
             startActivity(GuideActivity_.intent(this).get());
             finish();
-        }else if (!TextUtils.isEmpty(StartUtil.getUserName(this))){
+        } else if (!TextUtils.isEmpty(StartUtil.getUserName(this))) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     flag = StartUtil.getCount(SplashActivity.this);
-                    Log.d("123","flag--------------"+flag);
+                    KLog.e( "flag--------------" + flag);
+                    KLog.e(StartUtil.getUserId(SplashActivity.this)+" "+ StartUtil.getUserPwd(SplashActivity.this));
                     if (flag == 0) {
                         new LoginMain(Integer.parseInt(StartUtil.getUserId(SplashActivity.this)),
-                                StartUtil.getUserPwd(SplashActivity.this), "", 0, 0,SplashActivity.this).start(Integer.parseInt(StartUtil.getUserId(SplashActivity.this)),
-                                StartUtil.getUserPwd(SplashActivity.this), 0, "", 0,SplashActivity.this);
-                    }else if (flag == 1){
+                                StartUtil.getUserPwd(SplashActivity.this), "", 0, 0, SplashActivity.this).start(Integer.parseInt(StartUtil.getUserId(SplashActivity.this)),
+                                StartUtil.getUserPwd(SplashActivity.this), 0, "", 0, SplashActivity.this);
+                    } else if (flag == 1) {
                         startActivity(LoginActivity_.intent(SplashActivity.this).get());
                         finish();
-                    }else if (flag == 2 || flag == 3){
-                        new LoginMain(0, "",StartUtil.getQQid(SplashActivity.this) , flag, flag,SplashActivity.this).start(0, "", flag, StartUtil.getUserId(SplashActivity.this),flag,SplashActivity.this);
+                    } else if (flag == 2 || flag == 3) {
+                        KLog.e(StartUtil.getUserId(SplashActivity.this)+" "+ StartUtil.getUserPwd(SplashActivity.this));
+                        new LoginMain(Integer.parseInt(StartUtil.getUserId(SplashActivity.this)),
+                                StartUtil.getUserPwd(SplashActivity.this), "", 0, 0, SplashActivity.this).start(Integer.parseInt(StartUtil.getUserId(SplashActivity.this)),
+                                StartUtil.getUserPwd(SplashActivity.this), 0, "", 0, SplashActivity.this);
                     }
                 }
             }).start();
-//            startActivity(MainActivity_.intent(this).get());
-        }else {
+        } else {
             startActivity(LoginActivity_.intent(this).get());
             finish();
         }
     }
+
     @Subscriber(tag = "splash_success")
-    public void loginSuccess(LogonResponse res){
+    public void loginSuccess(LogonResponse res) {
 //        if (!TextUtils.isEmpty(res.getCvalue())){
 //            StartUtil.putIpPort(this,res.getCvalue());
 //        }
 //        flag = 0;
-        if (res != null){
-            if (flag != 0) {
-                Log.d("123",StartUtil.getUserName(this)+StartUtil.getUserIcon(this));
-//                StartUtil.editInfo(this, StartUtil.getUserName(this), res.getUserid() + "", StartUtil.getUserIcon(this), res.getCuserpwd());
-            }else {
-                if (res.getHeadpic()>10){
-//                    StartUtil.editInfo(this, res.getCalias(), res.getUserid() + "", res.getCphoto(), res.getCuserpwd());
-                }else {
-                    Log.d("123","splash head"+res.getHeadpic());
-//                    StartUtil.editInfo(this, res.getCalias(), res.getUserid() + "", "head" + res.getCphoto(), res.getCuserpwd());
-                }
-            }
-            StartUtil.editUserInfo(this,res.getNlevel()+"",res.getNdeposit()+"",res.getNk()+"",res.getNb()+"",res.getCidiograph());
-            StartUtil.putVersion(this,res.getNverison()+"");
+        if (res != null) {
+            StartUtil.editUserInfo(this, res.getNlevel() + "", res.getNdeposit() + "", res.getNk() + "", res.getNb() + "", res.getCidiograph());
+            StartUtil.putVersion(this, res.getNverison() + "");
         }
         startActivity(MainActivity_.intent(SplashActivity.this).get());
         finish();
     }
+
     @Subscriber(tag = "splash_fail")
-    public void loginFail(String loginflag){
-        if (loginflag == "0"){
+    public void loginFail(String loginflag) {
+        if (loginflag == "0") {
             Toast.makeText(this, "账号密码错误", Toast.LENGTH_SHORT).show();
         }
         startActivity(LoginActivity_.intent(this).get());

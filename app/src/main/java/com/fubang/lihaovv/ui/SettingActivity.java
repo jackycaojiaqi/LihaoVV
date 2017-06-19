@@ -67,7 +67,7 @@ public class SettingActivity extends BaseActivity {
             public void onClick(View v) {
                 StartUtil.deleteLogin(SettingActivity.this);
                 startActivity(LoginActivity_.intent(SettingActivity.this).get());
-
+                finish();
             }
         });
     }

@@ -414,7 +414,6 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
             }
         });
         roomIdTv.setText(roomId + "");
-        ControllerUtil.showAndHide(testController, roomControl);
         fullImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
