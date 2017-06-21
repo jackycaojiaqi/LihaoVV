@@ -16,20 +16,20 @@
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ssdk_auth_title_back.png"
     },
     {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ssdk_oks_classic_pocket.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ssdk_oks_classic_pocket.png"
-    },
-    {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ssdk_oks_classic_kakaotalk.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ssdk_oks_classic_kakaotalk.png"
     },
     {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ssdk_oks_classic_facebookmessenger.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ssdk_oks_classic_facebookmessenger.png"
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ssdk_oks_classic_pocket.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ssdk_oks_classic_pocket.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ssdk_oks_classic_line.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ssdk_oks_classic_line.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ssdk_oks_classic_facebookmessenger.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/bundles/debug/res/drawable-xhdpi-v4/ssdk_oks_classic_facebookmessenger.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/androidTest/debug/drawable-xhdpi-v4/ssdk_oks_classic_email.png",

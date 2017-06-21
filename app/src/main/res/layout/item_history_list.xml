@@ -39,6 +39,7 @@
     <ImageView
         android:id="@+id/history_del"
         android:src="@mipmap/clear_icon"
+        android:visibility="gone"
         android:layout_width="100dp"
         android:layout_gravity="center"
         android:layout_height="35dp" />

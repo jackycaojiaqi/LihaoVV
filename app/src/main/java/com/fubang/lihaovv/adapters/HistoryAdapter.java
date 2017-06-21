@@ -12,6 +12,8 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.fubang.lihaovv.R;
+import com.fubang.lihaovv.ui.RoomActivity;
+import com.fubang.lihaovv.ui.RoomActivity_;
 import com.fubang.lihaovv.ui.TestActivity_;
 import com.fubang.lihaovv.AppConstant;
 import com.fubang.lihaovv.entities.HistoryEnity;
@@ -77,8 +79,10 @@ public class HistoryAdapter extends ListBaseAdapter<HistoryEnity> {
         holder.layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                context.startActivity(TestActivity_.intent(context)
-                        .extra("roomIp",s[0]).extra("roomId",list.get(position).getRoomid()).get());
+                context.startActivity(RoomActivity_.intent(context)
+                        .extra("roomIp", list.get(position).getGateway()).
+                                extra("roomId", list.get(position).getRoomid()).
+                                extra("roomPwd", list.get(position).getRoompwd()).get());
             }
         });
         return convertView;

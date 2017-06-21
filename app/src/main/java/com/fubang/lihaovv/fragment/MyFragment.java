@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import com.fubang.lihaovv.ui.MessageActivity_;
 import com.fubang.lihaovv.ui.PersonActivity_;
 import com.fubang.lihaovv.ui.PrivilegeActivity_;
 import com.fubang.lihaovv.ui.RechargeActivity_;
+import com.fubang.lihaovv.ui.SearchActivity_;
 import com.fubang.lihaovv.ui.ServiceActivity_;
 import com.fubang.lihaovv.ui.SettingActivity_;
 import com.fubang.lihaovv.AppConstant;
@@ -56,12 +58,15 @@ public class MyFragment extends BaseFragment implements Callback<HistoryListEnti
 
     private List<Fragment> fragments = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
-//    @ViewById(R.id.my_viewpage)
+    //    @ViewById(R.id.my_viewpage)
 //    ViewPager viewPager;
 //    @ViewById(R.id.my_tablayout)
 //    TabLayout tabLayout;
     @ViewById(R.id.my_user_headicon)
     SimpleDraweeView userIcon;
+    @ViewById(R.id.fm_mine_search)
+    ImageView fmMineSearch;
+
     @ViewById(R.id.my_username)
     TextView userName;
     @ViewById(R.id.my_recharge)
@@ -95,9 +100,9 @@ public class MyFragment extends BaseFragment implements Callback<HistoryListEnti
         for (int i = 0; i < AppConstant.MY_TYPE_TITLE.length; i++) {
             titles.add(AppConstant.MY_TYPE_TITLE[i]);
         }
-        fragments.add(MyItemFragment_.builder().arg(AppConstant.HOME_TYPE,titles.get(0)).build());
-        fragments.add(MyItemFragment_.builder().arg(AppConstant.HOME_TYPE,titles.get(1)).build());
-        fragments.add(MyItemFragment_.builder().arg(AppConstant.HOME_TYPE,titles.get(2)).build());
+        fragments.add(MyItemFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(0)).build());
+        fragments.add(MyItemFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
+        fragments.add(MyItemFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(2)).build());
         myRecharge.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,30 +145,35 @@ public class MyFragment extends BaseFragment implements Callback<HistoryListEnti
                 startActivity(HistoryActivity_.intent(getContext()).get());
             }
         });
-
+        fmMineSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(SearchActivity_.intent(getContext()).get());
+            }
+        });
     }
 
     @Override
     public void initData() {
-        Log.d("123",StartUtil.getUserIcon(getContext()).length()+"length");
-        if (StartUtil.getUserIcon(getContext()).length()>30){
+        Log.d("123", StartUtil.getUserIcon(getContext()).length() + "length");
+        if (StartUtil.getUserIcon(getContext()).length() > 30) {
             userIcon.setImageURI(Uri.parse(StartUtil.getUserIcon(getContext())));
-        }else if (StartUtil.getUserIcon(getContext()).length()>10) {
-            String url = AppConstant.HEAD_URL+StartUtil.getUserIcon(getContext());
+        } else if (StartUtil.getUserIcon(getContext()).length() > 10) {
+            String url = AppConstant.HEAD_URL + StartUtil.getUserIcon(getContext());
             userIcon.setImageURI(Uri.parse(url));
-            Log.d("123","head url-------"+url);
-        }else {
-                String[] pichead = StartUtil.getUserIcon(getContext()).split("\\.");
+            Log.d("123", "head url-------" + url);
+        } else {
+            String[] pichead = StartUtil.getUserIcon(getContext()).split("\\.");
 //        userIcon.setImageURI(Uri.parse(StartUtil.getUserIcon(getContext())));
-                Log.d("123", pichead[0]);
-                userIcon.setImageResource(getResourceByReflect(pichead[0]));
+            Log.d("123", pichead[0]);
+            userIcon.setImageResource(getResourceByReflect(pichead[0]));
         }
         userName.setText(StartUtil.getUserName(getContext()));
-        HomeTitleAdapter adapter = new HomeTitleAdapter(getChildFragmentManager(),fragments,titles);
+        HomeTitleAdapter adapter = new HomeTitleAdapter(getChildFragmentManager(), fragments, titles);
 //        viewPager.setAdapter(adapter);
 //        tabLayout.setupWithViewPager(viewPager);
 //        tabLayout.setTabMode(TabLayout.MODE_FIXED);
-        kbTv.setText(StartUtil.getUserKbi(getContext())+" K币");
+        kbTv.setText(StartUtil.getUserKbi(getContext()) + " K币");
         Retrofit retrofit = new Retrofit.Builder().baseUrl(AppConstant.BASE_URL)
                 .addConverterFactory(new Converter.Factory() {
                     @Override
@@ -186,7 +196,7 @@ public class MyFragment extends BaseFragment implements Callback<HistoryListEnti
                                         list.add(historyEnity);
                                     }
                                     entity.setEnities(list);
-                                }catch (JSONException e){
+                                } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
                                 return entity;
@@ -198,37 +208,41 @@ public class MyFragment extends BaseFragment implements Callback<HistoryListEnti
         call = service.getHistoryEnity(Integer.parseInt(StartUtil.getUserId(getContext())));
         call.enqueue(this);
     }
+
     /**
      * 获取图片名称获取图片的资源id的方法
+     *
      * @param imageName
      * @return
      */
-    public int getResourceByReflect(String imageName){
-        Class drawable  =  R.drawable.class;
+    public int getResourceByReflect(String imageName) {
+        Class drawable = R.drawable.class;
         Field field = null;
-        int r_id ;
+        int r_id;
         try {
             field = drawable.getField(imageName);
             r_id = field.getInt(field.getName());
         } catch (Exception e) {
-            r_id= R.drawable.head0;
+            r_id = R.drawable.head0;
             Log.e("ERROR", "PICTURE NOT　FOUND！");
         }
         return r_id;
     }
 
     @Subscriber(tag = "UserInfo")
-    public void getUserInfo(UserEntity userEntity){
-        Log.d("123",userEntity.getUserIcon()+userEntity.getUserName());
+    public void getUserInfo(UserEntity userEntity) {
+        Log.d("123", userEntity.getUserIcon() + userEntity.getUserName());
         userIcon.setImageURI(Uri.parse(userEntity.getUserIcon()));
         userName.setText(userEntity.getUserName());
     }
+
     @Override
     public void onResume() {
         super.onResume();
         Call<HistoryListEntiy> call2 = call.clone();
         call2.enqueue(this);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -238,9 +252,9 @@ public class MyFragment extends BaseFragment implements Callback<HistoryListEnti
     public void onResponse(Call<HistoryListEntiy> call, Response<HistoryListEntiy> response) {
         call.cancel();
         List<HistoryEnity> list = response.body().getEnities();
-        if (list != null){
+        if (list != null) {
             Log.d("123", list.size() + "------------rich");
-            historyTv.setText(list.size()+"");
+            historyTv.setText(list.size() + "");
         }
     }
 

@@ -174,6 +174,9 @@ public class RoomActivity extends BaseActivity {
     ImageView backImage;
     @ViewById(R.id.test_new_controll)
     RelativeLayout testController;
+    @ViewById(R.id.rll_control_view)
+    RelativeLayout rllControlView;
+
     @ViewById(R.id.test_new_full)
     ImageView fullImage;
     @ViewById(R.id.iv_room_setting)
@@ -409,7 +412,7 @@ public class RoomActivity extends BaseActivity {
         fragments.add(PersonFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
         fragments.add(LookFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(2)).build());
         fragments.add(MicQuenFragment_.builder().arg(AppConstant.HOME_TYPE, titles.get(1)).build());
-        roomIdTv.setText(roomId + "");
+        roomIdTv.setText(R.string.this_mic_no_anchor);
         roomActivity = this;
         mDetector = EmotionInputDetector.with(this)
                 .setEmotionView(emotionLayout)
@@ -424,6 +427,7 @@ public class RoomActivity extends BaseActivity {
     private boolean is_video1_play = false;
     private boolean is_video2_play = false;
     private boolean is_video3_play = false;
+    private boolean is_control_view_show = true;
 
     @Override
     public void initListener() {
@@ -551,6 +555,20 @@ public class RoomActivity extends BaseActivity {
                 }
             }
         });
+        plVider1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!is_control_view_show) {
+                    rllControlView.setVisibility(View.VISIBLE);
+                } else {
+                    rllControlView.setVisibility(View.GONE);
+                }
+                KLog.e(is_control_view_show ? "123" : "456");
+                is_control_view_show = !is_control_view_show;
+            }
+        });
+
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -587,6 +605,18 @@ public class RoomActivity extends BaseActivity {
                             }
                         }
                     }
+                }
+                boolean has_mic_user = false;
+                //当前麦主播名字
+                for (int i = 0; i < micUsers.size(); i++) {
+                    if (micUsers.get(i).getMicindex() == micFlag) {
+                        roomIdTv.setText((micFlag + 1) + "麦主播：" + micUsers.get(i).getUseralias() + " ");
+                        has_mic_user = true;
+                    }
+                }
+                if (!has_mic_user) {
+                    roomIdTv.setText(R.string.this_mic_no_anchor);
+                    has_mic_user = false;
                 }
             }
 
@@ -965,7 +995,7 @@ public class RoomActivity extends BaseActivity {
                 roomMain.getRoom().getChannel().upMicRequest(userid, Header.MIC_STATUS_APPLICATE_MIC, micFlag);
             }
         }).start();
-        testController.setVisibility(View.GONE);
+        rllControlView.setVisibility(View.GONE);
     }
 
     //自己下麦
@@ -977,7 +1007,7 @@ public class RoomActivity extends BaseActivity {
                 roomMain.getRoom().getChannel().upMicRequest(userid, Header.MIC_STATUS_DOWN_MIC, micFlag);
             }
         }).start();
-        testController.setVisibility(View.VISIBLE);
+        rllControlView.setVisibility(View.VISIBLE);
     }
 
     //抱上1麦
@@ -1269,6 +1299,13 @@ public class RoomActivity extends BaseActivity {
                 micUsers.add(userInfos.get(i));
             }
         }
+        //设置mic 主播名字
+        for (int i = 0; i < micUsers.size(); i++) {
+            if (micFlag == micUsers.get(i).getMicindex()) ;
+            {
+                roomIdTv.setText((micFlag + 1) + "麦主播：" + micUsers.get(i).getUseralias() + " ");
+            }
+        }
         String room_name = "lihao_" + obj.getUserid() + "_" + obj.getUserid();
         OkGo.<String>get(AppConstant.GET_RTMP_URL)
                 .params("streamKey", room_name)
@@ -1284,7 +1321,7 @@ public class RoomActivity extends BaseActivity {
                                 _CameraSurface.setVisibility(View.VISIBLE);
                                 //通知麦序fragment  已经上麦了
                                 EventBus.getDefault().post("is_upmic", "is_upmic");
-                                testController.setVisibility(View.GONE);
+                                rllControlView.setVisibility(View.GONE);
                                 if (is_surface_creat) {
                                     mMediaRecorder.startRecord(push_url);
                                 } else {
@@ -1323,7 +1360,6 @@ public class RoomActivity extends BaseActivity {
     @Subscriber(tag = "downMicState")
     public void downMicState(MicState obj) {
         KLog.e("downMicState");
-
         for (int i = 0; i < micUsers.size(); i++) {
             if (micUsers.get(i).getUserid() == obj.getUserid()) {
                 //根据micindex关闭对应号的mic
@@ -1332,16 +1368,19 @@ public class RoomActivity extends BaseActivity {
                     case 0:
                         map_trmp_play.put(0, "null");
                         iv_cover_1.setVisibility(View.VISIBLE);
+                        roomIdTv.setText(R.string.this_mic_no_anchor);
                         plVider1.pause();
                         break;
                     case 1:
                         map_trmp_play.put(1, "null");
                         iv_cover_2.setVisibility(View.VISIBLE);
+                        roomIdTv.setText(R.string.this_mic_no_anchor);
                         plVider2.pause();
                         break;
                     case 2:
                         map_trmp_play.put(2, "null");
                         iv_cover_3.setVisibility(View.VISIBLE);
+                        roomIdTv.setText(R.string.this_mic_no_anchor);
                         plVider3.pause();
                         break;
                 }
@@ -1359,7 +1398,7 @@ public class RoomActivity extends BaseActivity {
                 mMediaRecorder.reset();
                 _CameraSurface.setVisibility(View.GONE);
                 is_pushing = false;
-                testController.setVisibility(View.VISIBLE);
+                rllControlView.setVisibility(View.VISIBLE);
             }
 
         }
@@ -1403,6 +1442,10 @@ public class RoomActivity extends BaseActivity {
                         KLog.e(obj.getMicindex() + rtmpentity.getRTMPPlayURL());
                     }
                 });
+        //设置mic 主播名字
+        if (micFlag == obj.getMicindex()) {
+            roomIdTv.setText((micFlag + 1) + "麦主播：" + obj.getUseralias() + " ");
+        }
     }
 
     @Click({R.id.linear_new_container, R.id.chat_image_btn, R.id.room_new_gift, R.id.iv_room_setting})
@@ -1841,7 +1884,7 @@ public class RoomActivity extends BaseActivity {
         mMediaRecorder.setZoom(0.5f);
         mMediaRecorder.setPreviewSize(_CameraSurface.getMeasuredWidth(), _CameraSurface.getMeasuredHeight() / 2);
         mMediaRecorder.startRecord(push_url);
-        testController.setVisibility(View.GONE);
+        rllControlView.setVisibility(View.GONE);
     }
 
     private boolean is_surface_creat = false;

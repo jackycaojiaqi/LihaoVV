@@ -44,12 +44,12 @@
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_kakaotalk.png"
     },
     {
-        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/debug/drawable-xhdpi-v4/ssdk_oks_classic_wechatmoments.png",
-        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_wechatmoments.png"
-    },
-    {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/debug/drawable-xhdpi-v4/ssdk_oks_classic_dropbox.png",
         "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_dropbox.png"
+    },
+    {
+        "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/debug/drawable-xhdpi-v4/ssdk_oks_classic_wechatmoments.png",
+        "source": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/src/main/res/drawable-xhdpi/ssdk_oks_classic_wechatmoments.png"
     },
     {
         "merged": "/Users/jacky/FuBangProject/LihaoVV/oneKeyShare/build/intermediates/res/merged/debug/drawable-xhdpi-v4/ssdk_oks_classic_laiwangmoments.png",

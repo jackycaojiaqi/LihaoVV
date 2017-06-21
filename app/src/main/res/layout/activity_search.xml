@@ -1,83 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
 
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     tools:context=".ui.SearchActivity">
+
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/head_bg_color"
-        >
+        android:orientation="horizontal">
+
         <ImageView
             android:id="@+id/search_back_btn"
-            android:layout_margin="@dimen/search_image_margin"
-            android:layout_gravity="center_vertical"
-            android:src="@mipmap/btn_title_black_back"
             android:layout_width="@dimen/search_image_width"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/search_image_margin"
+            android:src="@mipmap/btn_title_black_back" />
+
 
         <android.support.v7.widget.CardView
+            android:layout_width="300dp"
+            android:layout_height="35dp"
             android:layout_gravity="center"
-            app:cardCornerRadius="@dimen/search_card_radius"
-            android:layout_width="0dp"
             app:cardBackgroundColor="#f1abe1"
-            android:layout_weight="1"
-            android:layout_height="40dp">
-            <LinearLayout
-                android:background="#f1abe1"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <ImageView
-                    android:src="@mipmap/search_icon"
-                    android:layout_width="22dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_height="match_parent" />
-                <EditText
-                    android:id="@+id/search_edittext"
-                    android:queryHint="请输入房间id"
-                    android:background="@null"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="match_parent" />
-                <ImageView
-                    android:id="@+id/search_edit_clear"
-                    android:src="@mipmap/del"
-                    android:padding="10dp"
-                    android:layout_width="30dp"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
+            app:cardCornerRadius="10dp">
 
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:src="@mipmap/search_icon" />
+
+            <com.fubang.lihaovv.widget.ClearableEditText
+                android:id="@+id/search_edittext"
+                android:layout_width="match_parent"
+                android:paddingLeft="40dp"
+                android:layout_height="match_parent"
+                android:textSize="14dp"
+                android:background="@null"
+                android:textColor="@color/cc_black"
+                android:focusable="true"
+                android:hint="请输入房间id" />
         </android.support.v7.widget.CardView>
+
         <TextView
             android:id="@+id/search_to_search"
-            android:textSize="16dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginLeft="10dp"
-            android:layout_gravity="center_vertical"
-            android:textColor="@color/home_tab_backgroud"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/search_find"/>
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:text="@string/search_find"
+            android:textColor="@color/home_tab_backgroud"
+            android:textSize="16dp"
+            android:visibility="gone" />
     </LinearLayout>
+
     <ListView
         android:id="@+id/search_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </LinearLayout>
 
-    <!--<SearchView-->
-    <!--android:background="@null"-->
-    <!--android:id="@+id/search_view"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:iconifiedByDefault="false"-->
-    <!--android:inputType="textCapWords"-->
-    <!--android:imeOptions="actionSearch"-->
-    <!--android:queryHint="请输入房间id"-->
-    <!--android:layout_height="30dp"/>-->
+    <!--<SearchView--><!--android:background="@null"--><!--android:id="@+id/search_view"--><!--android:layout_width="match_parent"--><!--android:iconifiedByDefault="false"--><!--android:inputType="textCapWords"--><!--android:imeOptions="actionSearch"--><!--android:queryHint="请输入房间id"--><!--android:layout_height="30dp"/>-->

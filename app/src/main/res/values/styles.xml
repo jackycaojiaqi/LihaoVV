@@ -36,7 +36,7 @@
 
     <style name="user_text_title_stylt">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">16dp</item>
         <item name="android:layout_marginLeft">10dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:textColor">@color/user_title_text</item>

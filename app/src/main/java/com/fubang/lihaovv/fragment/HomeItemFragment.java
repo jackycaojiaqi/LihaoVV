@@ -46,7 +46,7 @@ public class HomeItemFragment extends BaseFragment implements RoomListView,PullT
     public void before() {
         EventBus.getDefault().register(this);
         type = getArguments().getString(AppConstant.HOME_TYPE);
-        presenter = new RoomListPresenterImpl(this,count,page,group);
+        presenter = new RoomListPresenterImpl(this,count,page,group,"");
     }
 
     @Override
@@ -108,13 +108,13 @@ public class HomeItemFragment extends BaseFragment implements RoomListView,PullT
     @Override
     public void onPullDownToRefresh(PullToRefreshBase refreshView) {
         page = 1;
-        new RoomListPresenterImpl(this,count,page,group).getRoomList();
+        new RoomListPresenterImpl(this,count,page,group,"").getRoomList();
     }
 
     @Override
     public void onPullUpToRefresh(PullToRefreshBase refreshView) {
         page = 2;
-        new RoomListPresenterImpl(this,count,page,group).getRoomList();
+        new RoomListPresenterImpl(this,count,page,group,"").getRoomList();
         ptRefreshGv.onRefreshComplete();
     }
 

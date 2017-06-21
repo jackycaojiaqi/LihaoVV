@@ -209,9 +209,11 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
         }
         if (is_video2_play = false && !map_trmp_play.get(1).equals("null")) {
             plVideo2.start();
+            plVideo2.setVolume(0.0f,0.0f);
         }
         if (is_video3_play = false && !map_trmp_play.get(2).equals("null")) {
             plVideo3.start();
+            plVideo3.setVolume(0.0f,0.0f);
         }
         new Thread(new Runnable() {
             @Override
@@ -459,6 +461,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                 if (!map_trmp_play.get(1).equals("null")) {
                     plVideo2.setVideoPath(map_trmp_play.get(1));
                     plVideo2.start();
+                    plVideo2.setVolume(0.0f,0.0f);
                     iv_cover_2.setVisibility(View.GONE);
                 } else {
                     iv_cover_2.setVisibility(View.VISIBLE);
@@ -481,6 +484,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                 if (!map_trmp_play.get(2).equals("null")) {
                     plVideo3.setVideoPath(map_trmp_play.get(2));
                     plVideo3.start();
+                    plVideo3.setVolume(0.0f,0.0f);
                     iv_cover_3.setVisibility(View.GONE);
                 } else {
                     iv_cover_3.setVisibility(View.VISIBLE);
@@ -629,6 +633,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                                 plVideo2.setVideoPath(map_trmp_play.get(1));
                                 iv_cover_2.setVisibility(View.GONE);
                                 plVideo2.start();
+                                plVideo2.setVolume(0.0f,0.0f);
                                 break;
                             case 2:
                                 KLog.e("2 mic");
@@ -636,6 +641,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                                 plVideo3.setVideoPath(map_trmp_play.get(2));
                                 iv_cover_3.setVisibility(View.GONE);
                                 plVideo3.start();
+                                plVideo3.setVolume(0.0f,0.0f);
                                 break;
                         }
                         KLog.e(obj.getMicindex() + rtmpentity.getRTMPPlayURL());
@@ -674,6 +680,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                                 map_trmp_play.put(1, rtmp.getRTMPPlayURL());
                                 plVideo2.setVideoPath(map_trmp_play.get(1));
                                 plVideo2.start();
+                                plVideo2.setVolume(0.0f,0.0f);
                                 iv_cover_2.setVisibility(View.GONE);
                                 break;
                             case 2:
@@ -681,6 +688,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                                 map_trmp_play.put(2, rtmp.getRTMPPlayURL());
                                 plVideo3.setVideoPath(map_trmp_play.get(2));
                                 plVideo3.start();
+                                plVideo3.setVolume(0.0f,0.0f);
                                 iv_cover_3.setVisibility(View.GONE);
                                 break;
                         }
@@ -1028,6 +1036,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                             case 1:
                                 plVideo2.setVideoPath(map_trmp_play.get(1));
                                 plVideo2.start();
+                                plVideo2.setVolume(0.0f,0.0f);
                                 iv_cover_2.setVisibility(View.GONE);
                                 if (!is_video2_play)
                                     sendReconnectMessage(1);
@@ -1035,6 +1044,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                             case 2:
                                 plVideo3.setVideoPath(map_trmp_play.get(2));
                                 plVideo3.start();
+                                plVideo3.setVolume(0.0f,0.0f);
                                 iv_cover_3.setVisibility(View.GONE);
                                 if (!is_video3_play)
                                     sendReconnectMessage(2);

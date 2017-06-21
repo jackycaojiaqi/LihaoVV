@@ -18,12 +18,14 @@ public class RoomListPresenterImpl implements RoomListPresenter {
     private int count;
     private int page;
     private int group;
+    private String keywords;
 
-    public RoomListPresenterImpl(RoomListView roomListView, int count, int page, int group) {
+    public RoomListPresenterImpl(RoomListView roomListView, int count, int page, int group, String keywords) {
         this.roomListView = roomListView;
         this.count = count;
         this.page = page;
         this.group = group;
+        this.keywords = keywords;
     }
 
     @Override
@@ -36,8 +38,9 @@ public class RoomListPresenterImpl implements RoomListPresenter {
 
             @Override
             public void onFailure(Call<RoomEntity> call, Throwable t) {
+                t.printStackTrace();
                 roomListView.faidedRoomList();
             }
-        },count,page,group);
+        }, count, page, group, keywords);
     }
 }

@@ -1,63 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:background="@color/head_bg_color"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/widget_bottom_height">
+    android:layout_height="45dp"
+    android:background="@color/head_bg_color"
+    android:orientation="horizontal">
+
     <android.support.v7.view.menu.ListMenuItemView
         android:layout_width="@dimen/widget_bottom_height"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/head_icon_marginleft"
-        >
+        android:layout_marginLeft="@dimen/head_icon_marginleft">
 
         <ImageView
             android:id="@+id/main_head_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@mipmap/dl_logo"/>
+            android:padding="6dp"
+            android:src="@mipmap/dl_logo" />
     </android.support.v7.view.menu.ListMenuItemView>
     <!--<android.support.v7.widget.CardView-->
-        <!--android:layout_gravity="center"-->
-        <!--android:background="#0596f1"-->
-        <!--app:cardCornerRadius="10dp"-->
-        <!--android:layout_width="200dp"-->
-        <!--android:layout_height="20dp">-->
-        <!--<ImageView-->
-            <!--android:layout_marginLeft="10dp"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:src="@mipmap/icon_search"-->
-            <!--android:layout_gravity="center_vertical"/>-->
+    <!--android:layout_gravity="center"-->
+    <!--android:background="#0596f1"-->
+    <!--app:cardCornerRadius="10dp"-->
+    <!--android:layout_width="200dp"-->
+    <!--android:layout_height="20dp">-->
+    <!--<ImageView-->
+    <!--android:layout_marginLeft="10dp"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:src="@mipmap/icon_search"-->
+    <!--android:layout_gravity="center_vertical"/>-->
     <!--</android.support.v7.widget.CardView>-->
     <FrameLayout
         android:id="@+id/main_head_search"
-        android:layout_marginLeft="@dimen/widget_search_marginleft"
-        android:layout_marginTop="@dimen/widget_search_margintop"
         android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="@dimen/search_line_height">
+        android:layout_height="25dp"
+        android:layout_marginLeft="@dimen/widget_search_marginleft"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1">
+
         <ImageView
-            android:src="@mipmap/radio_circle"
-            android:scaleType="fitXY"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@mipmap/radio_circle" />
+
         <ImageView
-            android:src="@mipmap/search_icon"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical"
             android:layout_marginRight="@dimen/history_marginleft"
-            android:layout_height="wrap_content"/>
+            android:src="@mipmap/search_icon" />
     </FrameLayout>
 
     <ImageView
-        android:layout_marginLeft="@dimen/saosao_marginleft"
         android:id="@+id/main_head_scanner"
-        style="@style/widget_home_head_image"
-        android:src="@mipmap/shaoshao_icon"/>
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="4dp"
+        android:padding="10dp"
+        android:src="@mipmap/shaoshao_icon" />
+
     <ImageView
-        android:layout_marginLeft="@dimen/history_marginleft"
-        android:layout_marginRight="10dp"
         android:id="@+id/main_head_history"
-        style="@style/widget_home_head_image"
-        android:src="@mipmap/history_icon"/>
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="4dp"
+        android:padding="10dp"
+        android:src="@mipmap/history_icon" />
 </LinearLayout>

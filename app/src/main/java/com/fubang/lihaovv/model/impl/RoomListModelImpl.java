@@ -29,11 +29,12 @@ public class RoomListModelImpl extends BaseModel implements RoomListModel {
         return instance;
     }
     @Override
-    public void getRoomListData(Callback<RoomEntity> callback, int count, int page, int groupId) {
+    public void getRoomListData(Callback<RoomEntity> callback, int count, int page, int groupId,String keyword) {
         ParamsMap map = ParamsMap.getInstance();
         map.put(AppConstant.COUNT,count);
         map.put(AppConstant.PAGE,page);
         map.put(AppConstant.GROUP,groupId);
+        map.put(AppConstant.KEY_WORD,keyword);
         service.getRoomEntity(map).enqueue(callback);
     }
 }

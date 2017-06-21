@@ -2,6 +2,8 @@ package com.fubang.lihaovv.utils;
 
 import android.content.Context;
 
+import com.fubang.lihaovv.AppConstant;
+
 import cn.sharesdk.framework.ShareSDK;
 import cn.sharesdk.onekeyshare.OnekeyShare;
 
@@ -31,8 +33,8 @@ public class ShareUtil {
         OnekeyShare onekeyShare = new OnekeyShare();
         //关闭sso授权
         onekeyShare.disableSSOWhenAuthorize();
-        onekeyShare.setTitle("第三空间");
-        onekeyShare.setText("http://61.153.104.118:9418/download/disankongjian.apk");
+        onekeyShare.setTitle("李好51VV");
+        onekeyShare.setText(AppConstant.DOWNLOAD_URL);
         // imagePath是图片的本地路径：除Linked-In以外的平台都支持此参数
         //oks.setImagePath(Environment.getExternalStorageDirectory() + "/meinv.jpg");//确保SDcard下面存在此张图片
 
@@ -40,11 +42,10 @@ public class ShareUtil {
         onekeyShare.setImageUrl("http://boke.nnnktv.com/images/home/u2.png");//网络图片rul
 
         // url：仅在微信（包括好友和朋友圈）中使用
-        onekeyShare.setUrl("http://61.153.104.118:9418/download/disankongjian.apk");   //网友点进链接后，可以看到分享的详情
+        onekeyShare.setUrl(AppConstant.DOWNLOAD_URL);   //网友点进链接后，可以看到分享的详情
 
         // Url：仅在QQ空间使用
-        onekeyShare.setTitleUrl("http://61.153.104.118:9418/download/disankongjian.apk");  //网友点进链接后，可以看到分享的详情
-
+        onekeyShare.setTitleUrl(AppConstant.DOWNLOAD_URL);  //网友点进链接后，可以看到分享的详情
         // 启动分享GUI
         onekeyShare.show(context);
     }

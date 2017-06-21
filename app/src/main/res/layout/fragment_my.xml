@@ -15,9 +15,11 @@
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <ImageView
+                android:id="@+id/fm_mine_search"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:src="@mipmap/search_icon"
+
                 android:layout_marginLeft="20dp"
                 android:layout_centerVertical="true"
                 />

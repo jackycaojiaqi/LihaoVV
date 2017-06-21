@@ -12,9 +12,10 @@
         android:layout_height="@dimen/setting_reheight">
         <ImageView
             android:id="@+id/history_back_btn"
-            android:layout_margin="@dimen/setting_image_margin"
             android:layout_centerVertical="true"
             android:src="@mipmap/lookleft_icon"
+            android:padding="6dp"
+            android:layout_marginLeft="10dp"
             android:layout_width="@dimen/setting_image_width"
             android:layout_height="30dp" />
         <TextView

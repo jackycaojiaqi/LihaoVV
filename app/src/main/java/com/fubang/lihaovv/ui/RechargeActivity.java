@@ -21,32 +21,25 @@ import org.androidannotations.annotations.ViewById;
  * 充值页面
  */
 @EActivity(R.layout.activity_recharge)
-public class RechargeActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener, View.OnClickListener  ,AsyncPayTask.PayCallBack{
+public class RechargeActivity extends BaseActivity implements View.OnClickListener, AsyncPayTask.PayCallBack {
     @ViewById(R.id.recharge_back_btn)
     ImageView backImage;
-    @ViewById(R.id.recharge_confirm_btn)
-    Button confirmBtn;
-    @ViewById(R.id.recharge_group)
-    RadioGroup radioGroup;
-    private int moneyB = 1000;
-    @ViewById(R.id.recharge_5)
-    RadioButton radioButton5;
-    @ViewById(R.id.recharge_10)
-    RadioButton radioButton10;
-    @ViewById(R.id.recharge_20)
-    RadioButton radioButton20;
-    @ViewById(R.id.recharge_50)
-    RadioButton radioButton50;
-    @ViewById(R.id.recharge_100)
-    RadioButton radioButton100;
-    @ViewById(R.id.recharge_200)
-    RadioButton radioButton200;
-    @ViewById(R.id.recharge_user_tv)
-    TextView userTv;
+    private int moneyB = -1;
+    @ViewById(R.id.tv_pay_1)
+    TextView tvPay1;
+    @ViewById(R.id.tv_pay_6)
+    TextView tvPay6;
+    @ViewById(R.id.tv_pay_30)
+    TextView tvPay30;
+    @ViewById(R.id.tv_pay_98)
+    TextView tvPay98;
+    @ViewById(R.id.tv_pay_298)
+    TextView tvPay298;
     @ViewById(R.id.recharge_kbi_tv)
     TextView kbiTv;
 
     public final static String RETURNURL = "http://61.153.104.118:9418/index.php/Alipay/callbak";
+
     @Override
     public void initView() {
         backImage.setOnClickListener(new View.OnClickListener() {
@@ -55,42 +48,38 @@ public class RechargeActivity extends BaseActivity implements RadioGroup.OnCheck
                 finish();
             }
         });
-        radioGroup.setOnCheckedChangeListener(this);
-        confirmBtn.setOnClickListener(this);
-        userTv.setText("充值账号:"+ StartUtil.getUserId(this));
-        kbiTv.setText("余额:"+StartUtil.getUserKbi(this));
+        kbiTv.setText(" "+StartUtil.getUserKbi(this));
+        tvPay1.setOnClickListener(this);
+        tvPay6.setOnClickListener(this);
+        tvPay30.setOnClickListener(this);
+        tvPay98.setOnClickListener(this);
+        tvPay298.setOnClickListener(this);
+
     }
 
-    @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-        if (group.getId()==R.id.recharge_group){
-            switch (checkedId){
-                case R.id.recharge_5:
-                    moneyB = 500000;
-                    break;
-                case R.id.recharge_10:
-                    moneyB = 1100000;
-                    break;
-                case R.id.recharge_20:
-                    moneyB = 2200000;
-                    break;
-                case R.id.recharge_50:
-                    moneyB = 5750000;
-                    break;
-                case R.id.recharge_100:
-                    moneyB = 12000000;
-                    break;
-                case R.id.recharge_200:
-                    moneyB = 24000000;
-                    break;
-            }
-        }
-    }
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(this, "确定充值"+moneyB+"币", Toast.LENGTH_SHORT).show();
-        new AsyncPayTask(this).pay(StartUtil.getUserId(this),RETURNURL,moneyB+"");
+        switch (v.getId()) {
+            case R.id.tv_pay_1:
+                moneyB = 1;
+                break;
+            case R.id.tv_pay_6:
+                moneyB = 6;
+                break;
+            case R.id.tv_pay_30:
+                moneyB = 30;
+                break;
+            case R.id.tv_pay_98:
+                moneyB = 98;
+                break;
+            case R.id.tv_pay_298:
+                moneyB = 298;
+                break;
+
+        }
+        if (moneyB != -1)
+            new AsyncPayTask(this).pay(StartUtil.getUserId(this), RETURNURL, moneyB + "");
     }
 
     @Override
@@ -98,7 +87,7 @@ public class RechargeActivity extends BaseActivity implements RadioGroup.OnCheck
         switch (result.getResultStatus()) {
             case "9000":
                 Toast.makeText(this, "支付成功", Toast.LENGTH_LONG).show();
-                startActivity(CompleteActivity_.intent(this).extra("RECHARGE_MONEY",moneyB).get());
+                startActivity(CompleteActivity_.intent(this).extra("RECHARGE_MONEY", moneyB).get());
                 break;
             case "8000":
                 Toast.makeText(this, "支付处理中", Toast.LENGTH_LONG).show();

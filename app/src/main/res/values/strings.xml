@@ -189,4 +189,5 @@
     <string name="cd_preview_mirror">cd_preview_mirror</string>
 
     <string name="cd_encoding_mirror">cd_encoding_mirror</string>
+    <string name="this_mic_no_anchor">当前麦没有主播</string>
 </resources>
