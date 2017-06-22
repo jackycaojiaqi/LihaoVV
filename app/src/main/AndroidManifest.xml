@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fubang.lihaovv">
+
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_TASKS" />
@@ -85,8 +87,8 @@
         <activity
             android:name="com.fubang.lihaovv.ui.NewRoomLandActivity_"
             android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="landscape"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape" />
         <activity
 
             android:name="com.fubang.lihaovv.ui.LoginActivity_"
@@ -119,9 +121,14 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.fubang.lihaovv.ui.RoomLandActivity_"
-            android:screenOrientation="landscape"
             android:launchMode="singleTask"
+            android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
+        <activity
+            android:name="com.fubang.lihaovv.ui.LivePickMusicActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+           />
 
         <!--<service-->
         <!--android:name="com.loveplusplus.update.DownloadService"-->
@@ -168,11 +175,11 @@
         <activity
             android:name="com.fubang.lihaovv.cao.RoomPortraitActivity_"
             android:configChanges="keyboardHidden|orientation" />
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.MAIN" />-->
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+        <!--<category android:name="android.intent.category.LAUNCHER" />-->
+        <!--</intent-filter>-->
     </application>
 
 

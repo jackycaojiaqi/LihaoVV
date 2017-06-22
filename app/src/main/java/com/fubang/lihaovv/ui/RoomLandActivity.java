@@ -102,6 +102,7 @@ import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.danmaku.parser.IDataSource;
 import master.flame.danmaku.danmaku.parser.android.BiliDanmukuParser;
 import master.flame.danmaku.ui.widget.DanmakuView;
+import okhttp3.Call;
 import sample.room.MicNotify;
 import sample.room.RoomMain;
 
@@ -617,8 +618,8 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                 .tag(this)
                 .execute(new StringCallback() {
                     @Override
-                    public void onSuccess(Response<String> response) {
-                        RtmpEntity rtmpentity = new Gson().fromJson(response.body(), RtmpEntity.class);
+                    public void onSuccess(String s, Call call, okhttp3.Response response) {
+                        RtmpEntity rtmpentity = new Gson().fromJson(s, RtmpEntity.class);
                         switch (obj.getMicindex()) {
                             case 0:
                                 KLog.e("0 mic");
@@ -646,6 +647,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                         }
                         KLog.e(obj.getMicindex() + rtmpentity.getRTMPPlayURL());
                     }
+
                 });
     }
 
@@ -665,8 +667,8 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                 .tag(this)
                 .execute(new StringCallback() {
                     @Override
-                    public void onSuccess(Response<String> response) {
-                        RtmpEntity rtmp = new Gson().fromJson(response.body(), RtmpEntity.class);
+                    public void onSuccess(String s, Call call, okhttp3.Response response) {
+                        RtmpEntity rtmp = new Gson().fromJson(s, RtmpEntity.class);
                         switch (obj.getMicindex()) {
                             case 0:
                                 KLog.e("0 mic");

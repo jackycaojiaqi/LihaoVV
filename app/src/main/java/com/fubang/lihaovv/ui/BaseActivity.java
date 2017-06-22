@@ -36,6 +36,7 @@ public class  BaseActivity extends AppCompatActivity {
     public void initView() {
 
     }
+    //布局10秒后隐藏
     public void animaView(final View view){
         AlphaAnimation animation1 = new AlphaAnimation(1.0f, 0.0f);
         animation1.setDuration(100 * 100);

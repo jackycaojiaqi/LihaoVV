@@ -15,6 +15,8 @@ public class AppConstant {
 //    public static final String[] BILLBOARD_TITLE = {"魅力之星","房间人气"};
     public static final String[] BILLBOARD_TITLE = {"房间人气"};
     public static final String BASE_URL = "http://120.26.54.182:888";
+    public static final String BASE_MUSIC_URL = "http://120.26.127.210:9419";
+
     public static final String RICH_BASE= "http://lihao.nnnktv.com";
 //    public static final String BASE_URL = "http://"+ StartUtil.getIpPort(App.getInstance());
 //    public static final String BASE_URL = "http://115.29.11.107:9493";
@@ -39,4 +41,7 @@ public class AppConstant {
 
 
     public static final String GET_RTMP_URL = "http://120.26.50.117:88/rtmp_pub.php?";//李好客户端获取rtmp地址
+    public static final String BASE_DOWNLOAD_MUSIC = "http://120.26.127.210:333/mp3_ge/";//音乐下载链接前缀
+    public static final String BASE_DOWNLOAD_LRC = "http://120.26.127.210:333/mp3_lrc/";//音乐下载链接前缀
+    public static final String MSG_GET_MP3 = "/index.php/app/get_mp3?";//获取Mp3列表
 }

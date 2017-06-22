@@ -113,14 +113,22 @@ dependencies {
     compile 'com.lovedise:permissiongen:0.0.6'
     compile 'com.qiniu.pili:pili-android-qos:0.8.+'
     compile files('libs/pldroid-media-streaming-2.1.2.jar')
-
     compile files('libs/klog.jar')
-    compile 'com.lzy.net:okgo:3.0.0'
+    //网络请求框架
+    compile 'com.lzy.net:okgo:2.1.4'
     compile files('libs/pldroid-player-1.5.1.jar')
     compile files('libs/alivc-live-record.jar')
     compile files('libs/pldroid-media-streaming-2.1.3.jar')
     //封装的popwindow
     compile 'com.github.pinguo-zhouwei:CustomPopwindow:2.0.0'
+    //歌词view
+    compile 'me.wcy:lrcview:1.4.1'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    //view注解
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile files('libs/lite-orm-1.9.2.jar')
+    //recycleview 适配器
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.16'
 }
 apt {
     arguments {

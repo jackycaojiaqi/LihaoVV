@@ -12,6 +12,7 @@ import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -38,6 +39,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -80,6 +83,7 @@ import com.fubang.lihaovv.fragment.CommonFragment_;
 import com.fubang.lihaovv.fragment.LookFragment_;
 import com.fubang.lihaovv.fragment.MicQuenFragment_;
 import com.fubang.lihaovv.fragment.PersonFragment_;
+import com.fubang.lihaovv.utils.FileUtils;
 import com.fubang.lihaovv.utils.GiftUtil;
 import com.fubang.lihaovv.utils.GlobalOnItemClickManager;
 import com.fubang.lihaovv.utils.NetUtils;
@@ -153,13 +157,15 @@ import master.flame.danmaku.danmaku.parser.BaseDanmakuParser;
 import master.flame.danmaku.danmaku.parser.IDataSource;
 import master.flame.danmaku.danmaku.parser.android.BiliDanmukuParser;
 import master.flame.danmaku.ui.widget.DanmakuView;
+import me.wcy.lrcview.LrcView;
+import okhttp3.Call;
 import sample.room.RoomMain;
 
 @EActivity(R.layout.activity_room)
 public class RoomActivity extends BaseActivity {
 
     @ViewById(R.id.ll_room_content)
-    LinearLayout llRoomContent;
+    RelativeLayout llRoomContent;
     @ViewById(R.id.linear_new_container)
     LinearLayout linearLayout;
     @ViewById(R.id.edit_new_text)
@@ -210,6 +216,25 @@ public class RoomActivity extends BaseActivity {
     ViewPager viewPager_content;
     @ViewById(R.id.room_new_tablayout)
     TabLayout tabLayout;
+    //=========================上麦用户控制布局
+    @ViewById(R.id.rll_mic_user_control_view)
+    RelativeLayout rllMicUserControlView;
+    @ViewById(R.id.ll_mic_user_control_view)
+    LinearLayout llMicUserControlView;
+    @ViewById(R.id.iv_mic_user_control_music)
+    ImageView ivMicUserControlMusic;
+    @ViewById(R.id.iv_mic_user_control_camera)
+    ImageView ivMicUserControlCamera;
+    @ViewById(R.id.iv_mic_user_control_beauty)
+    ImageView ivMicUserControlBeauty;
+    //========================歌词布局
+    @ViewById(R.id.rll_live_lrc)
+    protected RelativeLayout rllLiveLrc;
+    @ViewById(R.id.lrc_live)
+    protected LrcView lrcLive;
+    @ViewById(R.id.tv_live_lrc_cancle)
+    protected TextView tvLiveLrcCancle;
+
     PLVideoTextureView plVider1;
     PLVideoTextureView plVider2;
     PLVideoTextureView plVider3;
@@ -359,6 +384,10 @@ public class RoomActivity extends BaseActivity {
         if (mMediaRecorder != null) {
             mMediaRecorder.release();
         }
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+        handler.removeCallbacksAndMessages(null);
         mHandler.removeCallbacksAndMessages(null);
         EventBus.getDefault().unregister(this);
         super.onDestroy();
@@ -1312,13 +1341,15 @@ public class RoomActivity extends BaseActivity {
                 .tag(this)
                 .execute(new StringCallback() {
                     @Override
-                    public void onSuccess(Response<String> response) {
-                        RtmpEntity rtmp = new Gson().fromJson(response.body(), RtmpEntity.class);
+                    public void onSuccess(String s, Call call, okhttp3.Response response) {
+                        RtmpEntity rtmp = new Gson().fromJson(s, RtmpEntity.class);
                         //如果上公麦的id是自己，则执行上麦逻辑
                         if (Integer.parseInt(StartUtil.getUserId(context)) == obj.getUserid()) {
                             try {
                                 push_url = rtmp.getPublishUrl();
                                 _CameraSurface.setVisibility(View.VISIBLE);
+                                animaView(llMicUserControlView);
+                                rllMicUserControlView.setVisibility(View.VISIBLE);
                                 //通知麦序fragment  已经上麦了
                                 EventBus.getDefault().post("is_upmic", "is_upmic");
                                 rllControlView.setVisibility(View.GONE);
@@ -1353,6 +1384,7 @@ public class RoomActivity extends BaseActivity {
                             KLog.e(obj.getMicindex() + rtmp.getRTMPPlayURL());
                         }
                     }
+
                 });
     }
 
@@ -1397,7 +1429,17 @@ public class RoomActivity extends BaseActivity {
                 mMediaRecorder.stopRecord();
                 mMediaRecorder.reset();
                 _CameraSurface.setVisibility(View.GONE);
+                rllMicUserControlView.setVisibility(View.GONE);
                 is_pushing = false;
+                if (mediaPlayer!=null){
+                    if (mediaPlayer.isPlaying()){
+                        mediaPlayer.pause();
+                        mediaPlayer.reset();
+                        lrcLive.onDrag(0);
+                        rllLiveLrc.setVisibility(View.GONE);
+                    }
+                }
+                rllLiveLrc.setVisibility(View.GONE);
                 rllControlView.setVisibility(View.VISIBLE);
             }
 
@@ -1417,8 +1459,8 @@ public class RoomActivity extends BaseActivity {
                 .tag(this)
                 .execute(new StringCallback() {
                     @Override
-                    public void onSuccess(Response<String> response) {
-                        RtmpEntity rtmpentity = new Gson().fromJson(response.body(), RtmpEntity.class);
+                    public void onSuccess(String s, Call call, okhttp3.Response response) {
+                        RtmpEntity rtmpentity = new Gson().fromJson(s, RtmpEntity.class);
                         switch (obj.getMicindex()) {
                             case 0:
                                 KLog.e("0 mic");
@@ -1448,7 +1490,13 @@ public class RoomActivity extends BaseActivity {
         }
     }
 
-    @Click({R.id.linear_new_container, R.id.chat_image_btn, R.id.room_new_gift, R.id.iv_room_setting})
+    private boolean is_mic_control_view_show = true;
+    private boolean is_beautify = true;
+    private int REQUEST_CODE_MUSIC = 0x6;
+
+    @Click({R.id.linear_new_container, R.id.chat_image_btn, R.id.room_new_gift, R.id.iv_room_setting,
+            R.id.rll_mic_user_control_view, R.id.iv_mic_user_control_music, R.id.iv_mic_user_control_camera
+            , R.id.iv_mic_user_control_beauty, R.id.tv_live_lrc_cancle})
     void click(View v) {
         switch (v.getId()) {
             case R.id.linear_new_container:
@@ -1492,6 +1540,34 @@ public class RoomActivity extends BaseActivity {
                 View contentView = LayoutInflater.from(this).inflate(R.layout.pop_room_control, null);
                 handleControlView(contentView);
 
+                break;
+            case R.id.rll_mic_user_control_view:
+                if (is_mic_control_view_show) {
+                    llMicUserControlView.setVisibility(View.VISIBLE);
+                } else {
+                    llMicUserControlView.setVisibility(View.GONE);
+                }
+                is_mic_control_view_show = !is_mic_control_view_show;
+                break;
+            case R.id.iv_mic_user_control_music:
+                startActivityForResult(new Intent(context, LivePickMusicActivity.class), REQUEST_CODE_MUSIC);
+                break;
+            case R.id.iv_mic_user_control_camera:
+                mMediaRecorder.switchCamera();
+                break;
+            case R.id.iv_mic_user_control_beauty:
+                if (is_beautify) {
+                    mMediaRecorder.removeFlag(AlivcMediaFormat.FLAG_BEAUTY_ON);
+                } else {
+                    mMediaRecorder.addFlag(AlivcMediaFormat.FLAG_BEAUTY_ON);
+                }
+                is_beautify = !is_beautify;
+                break;
+            case R.id.tv_live_lrc_cancle:
+                mediaPlayer.pause();
+                mediaPlayer.reset();
+                lrcLive.onDrag(0);
+                rllLiveLrc.setVisibility(View.GONE);
                 break;
         }
     }
@@ -2007,4 +2083,84 @@ public class RoomActivity extends BaseActivity {
         }
     };
 
+    //布局10秒后隐藏
+    public void animaView(final View view) {
+        AlphaAnimation animation1 = new AlphaAnimation(1.0f, 0.5f);
+        animation1.setDuration(100 * 100);
+        animation1.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                view.setVisibility(View.GONE);
+                is_mic_control_view_show = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        view.setAnimation(animation1);
+        animation1.start();
+    }
+
+    private MediaPlayer mediaPlayer = new MediaPlayer();
+    private Handler handler = new Handler();
+    /**
+     * 根据MP3播放进度时事同步歌词组件
+     */
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer.isPlaying()) {
+                long time = mediaPlayer.getCurrentPosition();
+                lrcLive.updateTime(time);
+            }
+            handler.postDelayed(this, 200);
+        }
+    };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CODE_MUSIC) {
+                rllLiveLrc.setVisibility(View.VISIBLE);
+                String music_id = data.getStringExtra("music_id");
+                File file_lrc = new File(FileUtils.getLrcFiles() + music_id + ".lrc");
+                if (file_lrc.exists()) {
+                    lrcLive.loadLrc(file_lrc);//设置歌词资源
+                }
+                File file_music = new File(FileUtils.getMusicFiles() + music_id + ".mp3");
+
+                if (file_music.exists()) {
+                    try {
+                        if (mediaPlayer != null) {
+                            if (mediaPlayer.isPlaying()) {
+                                mediaPlayer.pause();
+                            }
+                        }
+                        mediaPlayer.reset();
+                        String path = file_music.getAbsolutePath();
+                        KLog.e(path);
+                        mediaPlayer.setDataSource(path);//设置MP3路径
+                        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                mediaPlayer.start();
+                                handler.post(runnable);
+                            }
+                        });
+                        mediaPlayer.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
 }
