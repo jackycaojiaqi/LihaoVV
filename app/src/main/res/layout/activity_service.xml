@@ -44,22 +44,20 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="QQ客服001"/>
+            android:text="QQ 客服：309169866"/>
         <ImageView
             android:layout_width="12dp"
             android:layout_height="12dp"
+            android:visibility="gone"
             android:layout_gravity="center_vertical"
             android:src="@mipmap/lookright_icon"/>
     </LinearLayout>
-    <View
-        android:layout_marginLeft="50dp"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="#c8c8cc"/>
+
     <LinearLayout
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
         android:orientation="horizontal"
+        android:visibility="gone"
         android:gravity="center"
         android:layout_height="50dp">
         <ImageView
@@ -81,14 +79,11 @@
             android:layout_gravity="center_vertical"
             android:src="@mipmap/lookright_icon"/>
     </LinearLayout>
-    <View
-        android:layout_marginLeft="50dp"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="#c8c8cc"/>
+
     <LinearLayout
         android:layout_marginRight="10dp"
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_height="50dp">
@@ -134,10 +129,11 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="15557635888"/>
+            android:text="客服电话：13701885128"/>
         <ImageView
             android:layout_width="12dp"
             android:layout_height="12dp"
+            android:visibility="gone"
             android:layout_gravity="center_vertical"
             android:src="@mipmap/lookright_icon"/>
     </LinearLayout>

@@ -221,6 +221,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
             KLog.e(res.getUserid() + " " + res.getCalias()+" "+res.getCuserpwd());
             StartUtil.editUserInfo(this, res.getNlevel() + "", res.getNdeposit() + "", res.getNk() + "", res.getNb() + "", res.getCidiograph());
             startActivity(MainActivity_.intent(LoginActivity.this).extra("flag", flag).get());
+            finish();
         }
     }
 

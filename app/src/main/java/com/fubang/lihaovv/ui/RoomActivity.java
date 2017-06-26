@@ -541,13 +541,19 @@ public class RoomActivity extends BaseActivity {
                 return false;
             }
         });
+        plVider1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                KLog.e("12131");
+            }
+        });
         //====================在 SDK 解析出视频的尺寸信息后，会触发该回调，开发者可以在该回调中调整 UI 的视图尺寸。
         plVider1.setOnVideoSizeChangedListener(new PLMediaPlayer.OnVideoSizeChangedListener() {
             @Override
             public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
                 if (width < height) {//竖屏 处理UI也为竖屏
                     ViewGroup.LayoutParams params = rll_video1.getLayoutParams();
-                    params.width = ScreenUtils.getScreenWidth(context) / 2;
+                    params.width = ScreenUtils.getScreenWidth(context) / 9*5;
                     rll_video1.setLayoutParams(params);
                 } else {
                     ViewGroup.LayoutParams params = rll_video1.getLayoutParams();
@@ -561,7 +567,7 @@ public class RoomActivity extends BaseActivity {
             public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
                 if (width < height) {//竖屏 处理UI也为竖屏
                     ViewGroup.LayoutParams params = rll_video2.getLayoutParams();
-                    params.width = ScreenUtils.getScreenWidth(context) / 2;
+                    params.width = ScreenUtils.getScreenWidth(context) / 9*5;
                     rll_video2.setLayoutParams(params);
                 } else {
                     ViewGroup.LayoutParams params = rll_video2.getLayoutParams();
@@ -575,7 +581,7 @@ public class RoomActivity extends BaseActivity {
             public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
                 if (width < height) {//竖屏 处理UI也为竖屏
                     ViewGroup.LayoutParams params = rll_video3.getLayoutParams();
-                    params.width = ScreenUtils.getScreenWidth(context) / 2;
+                    params.width = ScreenUtils.getScreenWidth(context)/ 9*5;
                     rll_video3.setLayoutParams(params);
                 } else {
                     ViewGroup.LayoutParams params = rll_video3.getLayoutParams();
@@ -1431,8 +1437,8 @@ public class RoomActivity extends BaseActivity {
                 _CameraSurface.setVisibility(View.GONE);
                 rllMicUserControlView.setVisibility(View.GONE);
                 is_pushing = false;
-                if (mediaPlayer!=null){
-                    if (mediaPlayer.isPlaying()){
+                if (mediaPlayer != null) {//关闭音乐播放器
+                    if (mediaPlayer.isPlaying()) {
                         mediaPlayer.pause();
                         mediaPlayer.reset();
                         lrcLive.onDrag(0);
@@ -1442,7 +1448,6 @@ public class RoomActivity extends BaseActivity {
                 rllLiveLrc.setVisibility(View.GONE);
                 rllControlView.setVisibility(View.VISIBLE);
             }
-
         }
     }
 
@@ -1687,7 +1692,7 @@ public class RoomActivity extends BaseActivity {
         options.setInteger(AVOptions.KEY_GET_AV_FRAME_TIMEOUT, 10 * 1000);
         options.setInteger(AVOptions.KEY_PROBESIZE, 128 * 1024);
         // Some optimization with buffering mechanism when be set to 1
-        options.setInteger(AVOptions.KEY_LIVE_STREAMING, 1);
+        options.setInteger(AVOptions.KEY_LIVE_STREAMING, 0);
         options.setInteger(AVOptions.KEY_DELAY_OPTIMIZATION, 1);
         // 1 -> hw codec enable, 0 -> disable [recommended]
         options.setInteger(AVOptions.KEY_MEDIACODEC, codecType);
@@ -1844,7 +1849,7 @@ public class RoomActivity extends BaseActivity {
     };
     private SurfaceView _CameraSurface;
     private Surface mPreviewSurface;
-    private int resolution = AlivcMediaFormat.OUTPUT_RESOLUTION_360P;
+    private int resolution = AlivcMediaFormat.OUTPUT_RESOLUTION_480P;
     private boolean screenOrientation = false;
     private int cameraFrontFacing = 1;
     private int bestBitrate = 500;

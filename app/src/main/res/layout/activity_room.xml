@@ -59,17 +59,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
-                <SurfaceView
-                    android:id="@+id/sv_upmic"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone" />
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+
+                    <SurfaceView
+                        android:id="@+id/sv_upmic"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2.5"
+                        android:visibility="gone" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1" />
+                </LinearLayout>
+
 
                 <RelativeLayout
                     android:id="@+id/rll_mic_user_control_view"
                     android:layout_width="match_parent"
-                    android:visibility="gone"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:id="@+id/ll_mic_user_control_view"
@@ -90,15 +108,17 @@
                         <ImageView
                             android:id="@+id/iv_mic_user_control_camera"
                             android:layout_width="40dp"
-                            android:layout_height="40dp" android:padding="5dp"
+                            android:layout_height="40dp"
                             android:layout_marginBottom="15dp"
                             android:layout_marginTop="15dp"
+                            android:padding="5dp"
                             android:src="@drawable/ic_mic_control_camera" />
 
                         <ImageView
                             android:id="@+id/iv_mic_user_control_beauty"
                             android:layout_width="40dp"
-                            android:layout_height="40dp" android:padding="5dp"
+                            android:layout_height="40dp"
+                            android:padding="5dp"
                             android:src="@drawable/ic_mic_control_beautify" />
                     </LinearLayout>
                 </RelativeLayout>
@@ -195,9 +215,9 @@
                         <ImageView
                             android:id="@+id/follow_new_image"
                             android:layout_width="40dp"
-                            android:padding="5dp"
                             android:layout_height="40dp"
                             android:layout_gravity="center_vertical"
+                            android:padding="5dp"
                             android:src="@drawable/ic_mic_control_fav" />
 
                         <ImageView
@@ -269,7 +289,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:visibility="gone"
         android:clickable="true"
         android:orientation="vertical">
 
@@ -332,8 +351,8 @@
                 android:id="@+id/room_new_gift"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_margin="5dp"
                 android:layout_gravity="center"
+                android:layout_margin="5dp"
                 android:src="@drawable/ic_gift" />
         </LinearLayout>
 
@@ -373,5 +392,6 @@
 
         </RelativeLayout>
     </LinearLayout>
+
     <include layout="@layout/activity_live_music_lrc" />
 </RelativeLayout>
