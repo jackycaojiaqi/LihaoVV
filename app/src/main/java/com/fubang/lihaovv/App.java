@@ -13,6 +13,7 @@ import com.lzy.okgo.cookie.CookieJarImpl;
 import com.lzy.okgo.cookie.store.MemoryCookieStore;
 import com.lzy.okgo.cookie.store.PersistentCookieStore;
 import com.lzy.okgo.interceptor.HttpLoggingInterceptor;
+import com.umeng.analytics.MobclickAgent;
 
 import org.androidannotations.annotations.EApplication;
 
@@ -72,7 +73,7 @@ public class App extends Application {
 //        Log.d("123",mgr+"------mgr");
         //初始化Fresco
 //        FrescoHelper.getInstance().init(this);
-
+        MobclickAgent.setScenarioType(getApplicationContext(), MobclickAgent.EScenarioType.E_UM_NORMAL);
 
         Fresco.initialize(this);
         //初始化数据库类

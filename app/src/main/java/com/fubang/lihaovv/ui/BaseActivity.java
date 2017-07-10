@@ -6,20 +6,22 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
 import com.fubang.lihaovv.R;
+import com.umeng.analytics.MobclickAgent;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.EActivity;
 
 @EActivity(R.layout.activity_base)
-public class  BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity {
 
     @AfterInject
-    public void before(){
+    public void before() {
 
     }
+
     @AfterViews
-    public final void init(){
+    public final void init() {
         initView();
         initListener();
         initData();
@@ -36,8 +38,10 @@ public class  BaseActivity extends AppCompatActivity {
     public void initView() {
 
     }
+
+
     //布局10秒后隐藏
-    public void animaView(final View view){
+    public void animaView(final View view) {
         AlphaAnimation animation1 = new AlphaAnimation(1.0f, 0.0f);
         animation1.setDuration(100 * 100);
         animation1.setAnimationListener(new Animation.AnimationListener() {

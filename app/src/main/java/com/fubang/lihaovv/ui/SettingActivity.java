@@ -16,6 +16,7 @@ import com.fubang.lihaovv.utils.AlertDialogUtil;
 import com.fubang.lihaovv.utils.ShareUtil;
 import com.loveplusplus.update.UpdateChecker;
 import com.socks.library.KLog;
+import com.umeng.analytics.MobclickAgent;
 import com.zhuyunjian.library.DeviceUtil;
 import com.zhuyunjian.library.StartUtil;
 
@@ -89,8 +90,14 @@ public class SettingActivity extends BaseActivity {
             e.printStackTrace();
         }
 
+    }public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
     }
-
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
     @Override
     public void initData() {
     }

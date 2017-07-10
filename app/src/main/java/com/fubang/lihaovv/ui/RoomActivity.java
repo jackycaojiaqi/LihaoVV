@@ -23,6 +23,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -63,6 +64,7 @@ import com.alibaba.livecloud.live.AlivcStatusCode;
 import com.alibaba.livecloud.live.OnLiveRecordErrorListener;
 import com.alibaba.livecloud.live.OnNetworkStatusListener;
 import com.alibaba.livecloud.live.OnRecordStatusListener;
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.example.zhouwei.library.CustomPopWindow;
 import com.facebook.drawee.gestures.GestureDetector;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -73,21 +75,33 @@ import com.fubang.lihaovv.SlidingTab.EmotionInputDetector;
 import com.fubang.lihaovv.SlidingTab.SlidingTabLayout;
 import com.fubang.lihaovv.adapters.EmotionAdapter;
 import com.fubang.lihaovv.adapters.GiftAdapter;
+import com.fubang.lihaovv.adapters.GiftNewAdapter;
 import com.fubang.lihaovv.adapters.HomeTitleAdapter;
+import com.fubang.lihaovv.adapters.MyPagerAdapter;
+import com.fubang.lihaovv.adapters.MyTabFragmentPagerAdapter;
 import com.fubang.lihaovv.adapters.RoomChatAdapter;
 import com.fubang.lihaovv.adapters.UserAdapter;
 import com.fubang.lihaovv.entities.FaceEntity;
 import com.fubang.lihaovv.entities.GiftEntity;
+import com.fubang.lihaovv.entities.GiftNewEntity;
 import com.fubang.lihaovv.entities.RtmpEntity;
 import com.fubang.lihaovv.fragment.CommonFragment_;
 import com.fubang.lihaovv.fragment.LookFragment_;
 import com.fubang.lihaovv.fragment.MicQuenFragment_;
 import com.fubang.lihaovv.fragment.PersonFragment_;
+import com.fubang.lihaovv.fragment.tabgiftfragment.TabFragment1;
+import com.fubang.lihaovv.fragment.tabgiftfragment.TabFragment2;
+import com.fubang.lihaovv.fragment.tabgiftfragment.TabFragment3;
+import com.fubang.lihaovv.fragment.tabgiftfragment.TabFragment4;
+import com.fubang.lihaovv.fragment.tabgiftfragment.TabFragment5;
+import com.fubang.lihaovv.fragment.tabgiftfragment.TabFragment6;
+import com.fubang.lihaovv.fragment.tabgiftfragment.TabFragment7;
 import com.fubang.lihaovv.utils.FileUtils;
 import com.fubang.lihaovv.utils.GiftUtil;
 import com.fubang.lihaovv.utils.GlobalOnItemClickManager;
 import com.fubang.lihaovv.utils.NetUtils;
 import com.fubang.lihaovv.utils.ScreenUtils;
+import com.fubang.lihaovv.utils.StringUtil;
 import com.fubang.lihaovv.utils.ToastUtil;
 import com.fubang.lihaovv.utils.Utils;
 import com.google.gson.Gson;
@@ -99,6 +113,8 @@ import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.pili.pldroid.player.widget.PLVideoView;
 import com.socks.library.KLog;
+import com.umeng.analytics.MobclickAgent;
+import com.viewpagerindicator.CirclePageIndicator;
 import com.xlg.android.protocol.ActWaitMicUserInfo;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.Header;
@@ -191,7 +207,6 @@ public class RoomActivity extends BaseActivity {
     TextView roomIdTv;
     @ViewById(R.id.follow_new_image)
     ImageView followImage;
-
     @ViewById(R.id.chat_new_input_line)
     LinearLayout chatLine;
     @ViewById(R.id.text_new_relative)
@@ -216,6 +231,11 @@ public class RoomActivity extends BaseActivity {
     ViewPager viewPager_content;
     @ViewById(R.id.room_new_tablayout)
     TabLayout tabLayout;
+    //=========================视频静音、图像遮挡控制
+    @ViewById(R.id.room_control_mute)
+    ImageView roomControlMute;
+    @ViewById(R.id.room_control_no_img)
+    ImageView roomControlNoImg;
     //=========================上麦用户控制布局
     @ViewById(R.id.rll_mic_user_control_view)
     RelativeLayout rllMicUserControlView;
@@ -234,6 +254,11 @@ public class RoomActivity extends BaseActivity {
     protected LrcView lrcLive;
     @ViewById(R.id.tv_live_lrc_cancle)
     protected TextView tvLiveLrcCancle;
+    //礼物布局
+    @ViewById(R.id.ll_gift_layout_content)
+    protected LinearLayout llGiftLayoutContent;
+    @ViewById(R.id.tv_gift_gone)
+    protected TextView tvGiftGone;
 
     PLVideoTextureView plVider1;
     PLVideoTextureView plVider2;
@@ -266,11 +291,11 @@ public class RoomActivity extends BaseActivity {
     private PopupWindow popupWindow;
     private PopupWindow faceWindow;
     private PopupWindow userWindow;
-    private List<GiftEntity> gifts = new ArrayList<>();
+    private List<GiftNewEntity> gifts = new ArrayList<>();
     private List<FaceEntity> faces = new ArrayList<>();
     private boolean isShow = false;
     private int toid;
-    private int giftId;
+    private int giftId = -1;
     private int roomId;
     private String ip;
     private int port;
@@ -318,7 +343,7 @@ public class RoomActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         isRunning = true;
-
+        MobclickAgent.onResume(this);
         configuration = getResources().getConfiguration();
         switch (micFlag) {
             case 0:
@@ -340,6 +365,7 @@ public class RoomActivity extends BaseActivity {
                 mStop = false;
                 if (roomMain.getRoom() != null) {
                     if (!roomMain.getRoom().isOK()) {
+                        roomMain.getRoom().getChannel().Close();
                         roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
                     }
                 }
@@ -350,6 +376,7 @@ public class RoomActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPause(this);
         isRunning = false;
         mStop = true;
         switch (micFlag) {
@@ -377,6 +404,11 @@ public class RoomActivity extends BaseActivity {
                 }
             }
         }).start();
+        if (userInfos != null) {
+            userInfos.clear();
+            userInfos = null;
+        }
+
         isRunning = false;
         plVider1.stopPlayback();
         plVider2.stopPlayback();
@@ -414,12 +446,12 @@ public class RoomActivity extends BaseActivity {
                 roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
             }
         }).start();
+        gifts = GiftUtil.getAllGift();
     }
 
 
     @Override
     public void initView() {
-
         LayoutInflater inflater = getLayoutInflater();
         view1 = inflater.inflate(R.layout.page_surface, null);
         view2 = inflater.inflate(R.layout.page_surface2, null);
@@ -502,7 +534,7 @@ public class RoomActivity extends BaseActivity {
 //        plVider1.setCoverView(findViewById(R.id.CoverView2));
 //        plVider1.setCoverView(findViewById(R.id.CoverView3));
         // 1 -> hw codec enable, 0 -> disable [recommended]
-        int codec = AVOptions.MEDIA_CODEC_AUTO;
+        final int codec = AVOptions.MEDIA_CODEC_AUTO;
         setOptions(codec);
         plVider1.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_ORIGIN);
         plVider2.setDisplayAspectRatio(PLVideoView.ASPECT_RATIO_ORIGIN);
@@ -553,7 +585,7 @@ public class RoomActivity extends BaseActivity {
             public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
                 if (width < height) {//竖屏 处理UI也为竖屏
                     ViewGroup.LayoutParams params = rll_video1.getLayoutParams();
-                    params.width = ScreenUtils.getScreenWidth(context) / 9*5;
+                    params.width = ScreenUtils.getScreenWidth(context) / 9 * 5;
                     rll_video1.setLayoutParams(params);
                 } else {
                     ViewGroup.LayoutParams params = rll_video1.getLayoutParams();
@@ -567,7 +599,7 @@ public class RoomActivity extends BaseActivity {
             public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
                 if (width < height) {//竖屏 处理UI也为竖屏
                     ViewGroup.LayoutParams params = rll_video2.getLayoutParams();
-                    params.width = ScreenUtils.getScreenWidth(context) / 9*5;
+                    params.width = ScreenUtils.getScreenWidth(context) / 9 * 5;
                     rll_video2.setLayoutParams(params);
                 } else {
                     ViewGroup.LayoutParams params = rll_video2.getLayoutParams();
@@ -581,7 +613,7 @@ public class RoomActivity extends BaseActivity {
             public void onVideoSizeChanged(PLMediaPlayer plMediaPlayer, int width, int height, int i2, int i3) {
                 if (width < height) {//竖屏 处理UI也为竖屏
                     ViewGroup.LayoutParams params = rll_video3.getLayoutParams();
-                    params.width = ScreenUtils.getScreenWidth(context)/ 9*5;
+                    params.width = ScreenUtils.getScreenWidth(context) / 9 * 5;
                     rll_video3.setLayoutParams(params);
                 } else {
                     ViewGroup.LayoutParams params = rll_video3.getLayoutParams();
@@ -618,18 +650,36 @@ public class RoomActivity extends BaseActivity {
                             plVider1.start();
                         plVider2.pause();
                         plVider3.pause();
+                        rllMicUserControlView.setVisibility(View.GONE);
+                        if (micUsers.size() > 0) {
+                            if (micUsers.get(0).getUserid() == Integer.parseInt(StartUtil.getUserId(context))) {//当前麦主播是自己。显示视频控制view
+                                rllMicUserControlView.setVisibility(View.VISIBLE);
+                            }
+                        }
                         break;
                     case 1:
                         plVider1.pause();
                         if (!map_trmp_play.get(1).equals("null"))
                             plVider2.start();
                         plVider3.pause();
+                        rllMicUserControlView.setVisibility(View.GONE);
+                        if (micUsers.size() > 1) {
+                            if (micUsers.get(1).getUserid() == Integer.parseInt(StartUtil.getUserId(context))) {//当前麦主播是自己。显示视频控制view
+                                rllMicUserControlView.setVisibility(View.VISIBLE);
+                            }
+                        }
                         break;
                     case 2:
                         plVider1.pause();
                         plVider2.pause();
                         if (!map_trmp_play.get(2).equals("null"))
                             plVider3.start();
+                        rllMicUserControlView.setVisibility(View.GONE);
+                        if (micUsers.size() > 2) {
+                            if (micUsers.get(2).getUserid() == Integer.parseInt(StartUtil.getUserId(context))) {//当前麦主播是自己。显示视频控制view
+                                rllMicUserControlView.setVisibility(View.VISIBLE);
+                            }
+                        }
                         break;
                 }
                 if (micUsers != null) {
@@ -687,6 +737,7 @@ public class RoomActivity extends BaseActivity {
                         }
                     }
                 }).start();
+                is_goto_full = true;
                 startActivity(RoomLandActivity_.intent(RoomActivity.this).extra("roomIp", roomIp).extra("roomId", roomId + "").extra("roomPwd", roomPwd + "").get());
             }
         });
@@ -730,6 +781,12 @@ public class RoomActivity extends BaseActivity {
 
             }
         });
+        tvGiftGone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                llGiftLayoutContent.setVisibility(View.GONE);
+            }
+        });
     }
 
 
@@ -767,34 +824,29 @@ public class RoomActivity extends BaseActivity {
 
     private TextView giftToUser;
     private boolean is_mic_have = false;
+    private int send_gift_type;
+    private ViewPager mViewPager;
+    private TabLayout mTabLayout;
+    private List<Fragment> fragments_gift;
+    private List<View> list_giftview = new ArrayList<>();
+    private boolean is_first_gift = false;
+    private TextView giftName;
+    private EditText giftCount;
 
     //礼物的悬浮框
     private void showWindow() {
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = layoutInflater.inflate(R.layout.pop_gift_grid, null);
-        gridView = (GridView) view.findViewById(R.id.room_gift_list);
-        giftSendBtn = (Button) view.findViewById(R.id.gift_send_btn);
-        final TextView giftName = (TextView) view.findViewById(R.id.gift_name_txt);
-        final EditText giftCount = (EditText) view.findViewById(R.id.gift_count);
-//        final EditText
-        giftToUser = (TextView) view.findViewById(R.id.gift_to_user);
-        popupWindow = new PopupWindow(view);
-        popupWindow.setFocusable(true);
-        gifts.clear();
-        gifts.addAll(GiftUtil.getGifts());
-        GiftAdapter giftAdapter = new GiftAdapter(gifts, this);
-        gridView.setAdapter(giftAdapter);
+        llGiftLayoutContent.setVisibility(View.VISIBLE);
+        if (is_first_gift == false) {
+            mTabLayout = (TabLayout) findViewById(R.id.tab_main);
+            ViewPager mViewPager = (ViewPager) findViewById(R.id.vp_gift_content);
+            handlelGiftFragment(mViewPager);
+            giftSendBtn = (Button) findViewById(R.id.gift_send_btn);
+            giftName = (TextView) findViewById(R.id.gift_name_txt);
+            giftCount = (EditText) findViewById(R.id.gift_count);
+            giftToUser = (TextView) findViewById(R.id.gift_to_user);
+            is_first_gift = true;
+        }
         //选择礼物
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Log.d("123",gifts.get(position)+"------------>");
-                giftId = gifts.get(position).getGiftId();
-                String name = gifts.get(position).getGiftName();
-                giftName.setText(name + "");
-//                popupWindow.dismiss();
-            }
-        });
         if (micUsers != null) {
             for (int i = 0; i < micUsers.size(); i++) {
                 if (micUsers.get(i).getMicindex() == micFlag) {
@@ -807,22 +859,28 @@ public class RoomActivity extends BaseActivity {
         giftSendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!is_mic_have) {
-                    ToastUtil.show(context, "当前麦没有主播");
-                    return;
-                }
                 if (giftId == -1) {
                     ToastUtil.show(context, "请先选择礼物");
                     return;
                 }
-                toid = -1;
-                toName = "";
-//                if (giftToUser.getText().toString().equals("1")){
-                for (int i = 0; i < micUsers.size(); i++) {
-                    if (micUsers.get(i).getMicindex() == micFlag) {
-                        toid = micUsers.get(i).getUserid();
-                        toName = micUsers.get(i).getUseralias();
+                if (send_gift_type == 1) {//送给主播的礼物
+
+                    if (!is_mic_have) {
+                        ToastUtil.show(context, "当前麦没有主播");
+                        return;
                     }
+                    toid = -1;
+                    toName = "";
+//                if (giftToUser.getText().toString().equals("1")){
+                    for (int i = 0; i < micUsers.size(); i++) {
+                        if (micUsers.get(i).getMicindex() == micFlag) {
+                            toid = micUsers.get(i).getUserid();
+                            toName = micUsers.get(i).getUseralias();
+                        }
+                    }
+                } else if (send_gift_type == 2) {//送给个人的礼物
+                    toid = persongift.getUserid();
+                    toName = persongift.getUseralias();
                 }
                 final int count = Integer.parseInt(giftCount.getText().toString());
                 KLog.e("toid--" + toid + "---giftId---" + giftId + "---count---" + count + "---toName---" + toName);
@@ -833,19 +891,39 @@ public class RoomActivity extends BaseActivity {
                         giftId = -1;
                     }
                 }).start();
-                giftName.setText("送给");
                 is_mic_have = false;
-
-                popupWindow.dismiss();
+                giftName.setText("送给");
+                llGiftLayoutContent.setVisibility(View.GONE);
+//                popupWindow.dismiss();、、
             }
         });
-        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        ColorDrawable dw = new ColorDrawable(0xffffffff);
-        popupWindow.setBackgroundDrawable(dw);
-        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
-        int height = wm.getDefaultDisplay().getHeight();
-        popupWindow.setHeight(height / 2);
-        popupWindow.setOutsideTouchable(true);
+//        popupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+//        ColorDrawable dw = new ColorDrawable(0xffffffff);
+//        popupWindow.setBackgroundDrawable(dw);
+//        WindowManager wm = (WindowManager) getSystemService(WINDOW_SERVICE);
+//        int height = wm.getDefaultDisplay().getHeight();
+//        popupWindow.setHeight(height / 2);
+//        popupWindow.setOutsideTouchable(true);
+    }
+
+    private MyTabFragmentPagerAdapter mMyTabFragmentPagerAdapter;
+
+    private void handlelGiftFragment(ViewPager mViewPager) {
+        fragments_gift = new ArrayList<Fragment>();
+        fragments_gift.clear();
+        fragments_gift.add(new TabFragment1());
+        fragments_gift.add(new TabFragment2());
+        fragments_gift.add(new TabFragment3());
+        fragments_gift.add(new TabFragment4());
+        fragments_gift.add(new TabFragment5());
+        fragments_gift.add(new TabFragment6());
+        fragments_gift.add(new TabFragment7());
+        mMyTabFragmentPagerAdapter = new MyTabFragmentPagerAdapter(getSupportFragmentManager()
+                , fragments_gift);
+        mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setAdapter(mMyTabFragmentPagerAdapter);
+        //将TabLayout和ViewPager绑定在一起，使双方各自的改变都能直接影响另一方，解放了开发人员对双方变动事件的监听
+        mTabLayout.setupWithViewPager(mViewPager);
     }
 
 
@@ -900,10 +978,11 @@ public class RoomActivity extends BaseActivity {
         if (danmaku == null || danmakuView == null) {
             return;
         }
+        KLog.e(chatmsg);
         danmaku.text = chatmsg;
-        danmaku.priority = 0;  // 可能会被各种过滤器过滤并隐藏显示
+        danmaku.priority = 1;  // 可能会被各种过滤器过滤并隐藏显示
         danmaku.isLive = islive;
-        danmaku.time = danmakuView.getCurrentTime() + 4800;
+        danmaku.time =  danmakuView.getCurrentTime()+1000;
         danmaku.textSize = 25f * (mParser.getDisplayer().getDensity() - 0.6f);
         danmaku.textColor = Color.WHITE;
         danmaku.textShadowColor = Color.WHITE;
@@ -922,7 +1001,7 @@ public class RoomActivity extends BaseActivity {
 
 
         mContext = DanmakuContext.create();
-        mContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3).setDuplicateMergingEnabled(false).setScrollSpeedFactor(1.2f).setScaleTextSize(1.2f)
+        mContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN, 3).setDuplicateMergingEnabled(false).setScrollSpeedFactor(2.2f).setScaleTextSize(1.3f)
                 .setCacheStuffer(new SpannedCacheStuffer(), new BaseCacheStuffer.Proxy() {
                     @Override
                     public void prepareDrawing(BaseDanmaku danmaku, boolean fromWorkerThread) {
@@ -990,32 +1069,21 @@ public class RoomActivity extends BaseActivity {
 
     }
 
+
     //接收礼物消息更新
+    @Subscriber(tag = "gift_select")
+    public void Giftselect(GiftNewEntity obj) {
+        giftId = obj.getDate().getGiftId();
+        KLog.e(giftId + " ");
+    }
+
+    //接收跑道礼物消息  其他礼物在CommonFragment中处理
     @Subscriber(tag = "BigGiftRecord")
     public void getGiftRecord(BigGiftRecord obj) {
-        int getGiftId = obj.getGiftid();
-        int count = obj.getCount();
-        String giftTxt = "";
-        if (count != 0) {
-            for (int i = 0; i < gifts.size(); i++) {
-                if (getGiftId == gifts.get(i).getGiftId()) {
-                    if (getGiftId < 10)
-                        giftTxt = "/g100" + getGiftId + "   x " + count;
-                    if (getGiftId >= 10 && getGiftId < 100)
-                        giftTxt = "/g10" + getGiftId + "   x " + count;
-                    if (getGiftId >= 100)
-                        giftTxt = "/g1" + getGiftId + "    x" + count;
-                    if (getGiftId > 549 && getGiftId < 563) {
-                        RoomChatMsg msg = new RoomChatMsg();
-                        msg.setToid(-1);
-                        msg.setContent("g" + getGiftId + "");
-                        msg.setSrcid(obj.getSrcid());
-                        msg.setSrcalias(obj.getSrcalias());
-                        msg.setDstvcbid(count);
-                        data.add(msg);
-                        adapter.notifyDataSetChanged();
-//                        listView.setSelection(listView.getCount() - 1);
-                    }
+        if (obj.getFlyid() >= 0 && obj.getReserve() == 0) {//上跑道礼物
+            for (GiftNewEntity giftNewEntity : gifts) {
+                if (giftNewEntity.getDate().getGiftId() == obj.getGiftid()) {
+                    addDanmaku(true, obj.getSrcalias() + "送给" + obj.getToalias() + "【" + obj.getCount() + "】" + "  个 【" + giftNewEntity.getDate().getGiftName() + "】");
                 }
             }
         }
@@ -1030,7 +1098,7 @@ public class RoomActivity extends BaseActivity {
                 roomMain.getRoom().getChannel().upMicRequest(userid, Header.MIC_STATUS_APPLICATE_MIC, micFlag);
             }
         }).start();
-        rllControlView.setVisibility(View.GONE);
+//        rllControlView.setVisibility(View.GONE);
     }
 
     //自己下麦
@@ -1088,13 +1156,26 @@ public class RoomActivity extends BaseActivity {
         viewPager_content.setCurrentItem(1, true);
     }
 
+    private RoomUserInfo persongift;
+
+    //个人礼物
+    @Subscriber(tag = "PersonGift")
+    public void PersonGift(RoomUserInfo obj) {
+        persongift = obj;
+        send_gift_type = 2;
+        showWindow();
+//        popupWindow.showAsDropDown(giftImage);
+    }
+
     //踢出房间
     @Subscriber(tag = "KickOut")
     public void getKickOut(final RoomUserInfo obj) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                roomMain.getRoom().getChannel().kickOutRoom(obj.getUserid());
+                if (obj.getUserid() != Integer.parseInt(StartUtil.getUserId(context))) {
+                    roomMain.getRoom().getChannel().kickOutRoom(obj.getUserid());
+                }
             }
         }).start();
 
@@ -1160,6 +1241,7 @@ public class RoomActivity extends BaseActivity {
                         @Override
                         public void run() {
                             play.start();
+                            roomMain.getRoom().getChannel().Close();
                             roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
                         }
                     }).start();
@@ -1197,6 +1279,7 @@ public class RoomActivity extends BaseActivity {
                     while (isRunning) {
                         play.start();
 //                        Log.d("123", "chongxingqidong");
+                        roomMain.getRoom().getChannel().Close();
                         roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
                     }
                 }
@@ -1235,7 +1318,7 @@ public class RoomActivity extends BaseActivity {
             }
         }
         if (msg.getMsgtype() == 12 || msg.getSrcid() == 2) {
-            addDanmaku(false, msg.getContent());
+            addDanmaku(true, msg.getContent());
         }
     }
 
@@ -1246,17 +1329,38 @@ public class RoomActivity extends BaseActivity {
         mic_guan = msg.getNvideowndtype();
     }
 
+    private boolean is_goto_full = false;
+
     //用户离开房间
     @Subscriber(tag = "RoomKickoutUserInfo")
     public void getUserOut(RoomKickoutUserInfo obj) {
-        int leaveId = obj.getToid();
-        KLog.e(leaveId + "离开房间");
-        for (int i = 0; i < userInfos.size(); i++) {
-            if (userInfos.get(i).getUserid() == leaveId) {
-                userInfos.remove(i);
+        if (Integer.parseInt(StartUtil.getUserId(context)) == obj.getToid()) {//自己被踢出，重新连接
+            if (!is_goto_full) {
+                KLog.e(obj.getToid() + "离开房间" + obj.getReasonid() + " " + obj.getReserve() + " " + obj.getSrcid() + " " + obj.getVcbid() + " " + obj.getToid());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                roomMain.getRoom().getChannel().Close();
+                                roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
+                            }
+                        }).start();
+                    }
+                }).start();
+                is_goto_full = false;
             }
+        } else {
+            int leaveId = obj.getToid();
+            KLog.e(leaveId + "离开房间" + obj.getReasonid());
+            for (int i = 0; i < userInfos.size(); i++) {
+                if (userInfos.get(i).getUserid() == leaveId) {
+                    userInfos.remove(i);
+                }
+            }
+            EventBus.getDefault().post(userInfos, "lookfragment_notify");
         }
-        EventBus.getDefault().post(userInfos, "lookfragment_notify");
     }
 
     private boolean is_list_hava_people = false;
@@ -1281,7 +1385,7 @@ public class RoomActivity extends BaseActivity {
             }
         });
         EventBus.getDefault().post(userInfos, "lookfragment_notify");
-        KLog.e(userInfo.getUserid() + "加入房间");
+        KLog.e(userInfo.getUserid() + userInfo.getUseralias() + "加入房间" + roomId);
     }
 
     static Camera camera;
@@ -1322,6 +1426,10 @@ public class RoomActivity extends BaseActivity {
     //上公麦提示   1
     @Subscriber(tag = "upMicState")
     public void upMicState(final MicState obj) {
+
+        if (obj.getUserid() == 8001 || obj.getUserid() == 8002 || obj.getUserid() == 8003) {//守麦员 不进行播放
+            return;
+        }
         new Thread(new Runnable() {//上下麦后获取拍卖列表
             @Override
             public void run() {
@@ -1341,7 +1449,9 @@ public class RoomActivity extends BaseActivity {
                 roomIdTv.setText((micFlag + 1) + "麦主播：" + micUsers.get(i).getUseralias() + " ");
             }
         }
-        String room_name = "lihao_" + obj.getUserid() + "_" + obj.getUserid();
+        KLog.e("udmic" + obj.getUdmic());
+
+        String room_name = "BoBo_" + roomId + "_" + obj.getUserid() + "_" + obj.getUdmic();
         OkGo.<String>get(AppConstant.GET_RTMP_URL)
                 .params("streamKey", room_name)
                 .tag(this)
@@ -1354,11 +1464,11 @@ public class RoomActivity extends BaseActivity {
                             try {
                                 push_url = rtmp.getPublishUrl();
                                 _CameraSurface.setVisibility(View.VISIBLE);
-                                animaView(llMicUserControlView);
-                                rllMicUserControlView.setVisibility(View.VISIBLE);
+//                                animaView(llMicUserControlView);
+//                                rllMicUserControlView.setVisibility(View.VISIBLE);
                                 //通知麦序fragment  已经上麦了
                                 EventBus.getDefault().post("is_upmic", "is_upmic");
-                                rllControlView.setVisibility(View.GONE);
+//                                rllControlView.setVisibility(View.GONE);
                                 if (is_surface_creat) {
                                     mMediaRecorder.startRecord(push_url);
                                 } else {
@@ -1366,29 +1476,44 @@ public class RoomActivity extends BaseActivity {
                                 }
                             } catch (Exception e) {
                             }
-                        } else {
-                            switch (obj.getMicindex()) {
-                                case 0:
-                                    KLog.e("0 mic");
-                                    map_trmp_play.put(0, rtmp.getRTMPPlayURL());
-                                    plVider1.setVideoPath(map_trmp_play.get(0));
-                                    plVider1.start();
-                                    break;
-                                case 1:
-                                    KLog.e("1 mic");
-                                    map_trmp_play.put(1, rtmp.getRTMPPlayURL());
-                                    plVider2.setVideoPath(map_trmp_play.get(1));
-                                    plVider2.start();
-                                    break;
-                                case 2:
-                                    KLog.e("2 mic");
-                                    map_trmp_play.put(2, rtmp.getRTMPPlayURL());
-                                    plVider3.setVideoPath(map_trmp_play.get(2));
-                                    plVider3.start();
-                                    break;
-                            }
-                            KLog.e(obj.getMicindex() + rtmp.getRTMPPlayURL());
                         }
+                        switch (obj.getMicindex()) {
+                            case 0:
+                                if (micFlag == 0) {
+                                    if (Integer.parseInt(StartUtil.getUserId(context)) == obj.getUserid()) {
+                                        rllMicUserControlView.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                                KLog.e("0 mic");
+                                map_trmp_play.put(0, rtmp.getRTMPPlayURL());
+                                plVider1.setVideoPath(map_trmp_play.get(0));
+                                plVider1.start();
+                                break;
+                            case 1:
+                                if (micFlag == 1) {
+                                    if (Integer.parseInt(StartUtil.getUserId(context)) == obj.getUserid()) {
+                                        rllMicUserControlView.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                                KLog.e("1 mic");
+                                map_trmp_play.put(1, rtmp.getRTMPPlayURL());
+                                plVider2.setVideoPath(map_trmp_play.get(1));
+                                plVider2.start();
+                                break;
+                            case 2:
+                                if (micFlag == 2) {
+                                    if (Integer.parseInt(StartUtil.getUserId(context)) == obj.getUserid()) {
+                                        rllMicUserControlView.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                                KLog.e("2 mic");
+                                map_trmp_play.put(2, rtmp.getRTMPPlayURL());
+                                plVider3.setVideoPath(map_trmp_play.get(2));
+                                plVider3.start();
+                                break;
+                        }
+                        KLog.e(obj.getMicindex() + rtmp.getRTMPPlayURL());
+
                     }
 
                 });
@@ -1397,7 +1522,7 @@ public class RoomActivity extends BaseActivity {
     //下麦提示
     @Subscriber(tag = "downMicState")
     public void downMicState(MicState obj) {
-        KLog.e("downMicState");
+        KLog.e("downMicState：" + obj.getUserid());
         for (int i = 0; i < micUsers.size(); i++) {
             if (micUsers.get(i).getUserid() == obj.getUserid()) {
                 //根据micindex关闭对应号的mic
@@ -1457,8 +1582,12 @@ public class RoomActivity extends BaseActivity {
     //麦上几个人就添加视频流
     @Subscriber(tag = "onMicUser")
     public void getonMicUser(final RoomUserInfo obj) {
+        if (obj.getUserid() == 8001 || obj.getUserid() == 8002 || obj.getUserid() == 8003) {//守麦员 不进行播放
+            return;
+        }
         micUsers.add(obj);
-        String room_name = "lihao_" + obj.getUserid() + "_" + obj.getUserid();
+        KLog.e("udmic" + obj.getUdmic());
+        String room_name = "BoBo_" + roomId + "_" + obj.getUserid() + "_" + obj.getUdmic();
         OkGo.<String>get(AppConstant.GET_RTMP_URL)
                 .params("streamKey", room_name)
                 .tag(this)
@@ -1498,10 +1627,16 @@ public class RoomActivity extends BaseActivity {
     private boolean is_mic_control_view_show = true;
     private boolean is_beautify = true;
     private int REQUEST_CODE_MUSIC = 0x6;
+    private boolean is_play1_mute = false;
+    private boolean is_play2_mute = false;
+    private boolean is_play3_mute = false;
+    private boolean is_play1_show = false;
+    private boolean is_play2_show = false;
+    private boolean is_play3_show = false;
 
     @Click({R.id.linear_new_container, R.id.chat_image_btn, R.id.room_new_gift, R.id.iv_room_setting,
-            R.id.rll_mic_user_control_view, R.id.iv_mic_user_control_music, R.id.iv_mic_user_control_camera
-            , R.id.iv_mic_user_control_beauty, R.id.tv_live_lrc_cancle})
+            R.id.iv_mic_user_control_music, R.id.iv_mic_user_control_camera
+            , R.id.iv_mic_user_control_beauty, R.id.tv_live_lrc_cancle, R.id.room_control_mute, R.id.room_control_no_img})
     void click(View v) {
         switch (v.getId()) {
             case R.id.linear_new_container:
@@ -1522,38 +1657,39 @@ public class RoomActivity extends BaseActivity {
                 break;
             //点击礼物图标
             case R.id.room_new_gift:
-                if (popupWindow == null) {
-                    showWindow();
-                    popupWindow.showAsDropDown(giftImage);
-                } else {
-                    if (popupWindow.isShowing()) {
-                        popupWindow.dismiss();
-                    } else {
-                        popupWindow.showAsDropDown(giftImage);
-                        if (micUsers != null) {
-                            for (int i = 0; i < micUsers.size(); i++) {
-                                if (micUsers.get(i).getMicindex() == micFlag) {
-                                    giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
-                                    is_mic_have = true;
-                                }
-                            }
-                        }
-                    }
-                }
+                send_gift_type = 1;
+//                if (popupWindow == null) {
+                showWindow();
+//                    popupWindow.showAsDropDown(giftImage);
+//                } else {
+//                    if (popupWindow.isShowing()) {
+//                        popupWindow.dismiss();
+//                    } else {
+//                        popupWindow.showAsDropDown(giftImage);
+//                        if (micUsers != null) {
+//                            for (int i = 0; i < micUsers.size(); i++) {
+//                                if (micUsers.get(i).getMicindex() == micFlag) {
+//                                    giftToUser.setText(micUsers.get(i).getUseralias() + "(" + micUsers.get(i).getUserid() + ")");
+//                                    is_mic_have = true;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
                 break;
             case R.id.iv_room_setting:
                 View contentView = LayoutInflater.from(this).inflate(R.layout.pop_room_control, null);
                 handleControlView(contentView);
 
                 break;
-            case R.id.rll_mic_user_control_view:
-                if (is_mic_control_view_show) {
-                    llMicUserControlView.setVisibility(View.VISIBLE);
-                } else {
-                    llMicUserControlView.setVisibility(View.GONE);
-                }
-                is_mic_control_view_show = !is_mic_control_view_show;
-                break;
+//            case R.id.rll_mic_user_control_view:
+//                if (is_mic_control_view_show) {
+//                    llMicUserControlView.setVisibility(View.VISIBLE);
+//                } else {
+//                    llMicUserControlView.setVisibility(View.GONE);
+//                }
+//                is_mic_control_view_show = !is_mic_control_view_show;
+//                break;
             case R.id.iv_mic_user_control_music:
                 startActivityForResult(new Intent(context, LivePickMusicActivity.class), REQUEST_CODE_MUSIC);
                 break;
@@ -1573,6 +1709,62 @@ public class RoomActivity extends BaseActivity {
                 mediaPlayer.reset();
                 lrcLive.onDrag(0);
                 rllLiveLrc.setVisibility(View.GONE);
+                break;
+            case R.id.room_control_mute:
+                switch (micFlag) {
+                    case 0:
+                        if (!is_play1_mute) {
+                            plVider1.setVolume(0.0f, 0.0f);
+                        } else {
+                            plVider1.setVolume(0.8f, 0.8f);
+                        }
+                        is_play1_mute = !is_play1_mute;
+                        break;
+                    case 1:
+                        if (!is_play2_mute) {
+                            plVider2.setVolume(0.0f, 0.0f);
+                        } else {
+                            plVider2.setVolume(0.8f, 0.8f);
+                        }
+                        is_play2_mute = !is_play2_mute;
+                        break;
+                    case 2:
+                        if (!is_play3_mute) {
+                            plVider3.setVolume(0.0f, 0.0f);
+                        } else {
+                            plVider3.setVolume(0.8f, 0.8f);
+                        }
+                        is_play3_mute = !is_play3_mute;
+                        break;
+                }
+                break;
+            case R.id.room_control_no_img:
+                switch (micFlag) {
+                    case 0:
+                        if (!is_play1_show) {
+                            iv_cover_1.setVisibility(View.GONE);
+                        } else {
+                            iv_cover_1.setVisibility(View.VISIBLE);
+                        }
+                        is_play1_show = !is_play1_show;
+                        break;
+                    case 1:
+                        if (!is_play2_show) {
+                            iv_cover_2.setVisibility(View.GONE);
+                        } else {
+                            iv_cover_2.setVisibility(View.VISIBLE);
+                        }
+                        is_play2_show = !is_play2_show;
+                        break;
+                    case 2:
+                        if (!is_play3_show) {
+                            iv_cover_3.setVisibility(View.GONE);
+                        } else {
+                            iv_cover_3.setVisibility(View.VISIBLE);
+                        }
+                        is_play3_show = !is_play3_show;
+                        break;
+                }
                 break;
         }
     }
@@ -1781,12 +1973,14 @@ public class RoomActivity extends BaseActivity {
     private static final int MESSAGE_ID_RECONNECTING = 0x01;
     private static final int ROOM_RECONNECT = 0x02;
 
-    private void sendReconnectMessage() {
-        mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_ID_RECONNECTING), 2000);
+    private synchronized void sendReconnectMessage() {
+        KLog.e("重新连接trmp播放地址");
+        mHandler.sendMessageDelayed(mHandler.obtainMessage(MESSAGE_ID_RECONNECTING), 6000);
     }
 
-    private void sendRoomReconnectMessage() {
-        mHandler.sendMessageDelayed(mHandler.obtainMessage(ROOM_RECONNECT), 2000);
+    private synchronized void sendRoomReconnectMessage() {
+        KLog.e("重新连接房间");
+//        mHandler.sendMessageDelayed(mHandler.obtainMessage(ROOM_RECONNECT), 5000);
     }
 
     protected Handler mHandler = new Handler() {
@@ -1807,7 +2001,7 @@ public class RoomActivity extends BaseActivity {
                                         sendReconnectMessage();
                                     break;
                                 case 1:
-                                    if (map_trmp_play.get(0).equals("null")) {
+                                    if (map_trmp_play.get(1).equals("null")) {
                                         return;
                                     }
                                     plVider2.setVideoPath(map_trmp_play.get(1));
@@ -1816,7 +2010,7 @@ public class RoomActivity extends BaseActivity {
                                         sendReconnectMessage();
                                     break;
                                 case 2:
-                                    if (map_trmp_play.get(0).equals("null")) {
+                                    if (map_trmp_play.get(2).equals("null")) {
                                         return;
                                     }
                                     plVider3.setVideoPath(map_trmp_play.get(2));
@@ -1837,12 +2031,12 @@ public class RoomActivity extends BaseActivity {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
+                            if (!StringUtil.isEmptyandnull(StartUtil.getUserId(context))) {
+                                roomMain.getRoom().getChannel().Close();
+                                roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomActivity.this)), StartUtil.getUserPwd(RoomActivity.this), ip, port, pwd);
+                            }
                         }
                     }).start();
-                    if (!roomMain.getRoom().isOK()) {
-                        sendRoomReconnectMessage();
-                    }
                     break;
             }
         }
@@ -1965,7 +2159,7 @@ public class RoomActivity extends BaseActivity {
         mMediaRecorder.setZoom(0.5f);
         mMediaRecorder.setPreviewSize(_CameraSurface.getMeasuredWidth(), _CameraSurface.getMeasuredHeight() / 2);
         mMediaRecorder.startRecord(push_url);
-        rllControlView.setVisibility(View.GONE);
+//        rllControlView.setVisibility(View.GONE);
     }
 
     private boolean is_surface_creat = false;

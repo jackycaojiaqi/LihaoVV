@@ -129,6 +129,11 @@ dependencies {
     compile files('libs/lite-orm-1.9.2.jar')
     //recycleview 适配器
     compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.16'
+    //二维码扫描
+    compile 'com.github.XuDaojie:QRCode-Android:v0.4.2'
+    compile files('libs/umeng-analytics-v6.1.1.jar')
+    compile files('libs/utdid4all-1.0.4.jar')
+    compile project(':viewPagerLibrary')
 }
 apt {
     arguments {

@@ -23,8 +23,9 @@
     <uses-permission android:name="android.permission.READ_SOCIAL_STREAM" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name="com.fubang.lihaovv.App_"
@@ -155,7 +156,6 @@
             android:configChanges="orientation|keyboardHidden|navigation"
             android:exported="false"
             android:screenOrientation="behind" />
-        <activity android:name="com.fubang.lihaovv.ui.DaiRechargeAcitivity_" />
         <activity android:name="com.fubang.lihaovv.ui.CompleteActivity_" />
         <!--<activity-->
         <!--android:name=".ui.RoomNewActivity_"-->
@@ -175,11 +175,14 @@
         <activity
             android:name="com.fubang.lihaovv.cao.RoomPortraitActivity_"
             android:configChanges="keyboardHidden|orientation" />
+        <activity android:name="io.github.xudaojie.qrcodelib.CaptureActivity"/>
         <!--<intent-filter>-->
         <!--<action android:name="android.intent.action.MAIN" />-->
 
         <!--<category android:name="android.intent.category.LAUNCHER" />-->
         <!--</intent-filter>-->
+        <meta-data android:value="595349a0ae1bf84c34001beb" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="Channel ID" android:name="LIHAOBOBO"/>
     </application>
 
 

@@ -12,7 +12,9 @@ public class LotteryNotice {
 	@StructOrder(4)
 	private int number2;      //50倍数
 	@StructOrder(5)
-	private int number3;		//100倍数
+	private int number3;		//500倍数
+	@StructOrder(5)
+	private int number4;		//1000倍数
 	public int getVcbid() {
 		return vcbid;
 	}
@@ -48,6 +50,13 @@ public class LotteryNotice {
 	}
 	public void setNumber3(int number3) {
 		this.number3 = number3;
+	}
+
+	public int getNumber4() {
+		return number4;
+	}
+	public void setNumber4(int number4) {
+		this.number4 = number4;
 	}
 
 }

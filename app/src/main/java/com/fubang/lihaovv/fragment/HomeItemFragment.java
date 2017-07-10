@@ -11,7 +11,9 @@ import com.fubang.lihaovv.adapters.HomeRoomAdapter;
 import com.fubang.lihaovv.entities.RoomEntity;
 import com.fubang.lihaovv.entities.RoomListEntity;
 import com.fubang.lihaovv.presenter.impl.RoomListPresenterImpl;
+import com.fubang.lihaovv.ui.RoomActivity_;
 import com.fubang.lihaovv.utils.DbUtil;
+import com.fubang.lihaovv.utils.ToastUtil;
 import com.fubang.lihaovv.view.RoomListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshGridView;
@@ -19,6 +21,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshGridView;
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
 import org.simple.eventbus.EventBus;
+import org.simple.eventbus.Subscriber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +30,10 @@ import java.util.List;
  * A simple {@link Fragment} subclass.
  */
 @EFragment(R.layout.fragment_home_item)
-public class HomeItemFragment extends BaseFragment implements RoomListView,PullToRefreshBase.OnRefreshListener2{
+public class HomeItemFragment extends BaseFragment implements RoomListView, PullToRefreshBase.OnRefreshListener2 {
     @ViewById(R.id.home_ptlist)
     PullToRefreshGridView ptRefreshGv;
-    private String type ;
+    private String type;
     private List<RoomListEntity> list = new ArrayList<>();
     private HomeRoomAdapter adapter;
     private RoomListPresenterImpl presenter;
@@ -38,7 +41,7 @@ public class HomeItemFragment extends BaseFragment implements RoomListView,PullT
     private int page = 1;
     private int group = 0;
 
-//    private View headView;
+    //    private View headView;
 //    private ConvenientBanner<String> chooseView;
 //    private Call<BannerEntity> callFirst;
 //    private List<String> listFirst = new ArrayList<>();
@@ -46,7 +49,7 @@ public class HomeItemFragment extends BaseFragment implements RoomListView,PullT
     public void before() {
         EventBus.getDefault().register(this);
         type = getArguments().getString(AppConstant.HOME_TYPE);
-        presenter = new RoomListPresenterImpl(this,count,page,group,"");
+        presenter = new RoomListPresenterImpl(this, count, page, group, "");
     }
 
     @Override
@@ -74,13 +77,13 @@ public class HomeItemFragment extends BaseFragment implements RoomListView,PullT
     public void initData() {
 //        initData1();
         List<RoomListEntity> listEntities = DbUtil.getSession()
-                    .getRoomListEntityDao()
-                    .queryBuilder()
-                    .limit(40)
-                    .list();
+                .getRoomListEntityDao()
+                .queryBuilder()
+                .limit(40)
+                .list();
         list.addAll(listEntities);
-        adapter = new HomeRoomAdapter(list,getContext());
-        EventBus.getDefault().post(list,"roomList");
+        adapter = new HomeRoomAdapter(list, getContext());
+        EventBus.getDefault().post(list, "roomList");
 //        ptRefreshGv.addHeaderView(headView);
         ptRefreshGv.setAdapter(adapter);
         presenter.getRoomList();
@@ -90,12 +93,12 @@ public class HomeItemFragment extends BaseFragment implements RoomListView,PullT
     @Override
     public void successRoomList(RoomEntity entity) {
         ptRefreshGv.onRefreshComplete();
-        if (page == 1){
+        if (page == 1) {
             list.clear();
         }
         List<RoomListEntity> roomListEntities = entity.getRoomlist();
         DbUtil.getSession().getRoomListEntityDao().insertOrReplaceInTx(roomListEntities);
-        EventBus.getDefault().post(entity,"successRoomEntity");
+        EventBus.getDefault().post(entity, "successRoomEntity");
         list.addAll(roomListEntities);
         adapter.notifyDataSetChanged();
     }
@@ -108,13 +111,13 @@ public class HomeItemFragment extends BaseFragment implements RoomListView,PullT
     @Override
     public void onPullDownToRefresh(PullToRefreshBase refreshView) {
         page = 1;
-        new RoomListPresenterImpl(this,count,page,group,"").getRoomList();
+        new RoomListPresenterImpl(this, count, page, group, "").getRoomList();
     }
 
     @Override
     public void onPullUpToRefresh(PullToRefreshBase refreshView) {
         page = 2;
-        new RoomListPresenterImpl(this,count,page,group,"").getRoomList();
+        new RoomListPresenterImpl(this, count, page, group, "").getRoomList();
         ptRefreshGv.onRefreshComplete();
     }
 
@@ -122,6 +125,26 @@ public class HomeItemFragment extends BaseFragment implements RoomListView,PullT
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    private boolean has_scane_room = false;
+
+    //网络异常，断开房间
+    @Subscriber(tag = "scane_room_id")
+    public void onScaneRoomId(String id) {
+        for (RoomListEntity roomListEntity : list) {
+            if (roomListEntity.getRoomid().equals(id)) {//如果扫描出来的roomid匹配 则进入房间
+                getActivity().startActivity(RoomActivity_.intent(getActivity())
+                        .extra("roomIp", roomListEntity.getGateway())
+                        .extra("roomId", roomListEntity.getRoomid())
+                        .extra("roomPwd", roomListEntity.getRoompwd()).get());
+                has_scane_room = true;
+            }
+        }
+        if (!has_scane_room) {
+            ToastUtil.show(getActivity(), "找不到二维码匹配的房间");
+        }
+        has_scane_room = false;
     }
 //    private void initData1() {
 //        if (callFirst != null)

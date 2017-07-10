@@ -10,6 +10,7 @@ import com.fubang.lihaovv.adapters.FollowAdapter;
 import com.fubang.lihaovv.entities.FollowEntity;
 import com.fubang.lihaovv.entities.FollowListEnitty;
 import com.fubang.lihaovv.presenter.impl.FollowPresenterImpl;
+import com.fubang.lihaovv.utils.StringUtil;
 import com.fubang.lihaovv.view.FollowView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshGridView;
@@ -37,7 +38,9 @@ public class FollowFragment extends BaseFragment implements FollowView,PullToRef
     @Override
     public void before() {
         EventBus.getDefault().register(this);
-        presenter = new FollowPresenterImpl(this,Integer.parseInt(StartUtil.getUserId(getContext())));
+        if (!StringUtil.isEmptyandnull(StartUtil.getUserId(getContext()))){
+            presenter = new FollowPresenterImpl(this,Integer.parseInt(StartUtil.getUserId(getContext())));
+        }
     }
 
     @Override

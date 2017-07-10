@@ -30,15 +30,15 @@ public class ClientSocket {
 		}
 		mSvrPort = port;
 		mSvrIP = ip;
-//		mSvrPort = 14293;
-//		mSvrIP = "42.121.57.170";
+		KLog.e(ip+":"+port);
+//		mSvrPort = 9958;
+//		mSvrIP = "120.26.76.28";
 		// 启动线程
 		mThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				doSocketRun();
 			}});
-		
 		mThread.start();
 		return -1;
 	}

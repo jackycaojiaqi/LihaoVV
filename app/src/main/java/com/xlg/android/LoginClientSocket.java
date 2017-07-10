@@ -32,8 +32,8 @@ public class LoginClientSocket {
 //
         mSvrPort = port;
         mSvrIP = ip;
-//		mSvrPort = 42111;
-//		mSvrIP = "42.121.57.170";
+//		mSvrPort = 33111;
+//		mSvrIP = "115.231.26.124";
         // 启动线程
         mThread = new Thread(new Runnable() {
             @Override

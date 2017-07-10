@@ -1,1 +1,1 @@
-include ':app', ':library', ':PullToRefresh', ':update', ':shareSDKmainLibs', ':oneKeyShare', ':lib'
+include ':app', ':library', ':PullToRefresh', ':update', ':shareSDKmainLibs', ':oneKeyShare', ':lib', ':viewPagerLibrary'

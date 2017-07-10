@@ -11,6 +11,7 @@ public class AppConstant {
 //    public static final String[] HOME_TYPE_TITLE = {"大厅列表","热门主播","新人主播"};
     public static final String[] HOME_TYPE_TITLE = {"大厅列表"};
     public static final String[] ROOM_TYPE_TITLE = {"公聊","私聊","观众","麦序"};
+
     public static final String[] MY_TYPE_TITLE = {"VIP","座驾","活动","我的道具"};
 //    public static final String[] BILLBOARD_TITLE = {"魅力之星","房间人气"};
     public static final String[] BILLBOARD_TITLE = {"房间人气"};

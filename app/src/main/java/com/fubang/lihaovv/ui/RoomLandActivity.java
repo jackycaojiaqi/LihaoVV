@@ -66,6 +66,7 @@ import com.pili.pldroid.player.PLMediaPlayer;
 import com.pili.pldroid.player.widget.PLVideoTextureView;
 import com.pili.pldroid.player.widget.PLVideoView;
 import com.socks.library.KLog;
+import com.umeng.analytics.MobclickAgent;
 import com.xlg.android.protocol.BigGiftRecord;
 import com.xlg.android.protocol.JoinRoomResponse;
 import com.xlg.android.protocol.MicState;
@@ -201,6 +202,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         isRunning = true;
         if (danmakuView != null && danmakuView.isPrepared() && danmakuView.isPaused()) {
             danmakuView.resume();
@@ -222,17 +224,17 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                 mStop = false;
                 if (roomMain.getRoom() != null) {
                     if (!roomMain.getRoom().isOK()) {
+                        roomMain.getRoom().getChannel().Close();
                         roomMain.Start(roomId, Integer.parseInt(StartUtil.getUserId(RoomLandActivity.this)), StartUtil.getUserPwd(RoomLandActivity.this), ip, port, roomPwd);
                     }
                 }
             }
         }).start();
-
     }
-
     @Override
     protected void onPause() {
         super.onPause();
+        MobclickAgent.onPause(this);
         isRunning = false;
         plVideo1.pause();
         plVideo2.pause();
@@ -457,14 +459,17 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                     plVideo1.start();
                     iv_cover_1.setVisibility(View.GONE);
                 } else {
+                    plVideo1.pause();
                     iv_cover_1.setVisibility(View.VISIBLE);
                 }
+
                 if (!map_trmp_play.get(1).equals("null")) {
                     plVideo2.setVideoPath(map_trmp_play.get(1));
                     plVideo2.start();
                     plVideo2.setVolume(0.0f,0.0f);
                     iv_cover_2.setVisibility(View.GONE);
                 } else {
+                    plVideo2.pause();
                     iv_cover_2.setVisibility(View.VISIBLE);
                 }
             }
@@ -480,6 +485,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                     plVideo1.start();
                     iv_cover_1.setVisibility(View.GONE);
                 } else {
+                    plVideo1.pause();
                     iv_cover_1.setVisibility(View.VISIBLE);
                 }
                 if (!map_trmp_play.get(2).equals("null")) {
@@ -488,6 +494,7 @@ public class RoomLandActivity extends BaseActivity implements View.OnClickListen
                     plVideo3.setVolume(0.0f,0.0f);
                     iv_cover_3.setVisibility(View.GONE);
                 } else {
+                    plVideo3.pause();
                     iv_cover_3.setVisibility(View.VISIBLE);
                 }
             }

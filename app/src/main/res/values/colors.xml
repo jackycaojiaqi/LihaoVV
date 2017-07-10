@@ -49,6 +49,7 @@
     <color name="green_626262">#626262</color>
     <color name="orange">#41ae3b</color>
     <color name="transparent_50">#50000000</color>
+    <color name="transparent_aa">#aa000000</color>
     <color name="orange_f1a94e">#f1a94e</color>
     <color name="gray_dan">#f4f4f4</color>
     <color name="gray_edit_bg">#fdf8f5</color>

@@ -754,7 +754,7 @@ public class NewRoomActivity extends BaseActivity implements MicNotify, View.OnC
         final TextView giftName  = (TextView)view.findViewById(R.id.gift_name_txt);
         final EditText giftCount = (EditText) view.findViewById(R.id.gift_count);
 //        final EditText
-        giftToUser = (EditText)view.findViewById(R.id.gift_to_user);
+//        giftToUser = (EditText)view.findViewById(R.id.gift_to_user);
         popupWindow = new PopupWindow(view);
         popupWindow.setFocusable(true);
         gifts.addAll(GiftUtil.getGifts());

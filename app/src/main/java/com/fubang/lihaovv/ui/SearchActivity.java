@@ -25,6 +25,7 @@ import com.fubang.lihaovv.entities.RoomListEntity;
 import com.fubang.lihaovv.presenter.impl.RoomListPresenterImpl;
 import com.fubang.lihaovv.view.RoomListView;
 import com.socks.library.KLog;
+import com.umeng.analytics.MobclickAgent;
 
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
@@ -111,7 +112,14 @@ public class SearchActivity extends BaseActivity implements RoomListView {
             }
         });
     }
-
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     @Override
     public void successRoomList(RoomEntity entity) {

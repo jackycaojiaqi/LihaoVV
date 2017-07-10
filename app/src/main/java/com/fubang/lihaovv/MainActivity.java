@@ -22,6 +22,7 @@ import com.fubang.lihaovv.ui.BaseActivity;
 import com.fubang.lihaovv.ui.LoginActivity;
 import com.loveplusplus.update.UpdateChecker;
 import com.socks.library.KLog;
+import com.umeng.analytics.MobclickAgent;
 import com.xlg.android.protocol.LogonResponse;
 import com.xlg.android.utils.Tools;
 import com.zhuyunjian.library.FragmentTabUtils;
@@ -49,7 +50,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void before() {
-        EventBus.getDefault().registerSticky(this);
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -98,7 +99,14 @@ public class MainActivity extends BaseActivity {
                 + (Integer.parseInt(ips[2]) << 8) + Integer.parseInt(ips[3]);
     }
 
-
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
     @Override
     protected void onDestroy() {
         EventBus.getDefault().unregister(this);

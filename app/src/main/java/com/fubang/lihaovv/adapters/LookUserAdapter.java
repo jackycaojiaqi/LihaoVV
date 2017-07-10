@@ -178,7 +178,8 @@ public class LookUserAdapter extends BaseExpandableListAdapter {
                 } else if (position == 3) {
                     Toast.makeText(context, "发送私聊信息给" + list.get(groupPosition).getUseralias(), Toast.LENGTH_SHORT).show();
                     EventBus.getDefault().post(list.get(groupPosition), "PersonChat");
-                } else {
+                } else if (position == 4){
+                    EventBus.getDefault().post(list.get(groupPosition), "PersonGift");
                 }
             }
         });

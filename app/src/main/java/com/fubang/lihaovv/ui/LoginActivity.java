@@ -13,6 +13,7 @@ import com.fubang.lihaovv.MainActivity_;
 import com.fubang.lihaovv.R;
 import com.fubang.lihaovv.entities.UserEntity;
 import com.socks.library.KLog;
+import com.umeng.analytics.MobclickAgent;
 import com.xlg.android.protocol.LogonResponse;
 import com.xlg.android.utils.Tools;
 import com.zhuyunjian.library.StartUtil;
@@ -230,5 +231,13 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener,
         if (loginflag == "0") {
             Toast.makeText(this, "账号密码错误", Toast.LENGTH_SHORT).show();
         }
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

@@ -13,6 +13,7 @@ import com.fubang.lihaovv.entities.HistoryEnity;
 import com.fubang.lihaovv.entities.HistoryListEntiy;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.umeng.analytics.MobclickAgent;
 import com.zhuyunjian.library.StartUtil;
 
 import org.androidannotations.annotations.EActivity;
@@ -121,5 +122,13 @@ public class HistoryActivity extends BaseActivity implements PullToRefreshBase.O
     public void onRefresh(PullToRefreshBase refreshView) {
         Call<HistoryListEntiy> call2 = call.clone();
         call2.enqueue(this);
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

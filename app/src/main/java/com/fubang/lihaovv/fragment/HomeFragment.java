@@ -19,16 +19,20 @@ import com.fubang.lihaovv.ui.HistoryActivity_;
 import com.fubang.lihaovv.ui.SearchActivity_;
 import com.fubang.lihaovv.AppConstant;
 import com.fubang.lihaovv.adapters.HomeTitleAdapter;
+import com.fubang.lihaovv.utils.ToastUtil;
 
 import org.androidannotations.annotations.EFragment;
 import org.androidannotations.annotations.ViewById;
+import org.simple.eventbus.EventBus;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.vividcode.android.zxing.CaptureActivity;
-import info.vividcode.android.zxing.Intents;
+
+import io.github.xudaojie.qrcodelib.CaptureActivity;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * 首页
@@ -54,6 +58,7 @@ public class HomeFragment extends BaseFragment {
     @ViewById(R.id.convenientBanner)
     ConvenientBanner convenientBanner;
     private ArrayList<Integer> localImages = new ArrayList<>();
+    private int REQUEST_QR_CODE = 0x121;
     @Override
     public void initView() {
         localImages.add(getResId("banner1",R.mipmap.class));
@@ -89,7 +94,8 @@ public class HomeFragment extends BaseFragment {
                 //google官方扫描二维码
 //                new IntentIntegrator(getActivity()).initiateScan();
                 //第三方的扫描
-                startActivityForResult(new Intent(getContext(), CaptureActivity.class),0);
+                Intent i = new Intent(getActivity(), CaptureActivity.class);
+                startActivityForResult(i, REQUEST_QR_CODE);
             }
         });
         searchImage.setOnClickListener(new View.OnClickListener() {
@@ -116,18 +122,7 @@ public class HomeFragment extends BaseFragment {
         tabLayout.setVisibility(View.GONE);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-//        IntentResult intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-//        String contents = intentResult.getContents();
-        if (resultCode == getActivity().RESULT_OK){
-            String scan_result = data.getStringExtra(Intents.Scan.RESULT);
-            Toast.makeText(getContext(), scan_result, Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(getContext(), "扫描失败", Toast.LENGTH_SHORT).show();
-        }
-    }
+
     public class LocalImageHolderView implements Holder<Integer> {
         private ImageView imageView;
         @Override
@@ -168,6 +163,16 @@ public class HomeFragment extends BaseFragment {
         } catch (Exception e) {
             e.printStackTrace();
             return -1;
+        }
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK
+                && requestCode == REQUEST_QR_CODE
+                && data != null) {
+            String result = data.getStringExtra("result");
+            EventBus.getDefault().post(result,"scane_room_id");
         }
     }
 }

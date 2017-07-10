@@ -95,16 +95,16 @@ public class LookFragment extends BaseFragment {
     @Subscriber(tag = "userList")
     public void getUserList(RoomUserInfo userInfo) {
         userInfos.add(userInfo);
-        Collections.sort(userInfos, new Comparator<RoomUserInfo>() {
-            @Override
-            public int compare(RoomUserInfo o1, RoomUserInfo o2) {
-                if (o1.getLevel1() == o2.getLevel1()) {
-                    return o1.getUserid() > o2.getUserid() ? -1 : 1;
-                } else {
-                    return o1.getLevel1() > o2.getLevel1() ? -1 : 1;
-                }
-            }
-        });
+//        Collections.sort(userInfos, new Comparator<RoomUserInfo>() {
+//            @Override
+//            public int compare(RoomUserInfo o1, RoomUserInfo o2) {
+//                if (o1.getLevel1() == o2.getLevel1()) {
+//                    return o1.getUserid() > o2.getUserid() ? -1 : 1;
+//                } else {
+//                    return o1.getLevel1() > o2.getLevel1() ? -1 : 1;
+//                }
+//            }
+//        });
 //        if (configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
         adapter.notifyDataSetChanged();
 //            userList.setAdapter(new UserAdapter(userInfos, this));

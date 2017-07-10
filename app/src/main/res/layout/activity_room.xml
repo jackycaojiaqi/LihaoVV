@@ -54,11 +54,6 @@
                 android:layout_height="match_parent"
                 app:widthToHeight="0.75">
 
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/room_vp"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -82,12 +77,19 @@
                         android:layout_weight="1" />
                 </LinearLayout>
 
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/room_vp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
 
                 <RelativeLayout
                     android:id="@+id/rll_mic_user_control_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone">
+                    android:layout_width="wrap_content"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content"
+
+                    >
 
                     <LinearLayout
                         android:id="@+id/ll_mic_user_control_view"
@@ -195,6 +197,7 @@
                         android:layout_margin="10dp"
                         android:src="@mipmap/more_icon" />
 
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
@@ -211,6 +214,22 @@
                             android:text="房间号"
                             android:textColor="@color/home_tab_backgroud"
                             android:textSize="14dp" />
+
+                        <ImageView
+                            android:id="@+id/room_control_no_img"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center_vertical"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_room_control_clear" />
+
+                        <ImageView
+                            android:id="@+id/room_control_mute"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center_vertical"
+                            android:padding="5dp"
+                            android:src="@drawable/ic_room_control_mute" />
 
                         <ImageView
                             android:id="@+id/follow_new_image"
@@ -251,7 +270,8 @@
             <android.support.v4.view.ViewPager
                 android:id="@+id/room_new_viewpager"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_marginBottom="50dp" />
         </LinearLayout>
         <!--<ListView-->
         <!--android:divider="@null"-->
@@ -290,7 +310,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:clickable="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -394,4 +415,6 @@
     </LinearLayout>
 
     <include layout="@layout/activity_live_music_lrc" />
+
+    <include layout="@layout/pop_gift_grid" />
 </RelativeLayout>

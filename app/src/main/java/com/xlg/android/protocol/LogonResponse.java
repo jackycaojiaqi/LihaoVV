@@ -36,6 +36,8 @@ public class LogonResponse {
 	private byte[]			cidiograph = new byte[128];	//个性签名
 	@StructOrder(15)
 	private byte[]			cuserpwd = new byte[32];//密码
+	@StructOrder(16)
+	private byte[]			cphoto = new byte[32];//自定义头像
 
 
 
@@ -150,6 +152,11 @@ public class LogonResponse {
 	public void setCidiograph(String cidiograph) {
 		Tools.String2ByteArrayGBK(this.cidiograph, cidiograph);
 	}
-
+	public String getCphoto() {
+		return Tools.ByteArray2StringGBK(cphoto);
+	}
+	public void setCphoto(String cphoto) {
+		Tools.String2ByteArrayGBK(this.cphoto, cphoto);
+	}
 
 }

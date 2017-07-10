@@ -25,6 +25,7 @@ import com.fubang.lihaovv.api.ApiService;
 import com.fubang.lihaovv.entities.HistoryEnity;
 import com.fubang.lihaovv.entities.HistoryListEntiy;
 import com.fubang.lihaovv.entities.UserEntity;
+import com.fubang.lihaovv.utils.StringUtil;
 import com.zhuyunjian.library.StartUtil;
 
 import org.androidannotations.annotations.EFragment;
@@ -205,8 +206,11 @@ public class MyFragment extends BaseFragment implements Callback<HistoryListEnti
                     }
                 }).build();
         ApiService service = retrofit.create(ApiService.class);
-        call = service.getHistoryEnity(Integer.parseInt(StartUtil.getUserId(getContext())));
-        call.enqueue(this);
+        if (!StringUtil.isEmptyandnull(StartUtil.getUserId(getContext()))) {
+            call = service.getHistoryEnity(Integer.parseInt(StartUtil.getUserId(getContext())));
+            call.enqueue(this);
+        }
+
     }
 
     /**
@@ -239,8 +243,10 @@ public class MyFragment extends BaseFragment implements Callback<HistoryListEnti
     @Override
     public void onResume() {
         super.onResume();
-        Call<HistoryListEntiy> call2 = call.clone();
-        call2.enqueue(this);
+        if (!StringUtil.isEmptyandnull(StartUtil.getUserId(getContext()))) {
+            Call<HistoryListEntiy> call2 = call.clone();
+            call2.enqueue(this);
+        }
     }
 
     @Override

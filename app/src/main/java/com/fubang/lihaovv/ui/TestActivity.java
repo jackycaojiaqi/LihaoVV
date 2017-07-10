@@ -329,7 +329,7 @@ public class TestActivity extends BaseActivity implements MicNotify, AVNotify, V
     private void showWindow() {
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.pop_gift_grid,null);
-        gridView = (GridView) view.findViewById(R.id.room_gift_list);
+//        gridView = (GridView) view.findViewById(R.id.room_gift_list);
         giftSendBtn = (Button) view.findViewById(R.id.gift_send_btn);
         final TextView giftName  = (TextView)view.findViewById(R.id.gift_name_txt);
         final EditText giftCount = (EditText) view.findViewById(R.id.gift_count);

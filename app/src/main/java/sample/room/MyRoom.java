@@ -262,7 +262,7 @@ public class MyRoom implements RoomHandler {
     @Override
     public void onSetMicStateNotify(MicState obj) {
         // TODO Auto-generated method stub
-        PrintUnknown("onSetMicStateNotify: ");
+        PrintUnknown("onSetMicStateNotify: "+obj.getMicstate());
         Tools.PrintObject(obj);
         if (obj.getMicstate() == 1) {
             EventBus.getDefault().post(obj, "upMicState");
@@ -413,7 +413,7 @@ public class MyRoom implements RoomHandler {
     @Override
     public void onTradeGiftError(int i) {
         // TODO Auto-generated method stub
-        KLog.e("onTradeGiftError: ");
+        KLog.e("onTradeGiftError: "+i);
     }
 
     @Override
@@ -427,13 +427,14 @@ public class MyRoom implements RoomHandler {
     @Override
     public void onLotteryGiftNotify(LotteryGiftNotice obj) {
         // TODO Auto-generated method stub
+        KLog.e("onTradeGiftNotify: ");
         PrintUnknown("onLotteryGiftNotify: ");
     }
 
     @Override
-    public void onLotteryNotify(LotteryNotice obj) {
-        // TODO Auto-generated method stub
+    public void onLotteryNotify(LotteryNotice obj) {//中奖礼物
         PrintUnknown("onLotteryNotify: ");
+        EventBus.getDefault().post(obj, "onLotteryNotify");
     }
 
     @Override

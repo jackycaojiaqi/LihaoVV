@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.fubang.lihaovv.MainActivity_;
 import com.fubang.lihaovv.R;
 import com.socks.library.KLog;
+import com.umeng.analytics.MobclickAgent;
 import com.xlg.android.protocol.LogonResponse;
 import com.zhuyunjian.library.DeviceUtil;
 import com.zhuyunjian.library.StartUtil;
@@ -57,6 +58,13 @@ public class SplashActivity extends BaseActivity {
             finish();
             return;
         }
+    }public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override

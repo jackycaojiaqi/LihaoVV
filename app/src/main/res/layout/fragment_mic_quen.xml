@@ -33,5 +33,6 @@
     <ExpandableListView
         android:id="@+id/mai_list_eplist"
         android:layout_width="match_parent"
+        android:layout_marginBottom="10dp"
         android:layout_height="match_parent" />
 </LinearLayout>

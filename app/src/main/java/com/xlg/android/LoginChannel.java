@@ -86,7 +86,6 @@ public class LoginChannel  implements ClientSocketHandler {
 			default:
 				break;
 			}
-			
 			// 移除一个包
 			mBuffer.rdarin(head.getLength());
 		}		

@@ -8,62 +8,97 @@ public class RoomUserInfo  {
 	@StructOrder(0)
 	private int	userid;
 	@StructOrder(1)
-	private int	vcbid;
+	private int	guardid;
 	@StructOrder(2)
 	private int	level1;				//用户级别
 	@StructOrder(3)
-	private int	nfamilyid;			//所属家族id
+	private int	guardlevel;			//守护级别
 	@StructOrder(4)
-	private int	decocolor;			//马甲颜色
+	private int	udmic;			//马甲颜色
 	@StructOrder(5)
-	private short	reserve;			//预留//用于表示是否为正常用户0-正常，1-机器人1
+	private int	decocolor;			//马甲颜色
 	@StructOrder(6)
-	private short	sealid;				//盖章id
-//	unsigned int	pigcount;			//猪头(暂未使用)
+	private short	reserve;			//预留//用于表示是否为正常用户0-正常，1-机器人1
 	@StructOrder(7)
-	private long	sealbringtime;		//盖章时长（秒）1970后时长
+	private short	sealid;				//盖章id
 	@StructOrder(8)
-	private int	ipaddr;				//最后登录ip
+	private long	sealbringtime;		//盖章时长（秒）1970后时长
 	@StructOrder(9)
-	private int	userstate;			//用户状态,用了低16位。
+	private int	ipaddr;				//最后登录ip
 	@StructOrder(10)
-	private int	starflag;			//周星标识
+	private int	userstate;			//用户状态,用了低16位。
 	@StructOrder(11)
-	private int	activityflag;		//活动星标识
+	private int	starflag;			//周星标识
 	@StructOrder(12)
-	private short  chargemicgiftid;    //用于收费麦的礼物id
+	private int	activityflag;		//活动星标识
 	@StructOrder(13)
-	private short  chargemicgiftcount;  //用于收费麦的礼物数目
+	private short  chargemicgiftid;    //用于收费麦的礼物id
 	@StructOrder(14)
-	private byte			publicmixindex;		//公麦序。最大255
+	private short  chargemicgiftcount;  //用于收费麦的礼物数目
 	@StructOrder(15)
-	private byte			gender;				//性别（0－女，1－男，2－未知）
+	private byte			publicmixindex;		//公麦序。最大255
 	@StructOrder(16)
-	private short			colorbarnum;		//自己的彩条总数
+	private byte			gender;				//性别（0－女，1－男，2－未知）
 	@StructOrder(17)
+	private short			colorbarnum;		//自己的彩条总数
+	@StructOrder(18)
 	private byte[]			useralias = new byte[32];//昵称
 	// add by:baddie@126.com  返回金币做蝴蝶显示用 返回麦时麦序供限时麦用
-	@StructOrder(18)
-	private long		nk;                  //金币
 	@StructOrder(19)
-	private short           micindex;            //在1麦还是2麦
+	private long		nk;                  //金币
 	@StructOrder(20)
-	private long    micendtime;             //麦时结束时间
+	private short           micindex;            //在1麦还是2麦
 	@StructOrder(21)
-	private long    micnowtime;           // 现在麦时过了多久
+	private long    micendtime;             //麦时结束时间
 	@StructOrder(22)
-	private byte[]            carname = new byte[32];              //座驾的名字
+	private long    micnowtime;           // 现在麦时过了多久
 	@StructOrder(23)
-	private int				isallowupmic;			//是否允许抱麦
+	private byte[]            carname = new byte[32];              //座驾的名字
 	@StructOrder(24)
-	private int				headid;					//头像id
+	private int				isallowupmic;			//是否允许抱麦
 	@StructOrder(25)
-	private int				kingmic;			//是否允许抱麦
+	private int				headid;					//头像id
 	@StructOrder(26)
+	private int				kingmic;			//是否允许抱麦
+	@StructOrder(27)
 	private byte[]				clastloginmac = new byte[32];					//头像id
+	@StructOrder(28)
+	private byte[]				photo = new byte[32];					//头像id
 
 	private String rtmp_paly_url;
 	private int jinmic;
+
+	public int getGuardid() {
+		return guardid;
+	}
+
+	public void setGuardid(int guardid) {
+		this.guardid = guardid;
+	}
+
+	public int getGuardlevel() {
+		return guardlevel;
+	}
+
+	public void setGuardlevel(int guardlevel) {
+		this.guardlevel = guardlevel;
+	}
+
+	public int getUdmic() {
+		return udmic;
+	}
+
+	public void setUdmic(int udmic) {
+		this.udmic = udmic;
+	}
+
+	public int getKingmic() {
+		return kingmic;
+	}
+
+	public void setKingmic(int kingmic) {
+		this.kingmic = kingmic;
+	}
 
 	public int getJinmic() {
 		return jinmic;
@@ -91,23 +126,11 @@ public class RoomUserInfo  {
 	public void setUserid(int userid) {
 		this.userid = userid;
 	}
-	public int getVcbid() {
-		return vcbid;
-	}
-	public void setVcbid(int vcbid) {
-		this.vcbid = vcbid;
-	}
 	public int getLevel1() {
 		return level1;
 	}
 	public void setLevel1(int level1) {
 		this.level1 = level1;
-	}
-	public int getNfamilyid() {
-		return nfamilyid;
-	}
-	public void setNfamilyid(int nfamilyid) {
-		this.nfamilyid = nfamilyid;
 	}
 	public int getDecocolor() {
 		return decocolor;
@@ -217,12 +240,14 @@ public class RoomUserInfo  {
 	public void setMicnowtime(long micnowtime) {
 		this.micnowtime = micnowtime;
 	}
+
 	public String getCarname() {
 		return Tools.ByteArray2StringGBK(carname);
 	}
 	public void setCarname(String carname) {
 		Tools.String2ByteArrayGBK(this.carname, carname);
 	}
+
 	public int getIsallowupmic() {
 		return isallowupmic;
 	}
@@ -236,5 +261,11 @@ public class RoomUserInfo  {
 		this.headid = headid;
 	}
 
+	public String getCphoto() {
+		return Tools.ByteArray2StringGBK(photo);
+	}
+	public void setCphoto(String photo) {
+		Tools.String2ByteArrayGBK(this.photo, photo);
+	}
 
 }

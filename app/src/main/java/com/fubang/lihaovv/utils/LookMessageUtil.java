@@ -45,6 +45,7 @@ public class LookMessageUtil {
         list.add(new LookMessageEntity(R.mipmap.mai2, "抱上2麦"));
         list.add(new LookMessageEntity(R.mipmap.mai3, "抱上3麦"));
         list.add(new LookMessageEntity(R.mipmap.tellqiaoqiao, "私聊"));
+        list.add(new LookMessageEntity(R.drawable.ic_gift, "送礼物"));
         return list;
     }
 

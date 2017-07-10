@@ -7,9 +7,12 @@ import android.widget.ListView;
 import com.fubang.lihaovv.R;
 import com.fubang.lihaovv.adapters.RoomChatAdapter;
 import com.fubang.lihaovv.entities.GiftEntity;
+import com.fubang.lihaovv.entities.GiftNewEntity;
+import com.fubang.lihaovv.ui.RoomActivity;
 import com.fubang.lihaovv.utils.GiftUtil;
 import com.socks.library.KLog;
 import com.xlg.android.protocol.BigGiftRecord;
+import com.xlg.android.protocol.LotteryNotice;
 import com.xlg.android.protocol.RoomChatMsg;
 import com.xlg.android.protocol.RoomUserInfo;
 import com.zhuyunjian.library.StartUtil;
@@ -32,7 +35,7 @@ public class CommonFragment extends BaseFragment {
     private List<RoomChatMsg> data = new ArrayList<>();
 
     private RoomChatAdapter adapter;
-    private List<GiftEntity> gifts = new ArrayList<>();
+    private List<GiftNewEntity> gifts = new ArrayList<>();
 
     @Override
     public void before() {
@@ -46,10 +49,36 @@ public class CommonFragment extends BaseFragment {
 
     @Override
     public void initView() {
-        gifts.addAll(GiftUtil.getGifts());
-
+        gifts.clear();
+        gifts = GiftUtil.getAllGift();
         adapter = new RoomChatAdapter(data, getContext());
         listView.setAdapter(adapter);
+    }
+    private String lottery_name;
+    private String gift_name;
+    //接收中奖礼物消息
+    @Subscriber(tag = "onLotteryNotify")
+    public void onLotteryNotify(LotteryNotice obj) {
+        for (RoomUserInfo userInfo : RoomActivity.userInfos){
+            if (userInfo.getUserid()==obj.getSrcid()){
+                lottery_name = userInfo.getUseralias();
+            }
+        }
+        for (GiftNewEntity giftNewEntity: gifts){
+            if (giftNewEntity.getDate().getGiftId()==obj.getGiftid()){
+                gift_name = giftNewEntity.getDate().getGiftName();
+            }
+        }
+        RoomChatMsg msg = new RoomChatMsg();
+        msg.setToid(8);
+        msg.setContent(lottery_name+"送出："+gift_name+"  获得10倍x"+obj.getNumber1()+" 100倍x"+obj.getNumber2()+
+                " 500倍x"+obj.getNumber3()+" 1000倍x"+obj.getNumber4());
+        msg.setSrcid(obj.getSrcid());
+        msg.setSrcalias(lottery_name);
+        msg.setDstvcbid(0);
+        data.add(msg);
+        adapter.notifyDataSetChanged();
+        listView.setSelection(listView.getCount() - 1);
     }
 
     //接收礼物消息更新
@@ -60,14 +89,8 @@ public class CommonFragment extends BaseFragment {
         String giftTxt = "";
         if (count != 0) {
             for (int i = 0; i < gifts.size(); i++) {
-                if (getGiftId == gifts.get(i).getGiftId()) {
-                    if (getGiftId < 10)
-                        giftTxt = "/g100" + getGiftId + "   x " + count;
-                    if (getGiftId >= 10 && getGiftId < 100)
-                        giftTxt = "/g10" + getGiftId + "   x " + count;
-                    if (getGiftId >= 100)
-                        giftTxt = "/g1" + getGiftId + "    x" + count;
-                    if (getGiftId > 31 && getGiftId < 64) {
+                if (getGiftId == gifts.get(i).getDate().getGiftId()) {
+                    if (getGiftId > 0 && getGiftId < 9999) {
                         RoomChatMsg msg = new RoomChatMsg();
                         msg.setToid(-1);
                         msg.setContent("g" + getGiftId + "");

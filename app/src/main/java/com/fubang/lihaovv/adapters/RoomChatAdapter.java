@@ -82,7 +82,7 @@ public class RoomChatAdapter extends ListBaseAdapter<RoomChatMsg> {
         } else
             holder.userTv.setText(list.get(position).getSrcalias() + ":");
 //        holder.messageTv.setText(Html.fromHtml(list.get(position).getContent()));
-        if (list.get(position).getToid() == -1) {
+        if (list.get(position).getToid() == -1) {//普通礼物
             holder.simpleDraweeView.setVisibility(View.VISIBLE);
             Uri uri = Uri.parse("res://" + context.getPackageName() + "/" + getResourceId(list.get(position).getContent()));
             DraweeController controller = Fresco.newDraweeControllerBuilder()
@@ -91,57 +91,16 @@ public class RoomChatAdapter extends ListBaseAdapter<RoomChatMsg> {
                     .build();
             holder.simpleDraweeView.setController(controller);
             holder.messageTv.setText("   X" + list.get(position).getDstvcbid());
-        } else {
+            holder.messageTv.setTextColor(context.getResources().getColor(R.color.gray));
+        } else if (list.get(position).getToid() == 8) {//中奖礼物
             holder.simpleDraweeView.setVisibility(View.GONE);
-            String spanned = String.valueOf(Html.fromHtml(list.get(position).getContent()));
-            StringBuilder stringBuilder = new StringBuilder();
-            if (spanned.indexOf('/') != -1) {
-                for (int i = 0; i < spanned.length(); i++) {
-                    if (spanned.charAt(i) == '/') {
-                        String s = spanned.substring(i + 10, i + 13);
-                        if (s.equals("Emo") || s.equals("emo")) {
-                            i = i + 12;
-                            stringBuilder.append("");
-                        } else {
-                            int number = Integer.parseInt(s);
-                            if (number > 0 && number < 96) {
-                                stringBuilder.append("<img src='e");
-                                stringBuilder.append(spanned.substring(i + 4, i + 13));
-                                stringBuilder.append("'/>");
-                            } else {
-                                stringBuilder.append("");
-                            }
-                            i = i + 12;
-                        }
-                    } else {
-                        stringBuilder.append(spanned.charAt(i));
-                    }
-                }
-
-                Log.d("123", "stringBuilder" + stringBuilder);
-//                if (stringBuilder.toString().equals("")) {
-//                    stringBuilder.append("<img src='Emotions'/>");
-//                }
-                holder.messageTv.setText(Html.fromHtml(stringBuilder.toString(), new Html.ImageGetter() {
-                    @Override
-                    public Drawable getDrawable(String source) {
-                        // TODO Auto-generated method stub
-                        // 获得系统资源的信息，比如图片信息
-                        Drawable drawable = context.getResources().getDrawable(getResourceId(source));
-                        // 第三个图片文件按照50%的比例进行压缩
-//                    if (source.equals("image3")) {
-//                        drawable.setBounds(0, 0, drawable.getIntrinsicWidth() / 2,
-//                                drawable.getIntrinsicHeight() / 2);
-//                    } else {
-                        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(),
-                                drawable.getIntrinsicHeight());
-//                    }
-                        return drawable;
-                    }
-                }, null));
-            } else {
-                holder.messageTv.setText(spanned);
-            }
+            holder.messageTv.setText(list.get(position).getContent());
+            holder.messageTv.setTextColor(context.getResources().getColor(R.color.red));
+            holder.userTv.setText("系统消息" + ":");
+        } else {//普通聊天
+            holder.simpleDraweeView.setVisibility(View.GONE);
+            holder.messageTv.setText(list.get(position).getContent());
+            holder.messageTv.setTextColor(context.getResources().getColor(R.color.gray));
         }
         return convertView;
     }

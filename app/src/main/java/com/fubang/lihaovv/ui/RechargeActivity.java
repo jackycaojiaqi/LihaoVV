@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fubang.lihaovv.R;
+import com.umeng.analytics.MobclickAgent;
 import com.zhuyunjian.library.AsyncPayTask;
 import com.zhuyunjian.library.PayResult;
 import com.zhuyunjian.library.StartUtil;
@@ -57,7 +58,14 @@ public class RechargeActivity extends BaseActivity implements View.OnClickListen
 
     }
 
-
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
